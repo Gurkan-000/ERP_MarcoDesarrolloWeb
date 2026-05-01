@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERP - Inicio</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body>
+  <div class="app-root">
+    <section id="erp-app" class="erp-app">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-icon" aria-hidden="true"><i data-lucide="shopping-bag"></i></div>
+          <div>
+            <h2>Lo Esencial</h2>
+            <p>ERP Broasteria</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-module="pos" data-roles="Mesero,Cajero,Administrador">
+            <i data-lucide="shopping-bag"></i>
+            Punto de Venta
+          </button>
+          <button class="nav-item" data-module="caja" data-roles="Cajero,Administrador">
+            <i data-lucide="wallet"></i>
+            Caja
+          </button>
+          <button class="nav-item" data-module="inventario" data-roles="Administrador">
+            <i data-lucide="package"></i>
+            Inventario
+          </button>
+          <button class="nav-item" data-module="catalogo" data-roles="Administrador">
+            <i data-lucide="layout-dashboard"></i>
+            Catalogo
+          </button>
+          <button class="nav-item" data-module="usuarios" data-roles="Administrador">
+            <i data-lucide="users"></i>
+            Usuarios
+          </button>
+          <button class="nav-item" data-module="configuraciones" data-roles="Administrador">
+            <i data-lucide="settings"></i>
+            Configuraciones
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-chip">
+            <div class="user-avatar" id="user-avatar">A</div>
+            <div class="user-meta">
+              <p id="user-name">Ana Torres</p>
+              <span id="user-role">Administrador</span>
+            </div>
+          </div>
+          <form th:action="@{/api/user/login}" method="get">
+            <button type="submit" class="btn btn-ghost">
+              <i data-lucide="log-out"></i>
+              Cerrar Sesión
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header class="topbar">
+          <h2 id="module-title">Punto de Venta</h2>
+          <p id="today-date"></p>
+        </header>
+
+        <main class="content-area">
+          <section id="module-pos" class="module active">
+            <div class="module-header">
+              <div class="tab-row">
+                <button class="tab active" data-tab="pos-salon"><i data-lucide="users"></i>Salon</button>
+                <button class="tab" data-tab="pos-llevar"><i data-lucide="shopping-bag"></i>Para Llevar</button>
+                <button class="tab" data-tab="pos-delivery"><i data-lucide="truck"></i>Delivery</button>
+              </div>
+            </div>
+            <div class="tab-content active" id="pos-salon">
+              <div class="card">
+                <h3>Mapa de Mesas</h3>
+                <div class="table-grid">
+                  <button class="table-card status-occupied">1 <span>Ocupada</span></button>
+                  <button class="table-card status-free">2 <span>Libre</span></button>
+                  <button class="table-card status-pre">3 <span>Precuenta</span></button>
+                  <button class="table-card status-free">4 <span>Libre</span></button>
+                  <button class="table-card status-free">5 <span>Libre</span></button>
+                  <button class="table-card status-free">6 <span>Libre</span></button>
+                </div>
+              </div>
+            </div>
+            <div class="tab-content" id="pos-llevar">
+              <div class="card empty-state">
+                <i data-lucide="shopping-bag"></i>
+                <h3>Pedidos para llevar</h3>
+                <p>Visualizacion demo lista para agregar pedidos rapidos.</p>
+              </div>
+            </div>
+            <div class="tab-content" id="pos-delivery">
+              <div class="card empty-state">
+                <i data-lucide="truck"></i>
+                <h3>Pedidos delivery</h3>
+                <p>Vista preparada para coordinaciones de delivery.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="module-caja" class="module">
+            <div class="split-layout">
+              <div class="card">
+                <h3>Estado de Caja</h3>
+                <p class="muted">Turno Abierto</p>
+                <div class="stat-card">
+                  <div>
+                    <p>Monto Inicial</p>
+                    <h4>S/ 50.00</h4>
+                  </div>
+                  <div>
+                    <p>Ingresos Efectivo</p>
+                    <h4 class="text-success">S/ 280.00</h4>
+                  </div>
+                  <div>
+                    <p>Ingresos Otros</p>
+                    <h4 class="text-info">S/ 120.00</h4>
+                  </div>
+                  <div>
+                    <p>Egresos</p>
+                    <h4 class="text-warning">S/ 40.00</h4>
+                  </div>
+                </div>
+                <button class="btn btn-danger">Cerrar Turno</button>
+              </div>
+              <div class="card">
+                <h3>Movimientos del Turno</h3>
+                <div class="list">
+                  <div class="list-item">
+                    <div>
+                      <p class="title">Venta mostrador</p>
+                      <span class="badge">Efectivo</span>
+                    </div>
+                    <strong class="text-success">+ S/ 15.00</strong>
+                  </div>
+                  <div class="list-item">
+                    <div>
+                      <p class="title">Compra de hielo</p>
+                      <span class="badge badge-orange">Egreso</span>
+                    </div>
+                    <strong class="text-warning">- S/ 6.00</strong>
+                  </div>
+                  <div class="list-item">
+                    <div>
+                      <p class="title">Pago delivery</p>
+                      <span class="badge badge-blue">Tarjeta</span>
+                    </div>
+                    <strong class="text-success">+ S/ 22.00</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="module-inventario" class="module">
+            <div class="module-header">
+              <div class="tab-row">
+                <button class="tab active" data-tab="inv-stock">Stock Actual</button>
+                <button class="tab" data-tab="inv-lotes">Lotes y Vencimientos</button>
+                <button class="tab" data-tab="inv-kardex">Kardex</button>
+                <button class="tab" data-tab="inv-toma">Toma Inventario</button>
+              </div>
+              <div class="pill-group">
+                <span class="pill warning">2 stock bajo</span>
+                <span class="pill info">1 lote por vencer</span>
+              </div>
+            </div>
+
+            <div class="tab-content active" id="inv-stock">
+              <div class="card">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Stock</th>
+                      <th>Minimo</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Combo Clasico</td>
+                      <td>12</td>
+                      <td>5</td>
+                      <td><span class="badge badge-green">Normal</span></td>
+                    </tr>
+                    <tr>
+                      <td>Combo Familiar</td>
+                      <td>3</td>
+                      <td>3</td>
+                      <td><span class="badge badge-orange">Bajo</span></td>
+                    </tr>
+                    <tr>
+                      <td>Gaseosa</td>
+                      <td>18</td>
+                      <td>8</td>
+                      <td><span class="badge badge-green">Normal</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="tab-content" id="inv-lotes">
+              <div class="card">
+                <h3>Control de Lotes</h3>
+                <div class="list">
+                  <div class="list-item">
+                    <div>
+                      <p class="title">Combo Clasico</p>
+                      <p class="muted">Vence en 3 dias</p>
+                    </div>
+                    <span class="badge badge-orange">8 unidades</span>
+                  </div>
+                  <div class="list-item">
+                    <div>
+                      <p class="title">Postres</p>
+                      <p class="muted">Vence en 12 dias</p>
+                    </div>
+                    <span class="badge">5 unidades</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="inv-kardex">
+              <div class="card">
+                <h3>Movimientos Recientes</h3>
+                <div class="list">
+                  <div class="list-item">
+                    <div>
+                      <p class="title">Ingreso de lote</p>
+                      <p class="muted">Combo Clasico</p>
+                    </div>
+                    <span class="badge badge-green">+ 8</span>
+                  </div>
+                  <div class="list-item">
+                    <div>
+                      <p class="title">Salida por venta</p>
+                      <p class="muted">Gaseosa</p>
+                    </div>
+                    <span class="badge badge-orange">- 2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="inv-toma">
+              <div class="card empty-state">
+                <i data-lucide="clipboard-check"></i>
+                <h3>Toma de Inventario</h3>
+                <p>Panel listo para realizar ajustes manuales.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="module-catalogo" class="module">
+            <div class="module-header">
+              <div class="tab-row">
+                <button class="tab active" data-tab="cat-productos"><i data-lucide="package"></i>Productos</button>
+                <button class="tab" data-tab="cat-categorias"><i data-lucide="layers"></i>Categorias</button>
+              </div>
+              <div class="catalog-actions">
+                <button class="btn btn-primary catalog-action" type="button" data-action="open-form"
+                  data-target="cat-productos">
+                  <i data-lucide="plus"></i>
+                  Nuevo producto
+                </button>
+                <button class="btn btn-muted catalog-action hidden" type="button" data-action="open-form"
+                  data-target="cat-categorias">
+                  <i data-lucide="plus"></i>
+                  Nueva categoria
+                </button>
+              </div>
+            </div>
+            <div class="tab-content active" id="cat-productos">
+              <div class="card">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Categoria</th>
+                      <th>Precio</th>
+                      <th>Stock</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Combo Clasico</td>
+                      <td>Combos</td>
+                      <td>S/ 18.90</td>
+                      <td>12</td>
+                    </tr>
+                    <tr>
+                      <td>Chicha Morada</td>
+                      <td>Bebidas</td>
+                      <td>S/ 5.00</td>
+                      <td>25</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <form class="inline-form hidden" id="form-cat-productos">
+                  <div class="form-grid">
+                    <label class="field">
+                      <span>Producto</span>
+                      <input type="text" placeholder="Ej. Combo Clasico" />
+                    </label>
+                    <label class="field">
+                      <span>Categoria</span>
+                      <input type="text" placeholder="Ej. Combos" />
+                    </label>
+                    <label class="field">
+                      <span>Precio</span>
+                      <input type="number" step="0.1" placeholder="Ej. 18.90" />
+                    </label>
+                    <label class="field">
+                      <span>Stock</span>
+                      <input type="number" placeholder="Ej. 10" />
+                    </label>
+                  </div>
+                  <div class="form-actions">
+                    <button class="btn btn-primary" type="button">Guardar</button>
+                    <button class="btn btn-muted" type="button" data-action="cancel-form">Cancelar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="tab-content" id="cat-categorias">
+              <div class="card">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Categoria</th>
+                      <th>Productos</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Combos</td>
+                      <td>8</td>
+                      <td><span class="badge badge-green">Activo</span></td>
+                    </tr>
+                    <tr>
+                      <td>Bebidas</td>
+                      <td>12</td>
+                      <td><span class="badge badge-green">Activo</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <form class="inline-form hidden" id="form-cat-categorias">
+                  <div class="form-grid">
+                    <label class="field">
+                      <span>Categoria</span>
+                      <input type="text" placeholder="Ej. Combos" />
+                    </label>
+                    <label class="field">
+                      <span>Estado</span>
+                      <select>
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="form-actions">
+                    <button class="btn btn-primary" type="button">Guardar</button>
+                    <button class="btn btn-muted" type="button" data-action="cancel-form">Cancelar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          <section id="module-usuarios" class="module">
+            <div class="card">
+              <h3>Gestion de Usuarios</h3>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ana Torres</td>
+                    <td>admin</td>
+                    <td><span class="badge badge-purple">Administrador</span></td>
+                    <td><span class="badge badge-green">Activo</span></td>
+                  </tr>
+                  <tr>
+                    <td>Luis Paredes</td>
+                    <td>caja</td>
+                    <td><span class="badge badge-blue">Cajero</span></td>
+                    <td><span class="badge badge-green">Activo</span></td>
+                  </tr>
+                  <tr>
+                    <td>Maria Lopez</td>
+                    <td>mesero</td>
+                    <td><span class="badge badge-orange">Mesero</span></td>
+                    <td><span class="badge badge-green">Activo</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="module-configuraciones" class="module">
+            <div class="card danger-zone">
+              <div>
+                <h3>Zona de Peligro</h3>
+                <p>Reinicia inventario y kardex (demo sin persistencia).</p>
+              </div>
+              <button class="btn btn-danger" id="open-reset">Reiniciar Inventario</button>
+            </div>
+          </section>
+        </main>
+      </div>
+    </section>
+  </div>
+
+  <div id="reset-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-icon" aria-hidden="true"><i data-lucide="alert-octagon"></i></div>
+      <h3>Estas totalmente seguro?</h3>
+      <p>Esta accion elimina el historial operativo de inventario. (Demo)</p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="confirm-reset">Si, borrar historial</button>
+        <button class="btn btn-muted" id="cancel-reset">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script th:src="@{/js/app.js}" defer></script>
+</body>
+
+</html>
