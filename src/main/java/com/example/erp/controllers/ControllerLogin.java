@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.erp.models.Usuario;
 
 @Controller
-@RequestMapping("/api/user")
+@RequestMapping("/api/login")
 public class ControllerLogin {
 
-    private List<Usuario> listUsuario = Arrays.asList(new Usuario("admin","admin123"),
+    private final List<Usuario> listUsuario = Arrays.asList(new Usuario("admin","admin123"),
                                                         new Usuario("caja","caja123"),
                                                         new Usuario("mesero","mesero123"));
 
-    @GetMapping("/login")
+    @GetMapping("/vista")
     public String autenticacionVista(Model model) {
         model.addAttribute("usuario", new Usuario());
         return "login";
@@ -33,7 +33,7 @@ public class ControllerLogin {
         Optional<Usuario> usuarioOptional = listUsuario.stream().filter(u -> usuario.getNombre().equals(u.getNombre()) && usuario.getContraseña().equals(u.getContraseña()))
                 .findFirst();
 
-        return usuarioOptional.isPresent() ? "index" : "login";
+        return usuarioOptional.isPresent() ? "redirect:/api/venta/vista" : "login";
     }
 
 }

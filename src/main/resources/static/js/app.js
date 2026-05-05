@@ -1,16 +1,37 @@
-const moduleTitle = document.getElementById('module-title');
 const todayDate = document.getElementById('today-date');
-const userName = document.getElementById('user-name');
-const userRole = document.getElementById('user-role');
-const userAvatar = document.getElementById('user-avatar');
 
 const resetModal = document.getElementById('reset-modal');
 const openReset = document.getElementById('open-reset');
 const cancelReset = document.getElementById('cancel-reset');
 const confirmReset = document.getElementById('confirm-reset');
+const resetForm = document.getElementById('reset-form');
 
-const navItems = Array.from(document.querySelectorAll('.nav-item'));
-const modules = Array.from(document.querySelectorAll('.module'));
+const mesaGrid = document.getElementById('mesa-grid');
+const mesaDetails = document.getElementById('pos-salon-details');
+const mesaSelected = document.getElementById('mesa-selected');
+const mesaEstado = document.getElementById('mesa-estado');
+const mesaInput = document.getElementById('mesa-input');
+const mesaOcuparInput = document.getElementById('mesa-ocupar-input');
+const mesaOcuparWrapper = document.getElementById('mesa-ocupar-wrapper');
+const mesaPedidosLists = Array.from(document.querySelectorAll('.mesa-pedidos-list'));
+const mesaPedidosEmpty = document.getElementById('mesa-sin-pedidos');
+const mesaTotal = document.getElementById('mesa-total');
+
+const cobroModal = document.getElementById('cobro-modal');
+const cobroMesaLabel = document.getElementById('cobro-mesa-label');
+const cobroList = document.getElementById('cobro-list');
+const cobroTotal = document.getElementById('cobro-total');
+const cobroMesaInput = document.getElementById('cobro-mesa-input');
+const cobroCancel = document.getElementById('cobro-cancel');
+
+const mesaOcupadaModal = document.getElementById('mesa-ocupada-modal');
+const mesaOcupadaLabel = document.getElementById('mesa-ocupada-label');
+const mesaOcupadaAgregar = document.getElementById('mesa-ocupada-agregar');
+const mesaOcupadaCobrar = document.getElementById('mesa-ocupada-cobrar');
+const mesaOcupadaCancel = document.getElementById('mesa-ocupada-cancel');
+
+let mesaOcupadaActual = null;
+
 const catalogActions = Array.from(document.querySelectorAll('.catalog-action'));
 const catalogForms = {
   'cat-productos': document.getElementById('form-cat-productos'),
@@ -27,17 +48,14 @@ const updateDate = () => {
   });
 };
 
-const activateModule = (moduleId, navButton) => {
-  navItems.forEach((item) => item.classList.remove('active'));
-  if (navButton) {
-    navButton.classList.add('active');
-    if (moduleTitle) moduleTitle.textContent = navButton.textContent.trim();
+const initLucideIcons = (attempt = 0) => {
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+    return;
   }
 
-  modules.forEach((module) => module.classList.remove('active'));
-  const target = document.getElementById(`module-${moduleId}`);
-  if (target) {
-    target.classList.add('active');
+  if (attempt < 15) {
+    setTimeout(() => initLucideIcons(attempt + 1), 120);
   }
 };
 
@@ -67,12 +85,6 @@ const openCatalogForm = (tabId) => {
   });
 };
 
-const handleNavClick = (event) => {
-  const button = event.target.closest('.nav-item');
-  if (!button) return;
-  activateModule(button.dataset.module, button);
-};
-
 const handleTabClick = (event) => {
   const tabButton = event.target.closest('.tab');
   if (!tabButton) return;
@@ -86,7 +98,6 @@ const handleTabClick = (event) => {
   module.querySelectorAll('.tab-content').forEach((panel) => panel.classList.remove('active'));
   const target = module.querySelector(`#${tabId}`);
   if (target) target.classList.add('active');
-
   if (module.id === 'module-catalogo') {
     updateCatalogActions(tabId);
     closeCatalogForms();
@@ -107,15 +118,132 @@ const handleFormCancel = (event) => {
 };
 
 const openModal = () => {
-  resetModal.classList.remove('hidden');
+  if (resetModal) resetModal.classList.remove('hidden');
 };
 
 const closeModal = () => {
-  resetModal.classList.add('hidden');
+  if (resetModal) resetModal.classList.add('hidden');
+};
+
+
+const updateMesaEstadoBadge = (estado) => {
+  if (!mesaEstado) return;
+  const estadoTexto = estado || 'Libre';
+  mesaEstado.textContent = estadoTexto;
+  mesaEstado.classList.remove('badge-green', 'badge-orange');
+  if (estadoTexto === 'Ocupada') {
+    mesaEstado.classList.add('badge-orange');
+  } else {
+    mesaEstado.classList.add('badge-green');
+  }
+};
+
+const setMesaSelected = (mesaNumero) => {
+  if (!mesaGrid) return;
+  mesaGrid.querySelectorAll('[data-mesa]').forEach((button) => {
+    button.classList.remove('is-selected');
+  });
+  const selected = mesaGrid.querySelector(`[data-mesa="${mesaNumero}"]`);
+  if (selected) selected.classList.add('is-selected');
+};
+
+const updateMesaPedidosPanel = (mesaNumero) => {
+  let activeList = null;
+  mesaPedidosLists.forEach((list) => {
+    const isMatch = list.dataset.mesa === String(mesaNumero);
+    list.classList.toggle('hidden', !isMatch);
+    if (isMatch) {
+      activeList = list;
+    }
+  });
+
+  const hasPedidos = activeList ? activeList.querySelectorAll('.list-item').length > 0 : false;
+  if (mesaPedidosEmpty) {
+    mesaPedidosEmpty.classList.toggle('hidden', hasPedidos);
+  }
+
+  if (mesaTotal) {
+    const total = activeList ? activeList.dataset.total : '0.00';
+    mesaTotal.textContent = `S/ ${total || '0.00'}`;
+  }
+
+  return hasPedidos;
+};
+
+const showMesaDetails = (mesaNumero, estado, button) => {
+  if (!mesaDetails) return;
+  mesaDetails.classList.remove('hidden');
+  if (mesaSelected) mesaSelected.textContent = `Mesa ${mesaNumero}`;
+  updateMesaEstadoBadge(estado);
+  setMesaSelected(mesaNumero);
+  if (mesaInput) mesaInput.value = mesaNumero;
+  if (mesaOcuparInput) mesaOcuparInput.value = mesaNumero;
+  if (cobroMesaInput) cobroMesaInput.value = mesaNumero;
+
+  const hasPedidosPanel = updateMesaPedidosPanel(mesaNumero);
+  const hasPedidosButton = button ? button.dataset.hasPedidos === 'true' : false;
+  const hasPedidos = hasPedidosPanel || hasPedidosButton;
+  if (mesaOcuparWrapper) {
+    const shouldShow = hasPedidos && estado !== 'Ocupada';
+    mesaOcuparWrapper.classList.toggle('hidden', !shouldShow);
+  }
+};
+
+const openCobroModal = (mesaNumero) => {
+  if (!cobroModal) return;
+  const sourceList = mesaPedidosLists.find((list) => list.dataset.mesa === String(mesaNumero));
+  if (cobroList) {
+    cobroList.innerHTML = sourceList ? sourceList.innerHTML : '';
+    if (!cobroList.children.length) {
+      cobroList.innerHTML = '<p class="muted">No hay pedidos para cobrar.</p>';
+    }
+  }
+  if (cobroTotal) {
+    const total = sourceList ? sourceList.dataset.total : '0.00';
+    cobroTotal.textContent = `S/ ${total || '0.00'}`;
+  }
+  if (cobroMesaLabel) cobroMesaLabel.textContent = `Mesa ${mesaNumero}`;
+  if (cobroMesaInput) cobroMesaInput.value = mesaNumero;
+  cobroModal.classList.remove('hidden');
+};
+
+const closeCobroModal = () => {
+  if (cobroModal) cobroModal.classList.add('hidden');
+};
+
+const openMesaOcupadaModal = (mesaNumero) => {
+  if (!mesaOcupadaModal) return;
+  mesaOcupadaActual = mesaNumero;
+  if (mesaOcupadaLabel) mesaOcupadaLabel.textContent = `Mesa ${mesaNumero}`;
+  mesaOcupadaModal.classList.remove('hidden');
+};
+
+const closeMesaOcupadaModal = () => {
+  if (mesaOcupadaModal) mesaOcupadaModal.classList.add('hidden');
+};
+
+const handleMesaClick = (event) => {
+  const button = event.target.closest('[data-mesa]');
+  if (!button || !mesaGrid || !mesaGrid.contains(button)) return;
+  const mesaNumero = button.dataset.mesa;
+  const estado = button.dataset.estado || 'Libre';
+  showMesaDetails(mesaNumero, estado, button);
+  if (estado === 'Ocupada') {
+    openMesaOcupadaModal(mesaNumero);
+  }
+};
+
+const initMesas = () => {
+  if (!mesaGrid) return;
+  const mesaSeleccionada = mesaGrid.dataset.mesaSeleccionada;
+  if (!mesaSeleccionada) return;
+  const button = mesaGrid.querySelector(`[data-mesa="${mesaSeleccionada}"]`);
+  if (!button) return;
+  const estado = button.dataset.estado || 'Libre';
+  showMesaDetails(mesaSeleccionada, estado, button);
 };
 
 const init = () => {
-  closeModal();
   updateDate();
 
   const catalogActiveTab = document.querySelector('#module-catalogo .tab.active');
@@ -123,23 +251,57 @@ const init = () => {
     updateCatalogActions(catalogActiveTab.dataset.tab);
   }
 
-  document.addEventListener('click', handleNavClick);
   document.addEventListener('click', handleTabClick);
   document.addEventListener('click', handleCatalogAction);
   document.addEventListener('click', handleFormCancel);
+  document.addEventListener('click', handleMesaClick);
 
   if (openReset) openReset.addEventListener('click', openModal);
   if (cancelReset) cancelReset.addEventListener('click', closeModal);
-  if (confirmReset) confirmReset.addEventListener('click', closeModal);
+  if (confirmReset) {
+    confirmReset.addEventListener('click', () => {
+      if (resetForm) resetForm.submit();
+      closeModal();
+    });
+  }
   if (resetModal) {
     resetModal.addEventListener('click', (event) => {
       if (event.target === resetModal) closeModal();
     });
   }
 
-  if (window.lucide) {
-    window.lucide.createIcons();
+  if (cobroCancel) cobroCancel.addEventListener('click', closeCobroModal);
+  if (cobroModal) {
+    cobroModal.addEventListener('click', (event) => {
+      if (event.target === cobroModal) closeCobroModal();
+    });
   }
+
+  if (mesaOcupadaAgregar) {
+    mesaOcupadaAgregar.addEventListener('click', () => {
+      closeMesaOcupadaModal();
+    });
+  }
+  if (mesaOcupadaCobrar) {
+    mesaOcupadaCobrar.addEventListener('click', () => {
+      closeMesaOcupadaModal();
+      if (mesaOcupadaActual) {
+        openCobroModal(mesaOcupadaActual);
+      }
+    });
+  }
+  if (mesaOcupadaCancel) {
+    mesaOcupadaCancel.addEventListener('click', closeMesaOcupadaModal);
+  }
+  if (mesaOcupadaModal) {
+    mesaOcupadaModal.addEventListener('click', (event) => {
+      if (event.target === mesaOcupadaModal) closeMesaOcupadaModal();
+    });
+  }
+
+  initMesas();
+
+  initLucideIcons();
 };
 
 document.addEventListener('DOMContentLoaded', init);

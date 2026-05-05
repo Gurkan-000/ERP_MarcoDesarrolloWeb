@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ERP - Inicio</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+    <div class="app-root">
+    <section id="erp-app" class="erp-app">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-icon" aria-hidden="true"><i data-lucide="shopping-bag"></i></div>
+          <div>
+            <h2>Lo Esencial</h2>
+            <p>ERP Broasteria</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a class="nav-item" th:href="@{/api/venta/vista}" data-roles="Mesero,Cajero,Administrador">
+            <i data-lucide="shopping-bag"></i>
+            Punto de Venta
+          </a>
+          <a class="nav-item active" th:href="@{/api/caja/vista}" data-roles="Cajero,Administrador">
+            <i data-lucide="wallet"></i>
+            Caja
+          </a>
+          <a class="nav-item" th:href="@{/api/inventario/vista}" data-roles="Administrador">
+            <i data-lucide="package"></i>
+            Inventario
+          </a>
+          <a class="nav-item" th:href="@{/api/catalogo/vistaProducto}" data-roles="Administrador">
+            <i data-lucide="layout-dashboard"></i>
+            Catalogo
+          </a>
+          <a class="nav-item" th:href="@{/api/usuario/vista}" data-roles="Administrador">
+            <i data-lucide="users"></i>
+            Usuarios
+          </a>
+          <a class="nav-item" th:href="@{/api/configuracion/vista}" data-roles="Administrador">
+            <i data-lucide="settings"></i>
+            Configuraciones
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-chip">
+            <div class="user-avatar">A</div>
+            <div class="user-meta">
+              <p>Ana Torres</p>
+              <span>Administrador</span>
+            </div>
+          </div>
+          <form th:action="@{/api/login/vista}" method="get">
+            <button type="submit" class="btn btn-ghost">
+              <i data-lucide="log-out"></i>
+              Cerrar Sesión
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header class="topbar">
+          <h2>Caja</h2>
+        </header>
+
+        <main class="content-area">
+          <section class="module active">
+            <div class="split-layout">
+              <div class="card">
+                <h3>Estado de Caja</h3>
+                <div th:if="${cajaEstado.estado != 'Turno Cerrado'}">
+                  <p class="muted" th:text="${cajaEstado.estado}">Turno Abierto</p>
+                  <div class="stat-card">
+                    <div>
+                      <p>Monto actual</p>
+                      <h4 class="text-success" th:text="|S/ ${cajaEstado.montoActual}|">S/ 0.00</h4>
+                      <p class="muted monto-inicial" th:text="|Monto inicial: S/ ${cajaEstado.montoInicial}|">Monto inicial: S/ 0.00</p>
+                    </div>
+                  </div>
+                  <form class="inline-form" th:action="@{/api/caja/registrar}" th:object="${registroCaja}" method="post">
+                    <div class="form-grid">
+                      <label class="field">
+                        <span>Concepto</span>
+                        <input type="text" placeholder="Ej. Compra de hielo" th:field="*{concepto}" />
+                      </label>
+                      <label class="field">
+                        <span>Tipo</span>
+                        <select th:field="*{tipo}">
+                          <option value="Ingreso">Ingreso</option>
+                          <option value="Egreso">Egreso</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Metodo</span>
+                        <select th:field="*{metodo}">
+                          <option value="Efectivo">Efectivo</option>
+                          <option value="Tarjeta">Tarjeta</option>
+                          <option value="Otro">Otro</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Monto</span>
+                        <input type="number" step="0.1" min="0" placeholder="Ej. 15.00" th:field="*{monto}" />
+                      </label>
+                    </div>
+                    <div class="form-actions">
+                      <button class="btn btn-primary" type="submit">Registrar movimiento</button>
+                    </div>
+                  </form>
+                  <div class="form-actions form-actions-end">
+                    <form th:action="@{/api/caja/cerrar}" method="post">
+                      <button class="btn btn-danger" type="submit">Cerrar Turno</button>
+                    </form>
+                  </div>
+                </div>
+                <div th:if="${cajaEstado.estado == 'Turno Cerrado'}">
+                  <p class="muted" th:text="${cajaEstado.estado}">Turno Cerrado</p>
+                  <div class="stat-card">
+                    <div>
+                      <p>Ultimo monto</p>
+                      <h4 class="text-info" th:text="|S/ ${cajaEstado.montoActual}|">S/ 0.00</h4>
+                    </div>
+                  </div>
+                  <form class="inline-form" th:action="@{/api/caja/abrir}" th:object="${aperturaCaja}" method="post">
+                    <div class="form-grid">
+                      <label class="field">
+                        <span>Nuevo monto inicial</span>
+                        <input type="number" step="0.1" min="0" placeholder="Ej. 100.00" th:field="*{montoInicial}" />
+                      </label>
+                    </div>
+                    <div class="form-actions">
+                      <button class="btn btn-primary" type="submit">Abrir Turno</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="card">
+                <h3>Movimientos del Turno</h3>
+                <div class="list">
+                  <div class="list-item" th:each="movimiento : ${movimientosCaja}">
+                    <div>
+                      <p class="title" th:text="${movimiento.concepto}">Movimiento</p>
+                      <span class="badge" th:if="${movimiento.tipo == 'Ingreso'}" th:text="${movimiento.metodo}">Metodo</span>
+                      <span class="badge badge-orange" th:if="${movimiento.tipo == 'Egreso'}">Egreso</span>
+                    </div>
+                    <strong th:class="${movimiento.tipo == 'Egreso'} ? 'text-warning' : 'text-success'"
+                            th:text="${movimiento.tipo == 'Egreso'} ? | - S/ ${movimiento.monto}| : |+ S/ ${movimiento.monto}|">
+                      + S/ 0.00
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </section>
+  </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+  <script th:src="@{/js/app.js}" defer></script>
+
+</body>
+</html>

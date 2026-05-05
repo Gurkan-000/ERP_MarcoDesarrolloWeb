@@ -276,6 +276,7 @@ body {
   color: var(--zinc-400);
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .nav-item:hover {
@@ -400,6 +401,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  text-decoration: none;
 }
 
 .tab.active {
@@ -459,6 +461,10 @@ body {
   align-content: center;
 }
 
+.table-card.is-selected {
+  box-shadow: 0 0 0 2px var(--blue-500);
+}
+
 .table-card span {
   font-size: 12px;
   font-weight: 600;
@@ -470,12 +476,6 @@ body {
   background: rgba(249, 115, 22, 0.15);
   color: var(--orange-600);
   border: 2px solid var(--orange-500);
-}
-
-.status-pre {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--blue-500);
-  border: 2px solid var(--blue-500);
 }
 
 .status-free {
@@ -503,6 +503,45 @@ body {
   font-size: 20px;
 }
 
+.monto-inicial {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+
+.mesa-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.mesa-meta {
+  display: grid;
+  gap: 4px;
+}
+
+.table-number {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.cobro-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--zinc-100);
+  margin: 14px 0;
+  font-weight: 600;
+}
+
+.modal-card .list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -522,6 +561,10 @@ body {
 
 .data-table tbody tr:hover {
   background: #fafafa;
+}
+
+.stock-editor-table .stock-spinner {
+  min-width: 120px;
 }
 
 .inline-form {
@@ -567,6 +610,10 @@ body {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.form-actions.form-actions-end {
+  justify-content: flex-end;
 }
 
 .list {
@@ -620,21 +667,11 @@ body {
   color: #7c3aed;
 }
 
-.pill-group {
-  display: flex;
-  gap: 10px;
-}
-
 .pill {
   padding: 6px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-}
-
-.pill.warning {
-  background: rgba(249, 115, 22, 0.15);
-  color: var(--orange-600);
 }
 
 .pill.info {

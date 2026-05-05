@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ERP - Inicio</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+    <div class="app-root">
+    <section id="erp-app" class="erp-app">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-icon" aria-hidden="true"><i data-lucide="shopping-bag"></i></div>
+          <div>
+            <h2>Lo Esencial</h2>
+            <p>ERP Broasteria</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a class="nav-item" th:href="@{/api/venta/vista}" data-roles="Mesero,Cajero,Administrador">
+            <i data-lucide="shopping-bag"></i>
+            Punto de Venta
+          </a>
+          <a class="nav-item" th:href="@{/api/caja/vista}" data-roles="Cajero,Administrador">
+            <i data-lucide="wallet"></i>
+            Caja
+          </a>
+          <a class="nav-item" th:href="@{/api/inventario/vista}" data-roles="Administrador">
+            <i data-lucide="package"></i>
+            Inventario
+          </a>
+          <a class="nav-item" th:href="@{/api/catalogo/vistaProducto}" data-roles="Administrador">
+            <i data-lucide="layout-dashboard"></i>
+            Catalogo
+          </a>
+          <a class="nav-item active" th:href="@{/api/usuario/vista}" data-roles="Administrador">
+            <i data-lucide="users"></i>
+            Usuarios
+          </a>
+          <a class="nav-item" th:href="@{/api/configuracion/vista}" data-roles="Administrador">
+            <i data-lucide="settings"></i>
+            Configuraciones
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-chip">
+            <div class="user-avatar">A</div>
+            <div class="user-meta">
+              <p>Ana Torres</p>
+              <span>Administrador</span>
+            </div>
+          </div>
+          <form th:action="@{/api/login/vista}" method="get">
+            <button type="submit" class="btn btn-ghost">
+              <i data-lucide="log-out"></i>
+              Cerrar Sesión
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header class="topbar">
+          <h2>Usuarios</h2>
+          <p id="today-date"></p>
+        </header>
+
+        <main class="content-area">
+                   <section id="module-usuarios" class="module active">
+            <div class="card">
+              <h3>Gestion de Usuarios</h3>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ana Torres</td>
+                    <td>admin</td>
+                    <td><span class="badge badge-purple">Administrador</span></td>
+                    <td><span class="badge badge-green">Activo</span></td>
+                  </tr>
+                  <tr>
+                    <td>Luis Paredes</td>
+                    <td>caja</td>
+                    <td><span class="badge badge-blue">Cajero</span></td>
+                    <td><span class="badge badge-green">Activo</span></td>
+                  </tr>
+                  <tr>
+                    <td>Maria Lopez</td>
+                    <td>mesero</td>
+                    <td><span class="badge badge-orange">Mesero</span></td>
+                    <td><span class="badge badge-green">Activo</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+      </div>
+    </section>
+  </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+  <script th:src="@{/js/app.js}" defer></script>
+
+</body>
+</html>

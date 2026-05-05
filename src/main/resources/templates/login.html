@@ -10,7 +10,7 @@
     
     <div class="app-root">
 
-    <section id="login-screen" class="login-screen">
+    <section class="login-screen">
       
       <div class="login-card">
         <div class="login-brand">
@@ -21,7 +21,7 @@
           <p>Ingresa tus credenciales</p>
         </div>
 
-        <form th:action="@{/api/user/autenticar}" th:object="${usuario}" method="post" class="login-form">
+        <form th:action="@{/api/login/autenticar}" th:object="${usuario}" method="post" class="login-form">
           <div class="input-group">
             <span class="input-icon" aria-hidden="true"><i data-lucide="user"></i></span>
             <input type="text" placeholder="Usuario" autocomplete="username" th:field="*{nombre}" required/>

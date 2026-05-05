@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ERP - Inicio</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+    <div class="app-root">
+    <section id="erp-app" class="erp-app">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-icon" aria-hidden="true"><i data-lucide="shopping-bag"></i></div>
+          <div>
+            <h2>Lo Esencial</h2>
+            <p>ERP Broasteria</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a class="nav-item" th:href="@{/api/venta/vista}" data-roles="Mesero,Cajero,Administrador">
+            <i data-lucide="shopping-bag"></i>
+            Punto de Venta
+          </a>
+          <a class="nav-item" th:href="@{/api/caja/vista}" data-roles="Cajero,Administrador">
+            <i data-lucide="wallet"></i>
+            Caja
+          </a>
+          <a class="nav-item" th:href="@{/api/inventario/vista}" data-roles="Administrador">
+            <i data-lucide="package"></i>
+            Inventario
+          </a>
+          <a class="nav-item active" th:href="@{/api/catalogo/vistaProducto}" data-roles="Administrador">
+            <i data-lucide="layout-dashboard"></i>
+            Catalogo
+          </a>
+          <a class="nav-item" th:href="@{/api/usuario/vista}" data-roles="Administrador">
+            <i data-lucide="users"></i>
+            Usuarios
+          </a>
+          <a class="nav-item" th:href="@{/api/configuracion/vista}" data-roles="Administrador">
+            <i data-lucide="settings"></i>
+            Configuraciones
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-chip">
+            <div class="user-avatar">A</div>
+            <div class="user-meta">
+              <p>Ana Torres</p>
+              <span>Administrador</span>
+            </div>
+          </div>
+          <form th:action="@{/api/login/vista}" method="get">
+            <button type="submit" class="btn btn-ghost">
+              <i data-lucide="log-out"></i>
+              Cerrar Sesión
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header class="topbar">
+          <h2>Catalogo</h2>
+          <p id="today-date"></p>
+        </header>
+
+        <main class="content-area">
+                    <section id="module-catalogo" class="module active">
+            <div class="module-header">
+              <div class="tab-row">
+                <a class="tab" data-tab="cat-productos" th:href="@{/api/catalogo/vistaProducto}">
+                  <i data-lucide="package"></i>Productos
+                </a>
+                <a class="tab active" data-tab="cat-categorias" th:href="@{/api/catalogo/vistaCategoria}">
+                  <i data-lucide="layers"></i>Categorias
+                </a>
+              </div>
+              <div class="catalog-actions">
+                <button class="btn btn-muted catalog-action" type="button" data-action="open-form"
+                  data-target="cat-categorias">
+                  <i data-lucide="plus"></i>
+                  Nueva categoria
+                </button>
+              </div>
+            </div>
+            <div class="tab-content active" id="cat-categorias">
+              <div class="card">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Categoria</th>
+                      <th>Productos</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="categoria:${categorias}">
+                        <td th:text="${categoria.nombre}"></td>
+                        <td th:text="${categoria.productos.size()}"></td>
+                        <td><span class="badge badge-green" th:text="${categoria.estado}"></span></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <form class="inline-form hidden" id="form-cat-categorias" th:action="@{/api/catalogo/crearCategoria}" th:object="${categoria}" method="post">
+                  <div class="form-grid">
+                    <label class="field">
+                      <span>Categoria</span>
+                      <input type="text" placeholder="Ej. Combos" th:field="*{nombre}"/>
+                    </label>
+                    <label class="field">
+                      <span>Estado</span>
+                      <select th:field="*{estado}">
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Guardar</button>
+                    <button class="btn btn-muted" type="button" data-action="cancel-form">Cancelar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </section>
+  </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+  <script th:src="@{/js/app.js}" defer></script>
+
+</body>
+</html>
