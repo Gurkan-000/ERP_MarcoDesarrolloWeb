@@ -12,23 +12,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.erp.models.CajaEstado;
 import com.example.erp.models.MovimientoCaja;
 import com.example.erp.services.CajaService;
+import com.example.erp.services.UsuarioService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/api/caja")
 public class ControllerCaja {
 
     private final CajaService cajaService;
+    private final UsuarioService usuarioService;
 
-    public ControllerCaja(CajaService cajaService) {
+    public ControllerCaja(CajaService cajaService, UsuarioService usuarioService) {
         this.cajaService = cajaService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping("/vista")
-    public String cajaVista(Model model) {
-        model.addAttribute("registroCaja", new MovimientoCaja());
-        model.addAttribute("aperturaCaja", new CajaEstado());
+    public String cajaVista(Model model, HttpSession session) {
 
-        return "caja";
+        boolean acceso = usuarioService.validarAcceso(session, "caja");
+
+        if (acceso) {
+            model.addAttribute("usuarioSesion", usuarioService.obtenerDeSesion(session));
+            model.addAttribute("registroCaja", new MovimientoCaja());
+            model.addAttribute("aperturaCaja", new CajaEstado());
+
+            return "caja";
+        }
+
+        return "redirect:/api/login/vista";
     }
 
     @ModelAttribute("cajaEstado")
