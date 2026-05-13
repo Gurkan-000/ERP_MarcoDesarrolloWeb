@@ -18,7 +18,7 @@ public class CatalogoService {
         cargarDatosIniciales();
     }
 
-    public void reiniciarInventario(){
+    public void reiniciarInventario() {
         productos.clear();
     }
 
@@ -31,42 +31,39 @@ public class CatalogoService {
     }
 
     public Producto buscarProductoPorNombre(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            return null;
+        final String buscado = (nombre != null && !nombre.trim().isEmpty()) ? nombre.trim() : null;
+        Producto resultado = null;
+        if (buscado != null) {
+            resultado = productos.stream()
+                    .filter(prod -> prod.getNombre().equalsIgnoreCase(buscado))
+                    .findFirst()
+                    .orElse(null);
         }
 
-        String buscado = nombre.trim();
-        return productos.stream()
-                .filter(prod -> prod.getNombre().equalsIgnoreCase(buscado))
-                .findFirst()
-                .orElse(null);
+        return resultado;
     }
 
     public void descontarStock(String nombreProducto, int cantidad) {
-        if (cantidad <= 0) {
-            return;
+        Producto producto = null;
+        if (cantidad > 0) {
+            producto = buscarProductoPorNombre(nombreProducto);
         }
 
-        Producto producto = buscarProductoPorNombre(nombreProducto);
-        if (producto == null) {
-            return;
+        if (producto != null) {
+            int nuevoStock = producto.getStock() - cantidad;
+            producto.setStock(Math.max(nuevoStock, 0));
         }
-
-        int nuevoStock = producto.getStock() - cantidad;
-        producto.setStock(Math.max(nuevoStock, 0));
     }
 
     public void actualizarStock(String nombreProducto, int nuevoStock) {
-        if (nuevoStock < 0) {
-            return;
+        Producto producto = null;
+        if (nuevoStock >= 0) {
+            producto = buscarProductoPorNombre(nombreProducto);
         }
 
-        Producto producto = buscarProductoPorNombre(nombreProducto);
-        if (producto == null) {
-            return;
+        if (producto != null) {
+            producto.setStock(nuevoStock);
         }
-
-        producto.setStock(nuevoStock);
     }
 
     public void crearProducto(Producto producto, String categoriaNombre) {
@@ -85,15 +82,16 @@ public class CatalogoService {
     }
 
     private Categoria buscarCategoriaPorNombre(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            return null;
+        final String buscada = (nombre != null && !nombre.trim().isEmpty()) ? nombre.trim() : null;
+        Categoria resultado = null;
+        if (buscada != null) {
+            resultado = categorias.stream()
+                    .filter(cat -> cat.getNombre().equalsIgnoreCase(buscada))
+                    .findFirst()
+                    .orElse(null);
         }
 
-        String buscada = nombre.trim();
-        return categorias.stream()
-                .filter(cat -> cat.getNombre().equalsIgnoreCase(buscada))
-                .findFirst()
-                .orElse(null);
+        return resultado;
     }
 
     private void cargarDatosIniciales() {

@@ -194,9 +194,6 @@ const openCobroModal = (mesaNumero) => {
   const sourceList = mesaPedidosLists.find((list) => list.dataset.mesa === String(mesaNumero));
   if (cobroList) {
     cobroList.innerHTML = sourceList ? sourceList.innerHTML : '';
-    if (!cobroList.children.length) {
-      cobroList.innerHTML = '<p class="muted">No hay pedidos para cobrar.</p>';
-    }
   }
   if (cobroTotal) {
     const total = sourceList ? sourceList.dataset.total : '0.00';

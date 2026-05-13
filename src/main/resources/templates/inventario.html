@@ -19,38 +19,40 @@
         </div>
 
         <nav class="sidebar-nav">
-          <a class="nav-item" th:href="@{/api/venta/vista}" data-roles="Mesero,Cajero,Administrador">
-            <i data-lucide="shopping-bag"></i>
-            Punto de Venta
-          </a>
-          <a class="nav-item" th:href="@{/api/caja/vista}" data-roles="Cajero,Administrador">
-            <i data-lucide="wallet"></i>
-            Caja
-          </a>
-          <a class="nav-item active" th:href="@{/api/inventario/vista}" data-roles="Administrador">
-            <i data-lucide="package"></i>
-            Inventario
-          </a>
-          <a class="nav-item" th:href="@{/api/catalogo/vistaProducto}" data-roles="Administrador">
-            <i data-lucide="layout-dashboard"></i>
-            Catalogo
-          </a>
-          <a class="nav-item" th:href="@{/api/usuario/vista}" data-roles="Administrador">
-            <i data-lucide="users"></i>
-            Usuarios
-          </a>
-          <a class="nav-item" th:href="@{/api/configuracion/vista}" data-roles="Administrador">
-            <i data-lucide="settings"></i>
-            Configuraciones
-          </a>
+          <th:block th:if="${usuarioSesion != null}" th:each="vista : ${usuarioSesion.vistas}">
+            <a class="nav-item" th:href="@{/api/venta/vista}" th:if="${vista == 'venta'}">
+              <i data-lucide="shopping-bag"></i>
+              Punto de Venta
+            </a>
+            <a class="nav-item" th:href="@{/api/caja/vista}" th:if="${vista == 'caja'}">
+              <i data-lucide="wallet"></i>
+              Caja
+            </a>
+            <a class="nav-item active" th:href="@{/api/inventario/vista}" th:if="${vista == 'inventario'}">
+              <i data-lucide="package"></i>
+              Inventario
+            </a>
+            <a class="nav-item" th:href="@{/api/catalogo/vistaProducto}" th:if="${vista == 'catalogo'}">
+              <i data-lucide="layout-dashboard"></i>
+              Catalogo
+            </a>
+            <a class="nav-item" th:href="@{/api/usuario/vista}" th:if="${vista == 'usuario'}">
+              <i data-lucide="users"></i>
+              Usuarios
+            </a>
+            <a class="nav-item" th:href="@{/api/configuracion/vista}" th:if="${vista == 'configuracion'}">
+              <i data-lucide="settings"></i>
+              Configuraciones
+            </a>
+          </th:block>
         </nav>
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar">A</div>
+            <div class="user-avatar" th:text="${#strings.substring(usuarioSesion.nombre,0,1)}">A</div>
             <div class="user-meta">
-              <p>Ana Torres</p>
-              <span>Administrador</span>
+              <p th:text="${usuarioSesion.nombre}">Usuario</p>
+              <span>Usuario</span>
             </div>
           </div>
           <form th:action="@{/api/login/vista}" method="get">

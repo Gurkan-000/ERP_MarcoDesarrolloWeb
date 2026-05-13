@@ -13,31 +13,42 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.erp.models.Categoria;
 import com.example.erp.models.Producto;
 import com.example.erp.services.CatalogoService;
+import com.example.erp.services.UsuarioService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/api/catalogo")
 public class ControllerCatalogo {
 
     private final CatalogoService catalogoService;
+    private final UsuarioService usuarioService;
 
-    public ControllerCatalogo(CatalogoService catalogoService) {
+    public ControllerCatalogo(CatalogoService catalogoService, UsuarioService usuarioService) {
         this.catalogoService = catalogoService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping("/vistaProducto")
-    public String vistaProducto(Model model) {
+    public String vistaProducto(Model model, HttpSession session) {
+        boolean acceso = usuarioService.validarAcceso(session, "catalogo");
+        if (acceso) {
+            model.addAttribute("usuarioSesion", usuarioService.obtenerDeSesion(session));
+            model.addAttribute("producto", new Producto());
+            return "catalogo/catalogoProducto";
+        }
+        return "redirect:/api/login/vista";
 
-        model.addAttribute("producto", new Producto());
-
-        return "catalogo/catalogoProducto";
     }
 
     @GetMapping("/vistaCategoria")
-    public String vistaCatalogo(Model model) {
-
-        model.addAttribute("categoria", new Categoria());
-
-        return "catalogo/catalogoCategoria";
+    public String vistaCatalogo(Model model, HttpSession session) {
+        boolean acceso = usuarioService.validarAcceso(session, "catalogo");
+        if (acceso) {
+            model.addAttribute("usuarioSesion", usuarioService.obtenerDeSesion(session));
+            return "catalogo/catalogoCategoria";
+        }
+        return "redirect:/api/login/vista";
     }
 
     @ModelAttribute("productos")
@@ -53,7 +64,7 @@ public class ControllerCatalogo {
     @PostMapping("/crearProducto")
     public String crearProducto(
             @ModelAttribute Producto producto,
-            @RequestParam(name = "categoriaNombre", required = false) String categoriaNombre) {
+            @RequestParam(required = false) String categoriaNombre) {
         catalogoService.crearProducto(producto, categoriaNombre);
 
         return "redirect:/api/catalogo/vistaProducto";

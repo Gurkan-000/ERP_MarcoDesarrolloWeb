@@ -258,7 +258,8 @@ body {
 }
 
 .sidebar-nav {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   padding: 8px 16px 16px;
   overflow-y: auto;

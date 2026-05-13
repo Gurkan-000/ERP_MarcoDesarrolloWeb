@@ -29,9 +29,6 @@ public class Pedido {
     }
 
     public void agregarDetalle(Producto producto, int cantidad) {
-        if (producto == null) {
-            return;
-        }
 
         int cantidadFinal = cantidad > 0 ? cantidad : 1;
         DetallePedido existente = detalles.stream()
@@ -61,14 +58,4 @@ public class Pedido {
         total = detalles.stream().mapToDouble(DetallePedido::getTotal).sum();
     }
 
-    @Getter @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class DetallePedido {
-
-        private String productoNombre;
-        private int cantidad;
-        private double precioUnitario;
-        private double total;
-    }
 }

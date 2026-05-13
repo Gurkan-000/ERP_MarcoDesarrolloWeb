@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ERP - Inicio</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERP - Inicio</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
+
 <body>
-    <div class="app-root">
+  <div class="app-root">
     <section id="erp-app" class="erp-app">
       <aside class="sidebar">
         <div class="sidebar-brand">
@@ -19,38 +21,40 @@
         </div>
 
         <nav class="sidebar-nav">
-          <a class="nav-item" th:href="@{/api/venta/vista}" data-roles="Mesero,Cajero,Administrador">
-            <i data-lucide="shopping-bag"></i>
-            Punto de Venta
-          </a>
-          <a class="nav-item" th:href="@{/api/caja/vista}" data-roles="Cajero,Administrador">
-            <i data-lucide="wallet"></i>
-            Caja
-          </a>
-          <a class="nav-item" th:href="@{/api/inventario/vista}" data-roles="Administrador">
-            <i data-lucide="package"></i>
-            Inventario
-          </a>
-          <a class="nav-item" th:href="@{/api/catalogo/vistaProducto}" data-roles="Administrador">
-            <i data-lucide="layout-dashboard"></i>
-            Catalogo
-          </a>
-          <a class="nav-item active" th:href="@{/api/usuario/vista}" data-roles="Administrador">
-            <i data-lucide="users"></i>
-            Usuarios
-          </a>
-          <a class="nav-item" th:href="@{/api/configuracion/vista}" data-roles="Administrador">
-            <i data-lucide="settings"></i>
-            Configuraciones
-          </a>
+          <th:block th:if="${usuarioSesion != null}" th:each="vista : ${usuarioSesion.vistas}">
+            <a class="nav-item" th:href="@{/api/venta/vista}" th:if="${vista == 'venta'}">
+              <i data-lucide="shopping-bag"></i>
+              Punto de Venta
+            </a>
+            <a class="nav-item" th:href="@{/api/caja/vista}" th:if="${vista == 'caja'}">
+              <i data-lucide="wallet"></i>
+              Caja
+            </a>
+            <a class="nav-item" th:href="@{/api/inventario/vista}" th:if="${vista == 'inventario'}">
+              <i data-lucide="package"></i>
+              Inventario
+            </a>
+            <a class="nav-item" th:href="@{/api/catalogo/vistaProducto}" th:if="${vista == 'catalogo'}">
+              <i data-lucide="layout-dashboard"></i>
+              Catalogo
+            </a>
+            <a class="nav-item active" th:href="@{/api/usuario/vista}" th:if="${vista == 'usuario'}">
+              <i data-lucide="users"></i>
+              Usuarios
+            </a>
+            <a class="nav-item" th:href="@{/api/configuracion/vista}" th:if="${vista == 'configuracion'}">
+              <i data-lucide="settings"></i>
+              Configuraciones
+            </a>
+          </th:block>
         </nav>
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar">A</div>
+            <div class="user-avatar" th:text="${#strings.substring(usuarioSesion.nombre,0,1)}">A</div>
             <div class="user-meta">
-              <p>Ana Torres</p>
-              <span>Administrador</span>
+              <p th:text="${usuarioSesion.nombre}">Usuario</p>
+              <span>Usuario</span>
             </div>
           </div>
           <form th:action="@{/api/login/vista}" method="get">
@@ -69,35 +73,54 @@
         </header>
 
         <main class="content-area">
-                   <section id="module-usuarios" class="module active">
+          <section id="module-usuarios" class="module active">
+            <div class="card">
+              <h3>Nuevo usuario</h3>
+              <p class="muted" th:if="${resultado == 'ok'}">Usuario creado correctamente.</p>
+              <p class="muted" th:if="${resultado == 'error'}">No se pudo crear el usuario.</p>
+              <form class="inline-form" th:action="@{/api/usuario/crear}" th:object="${nuevoUsuario}" method="post">
+                <div class="form-grid">
+                  <label class="field">
+                    <span>Usuario</span>
+                    <input type="text" th:field="*{nombre}" placeholder="Usuario" required />
+                  </label>
+                  <label class="field">
+                    <span>Contrasena</span>
+                    <input type="password" th:field="*{contrasena}" placeholder="********" required />
+                  </label>
+                  <label class="field">
+                    <span>Rol</span>
+                    <select th:field="*{rol}" required>
+                      <option value="" disabled selected>Seleccione un rol</option>
+                      <option th:value="Mesero">Mesero</option>
+                      <option th:value="Cajero">Cajero</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+            </div>
+
             <div class="card">
               <h3>Gestion de Usuarios</h3>
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Nombre</th>
                     <th>Usuario</th>
                     <th>Rol</th>
                     <th>Estado</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Ana Torres</td>
-                    <td>admin</td>
-                    <td><span class="badge badge-purple">Administrador</span></td>
-                    <td><span class="badge badge-green">Activo</span></td>
-                  </tr>
-                  <tr>
-                    <td>Luis Paredes</td>
-                    <td>caja</td>
-                    <td><span class="badge badge-blue">Cajero</span></td>
-                    <td><span class="badge badge-green">Activo</span></td>
-                  </tr>
-                  <tr>
-                    <td>Maria Lopez</td>
-                    <td>mesero</td>
-                    <td><span class="badge badge-orange">Mesero</span></td>
+                  <tr th:each="usuarioItem : ${usuarios}">
+                    <td th:text="${usuarioItem.nombre}">admin</td>
+                    <td>
+                      <span class="badge"
+                        th:classappend="${usuarioItem.rol == 'Administrador'} ? ' badge-purple' : (${usuarioItem.rol == 'Cajero'} ? ' badge-blue' : ' badge-orange')"
+                        th:text="${usuarioItem.rol}">Rol</span>
+                    </td>
                     <td><span class="badge badge-green">Activo</span></td>
                   </tr>
                 </tbody>
@@ -109,8 +132,9 @@
     </section>
   </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <script th:src="@{/js/app.js}" defer></script>
 
 </body>
+
 </html>

@@ -1,7 +1,5 @@
 package com.example.erp.controllers;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -12,28 +10,41 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.erp.models.Usuario;
+import com.example.erp.services.UsuarioService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/api/login")
 public class ControllerLogin {
 
-    private final List<Usuario> listUsuario = Arrays.asList(new Usuario("admin","admin123"),
-                                                        new Usuario("caja","caja123"),
-                                                        new Usuario("mesero","mesero123"));
+    private final UsuarioService usuarioService;
+
+    public ControllerLogin(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @GetMapping("/vista")
-    public String autenticacionVista(Model model) {
+    public String autenticacionVista(Model model, HttpSession session) {
+        if (session != null) {
+            session.invalidate();
+        }
         model.addAttribute("usuario", new Usuario());
         return "login";
     }
 
     @PostMapping("/autenticar")
-    public String autenticacionUsuario(@ModelAttribute Usuario usuario) {
+    public String autenticacionUsuario(@ModelAttribute Usuario usuario, HttpSession session) {
 
-        Optional<Usuario> usuarioOptional = listUsuario.stream().filter(u -> usuario.getNombre().equals(u.getNombre()) && usuario.getContraseña().equals(u.getContraseña()))
-                .findFirst();
+        Optional<Usuario> usuarioOptional = usuarioService.autenticar(usuario.getNombre(), usuario.getContrasena());
 
-        return usuarioOptional.isPresent() ? "redirect:/api/venta/vista" : "login";
+        if (usuarioOptional.isPresent()) {
+            Usuario usuarioAutenticado = usuarioOptional.get();
+            usuarioService.guardarEnSesion(session, usuarioAutenticado);
+            return "redirect:/api/venta/vista";
+        }
+        
+        return "login";
     }
 
 }

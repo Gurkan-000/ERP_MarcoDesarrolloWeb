@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.erp.models.Mesa;
 import com.example.erp.models.Pedido;
-import com.example.erp.models.Pedido.DetallePedido;
+import com.example.erp.models.DetallePedido;
 import com.example.erp.models.Producto;
 import com.example.erp.models.Venta;
 
@@ -39,6 +39,7 @@ public class VentaService {
         }
 
         Mesa mesa = buscarMesa(pedido.getMesaNumero());
+
         if (mesa == null) {
             return;
         }
@@ -49,6 +50,7 @@ public class VentaService {
         }
 
         Pedido pedidoMesa = mesa.getPedido();
+        
         if (pedidoMesa == null) {
             pedidoMesa = new Pedido(mesa, "Salon");
             mesa.asignarPedido(pedidoMesa);
@@ -56,6 +58,14 @@ public class VentaService {
 
         pedidoMesa.agregarDetalle(producto, pedido.getCantidad());
         mesa.actualizarTotal();
+    }
+
+    public String redirigirMesa(int mesaNumero) {
+        if (mesaNumero > 0) {
+            return "redirect:/api/venta/vista?mesa=" + mesaNumero;
+        }
+
+        return "redirect:/api/venta/vista";
     }
 
     public void marcarMesaOcupada(int mesaNumero) {
