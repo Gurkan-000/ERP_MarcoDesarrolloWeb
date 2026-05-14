@@ -51,7 +51,7 @@ public class CatalogoService {
 
         if (producto != null) {
             int nuevoStock = producto.getStock() - cantidad;
-            producto.setStock(Math.max(nuevoStock, 0));
+            producto.setStock(Math.max(nuevoStock,0));
         }
     }
 
@@ -70,7 +70,7 @@ public class CatalogoService {
         Categoria categoria = buscarCategoriaPorNombre(categoriaNombre);
         if (categoria != null) {
             producto.setCategoria(categoria);
-            producto.setStock(0);
+            producto.setStock(Math.max(producto.getStock(), 1));
             categoria.agregarProducto(producto);
         }
 

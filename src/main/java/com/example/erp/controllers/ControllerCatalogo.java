@@ -46,6 +46,7 @@ public class ControllerCatalogo {
         boolean acceso = usuarioService.validarAcceso(session, "catalogo");
         if (acceso) {
             model.addAttribute("usuarioSesion", usuarioService.obtenerDeSesion(session));
+            model.addAttribute("categoria", new Categoria());
             return "catalogo/catalogoCategoria";
         }
         return "redirect:/api/login/vista";
