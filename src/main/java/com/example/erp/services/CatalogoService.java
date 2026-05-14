@@ -70,7 +70,7 @@ public class CatalogoService {
         Categoria categoria = buscarCategoriaPorNombre(categoriaNombre);
         if (categoria != null) {
             producto.setCategoria(categoria);
-            producto.setStock(1);
+            producto.setStock(Math.max(producto.getStock(), 1));
             categoria.agregarProducto(producto);
         }
 
