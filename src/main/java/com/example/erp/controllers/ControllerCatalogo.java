@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.erp.models.Categoria;
-import com.example.erp.models.Producto;
+import com.example.erp.entities.Categoria;
+import com.example.erp.entities.Producto;
 import com.example.erp.services.CatalogoService;
 import com.example.erp.services.UsuarioService;
 

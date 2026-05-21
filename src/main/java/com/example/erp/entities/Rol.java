@@ -1,4 +1,4 @@
-package com.example.erp.models;
+package com.example.erp.entities;
 
 public enum Rol {
     Administrador,

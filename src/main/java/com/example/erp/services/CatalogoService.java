@@ -1,12 +1,13 @@
 package com.example.erp.services;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.erp.models.Categoria;
-import com.example.erp.models.Producto;
+import com.example.erp.entities.Categoria;
+import com.example.erp.entities.Producto;
 
 @Service
 public class CatalogoService {
@@ -94,11 +95,11 @@ public class CatalogoService {
     }
 
     private void cargarDatosIniciales() {
-        Categoria c1 = new Categoria("Broasters", "Activo");
-        Categoria c2 = new Categoria("Bebidas", "Activo");
+        Categoria c1 = new Categoria("Broasters");
+        Categoria c2 = new Categoria("Bebidas");
 
-        Producto p1 = new Producto("Pecho", c1, 17, 5);
-        Producto p2 = new Producto("Inka Cola 1.5 L", c2, 5.5, 10);
+        Producto p1 = new Producto("Pecho", c1, new BigDecimal(17), 5);
+        Producto p2 = new Producto("Inka Cola 1.5 L", c2, new BigDecimal(5.5), 10);
 
         c1.agregarProducto(p1);
         c2.agregarProducto(p2);
