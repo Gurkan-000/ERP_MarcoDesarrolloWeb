@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ERP - Inicio</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <link rel="stylesheet" href="/ERP_MarcoDesarrolloWeb/src/main/resources/static/css/styles.css" />
 </head>
 
 <body>
@@ -51,13 +51,13 @@
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar" th:text="${#strings.substring(usuarioSesion.nombre,0,1)}">A</div>
+            <div class="user-avatar">A</div>
             <div class="user-meta">
-              <p th:text="${usuarioSesion.nombre}">Usuario</p>
+              <p>Usuario</p>
               <span>Usuario</span>
             </div>
           </div>
-          <form th:action="@{/api/login/vista}" method="get">
+          <form method="get">
             <button type="submit" class="btn btn-ghost">
               <i data-lucide="log-out"></i>
               Cerrar Sesión
@@ -76,33 +76,32 @@
             <div class="split-layout">
               <div class="card">
                 <h3>Estado de Caja</h3>
-                <div th:if="${cajaEstado.estado != 'Turno Cerrado'}">
-                  <p class="muted" th:text="${cajaEstado.estado}">Turno Abierto</p>
+                <div >
+                  <p class="muted" >Turno Abierto</p>
                   <div class="stat-card">
                     <div>
                       <p>Monto actual</p>
-                      <h4 class="text-success" th:text="|S/ ${cajaEstado.montoActual}|">S/ 0.00</h4>
-                      <p class="muted monto-inicial" th:text="|Monto inicial: S/ ${cajaEstado.montoInicial}|">Monto
+                      <h4 class="text-success">S/ 0.00</h4>
+                      <p class="muted monto-inicial" >Monto
                         inicial: S/ 0.00</p>
                     </div>
                   </div>
-                  <form class="inline-form" th:action="@{/api/caja/registrar}" th:object="${registroCaja}"
-                    method="post">
+                  <form class="inline-form" method="post">
                     <div class="form-grid">
                       <label class="field">
                         <span>Concepto</span>
-                        <input type="text" placeholder="Ej. Compra de hielo" th:field="*{concepto}" />
+                        <input type="text" placeholder="Ej. Compra de hielo"/>
                       </label>
                       <label class="field">
                         <span>Tipo</span>
-                        <select th:field="*{tipo}">
+                        <select>
                           <option value="Ingreso">Ingreso</option>
                           <option value="Egreso">Egreso</option>
                         </select>
                       </label>
                       <label class="field">
                         <span>Metodo</span>
-                        <select th:field="*{metodo}">
+                        <select>
                           <option value="Efectivo">Efectivo</option>
                           <option value="Tarjeta">Tarjeta</option>
                           <option value="Otro">Otro</option>
@@ -110,7 +109,7 @@
                       </label>
                       <label class="field">
                         <span>Monto</span>
-                        <input type="number" step="0.1" min="0" placeholder="Ej. 15.00" th:field="*{monto}" />
+                        <input type="number" step="0.1" min="0" placeholder="Ej. 15.00"/>
                       </label>
                     </div>
                     <div class="form-actions">
@@ -118,24 +117,24 @@
                     </div>
                   </form>
                   <div class="form-actions form-actions-end">
-                    <form th:action="@{/api/caja/cerrar}" method="post">
+                    <form method="post">
                       <button class="btn btn-danger" type="submit">Cerrar Turno</button>
                     </form>
                   </div>
                 </div>
-                <div th:if="${cajaEstado.estado == 'Turno Cerrado'}">
-                  <p class="muted" th:text="${cajaEstado.estado}">Turno Cerrado</p>
+                <div >
+                  <p class="muted">Turno Cerrado</p>
                   <div class="stat-card">
                     <div>
                       <p>Ultimo monto</p>
-                      <h4 class="text-info" th:text="|S/ ${cajaEstado.montoActual}|">S/ 0.00</h4>
+                      <h4 class="text-info" >S/ 0.00</h4>
                     </div>
                   </div>
-                  <form class="inline-form" th:action="@{/api/caja/abrir}" th:object="${aperturaCaja}" method="post">
+                  <form class="inline-form" method="post">
                     <div class="form-grid">
                       <label class="field">
                         <span>Nuevo monto inicial</span>
-                        <input type="number" step="0.1" min="0" placeholder="Ej. 100.00" th:field="*{montoInicial}" />
+                        <input type="number" step="0.1" min="0" placeholder="Ej. 100.00" />
                       </label>
                     </div>
                     <div class="form-actions">
@@ -147,15 +146,13 @@
               <div class="card">
                 <h3>Movimientos del Turno</h3>
                 <div class="list">
-                  <div class="list-item" th:each="movimiento : ${movimientosCaja}">
+                  <div class="list-item">
                     <div>
-                      <p class="title" th:text="${movimiento.concepto}">Movimiento</p>
-                      <span class="badge" th:if="${movimiento.tipo == 'Ingreso'}"
-                        th:text="${movimiento.metodo}">Metodo</span>
-                      <span class="badge badge-orange" th:if="${movimiento.tipo == 'Egreso'}">Egreso</span>
+                      <p class="title">Movimiento</p>
+                      <span class="badge">Metodo</span>
+                      <span class="badge badge-orange">Egreso</span>
                     </div>
-                    <strong th:class="${movimiento.tipo == 'Egreso'} ? 'text-warning' : 'text-success'"
-                      th:text="${movimiento.tipo == 'Egreso'} ? | - S/ ${movimiento.monto}| : |+ S/ ${movimiento.monto}|">
+                    <strong>
                       + S/ 0.00
                     </strong>
                   </div>
@@ -169,7 +166,7 @@
   </div>
 
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script th:src="@{/js/app.js}" defer></script>
+  <script src="/ERP_MarcoDesarrolloWeb/src/main/resources/static/js/app.js"></script>
 
 </body>
 
