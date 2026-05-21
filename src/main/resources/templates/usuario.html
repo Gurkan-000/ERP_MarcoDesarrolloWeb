@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ERP - Inicio</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <link rel="stylesheet" href="/ERP_MarcoDesarrolloWeb/src/main/resources/static/css/styles.css" />
 </head>
 
 <body>
@@ -51,13 +51,13 @@
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar" th:text="${#strings.substring(usuarioSesion.nombre,0,1)}">A</div>
+            <div class="user-avatar">A</div>
             <div class="user-meta">
-              <p th:text="${usuarioSesion.nombre}">Usuario</p>
+              <p>Usuario</p>
               <span>Usuario</span>
             </div>
           </div>
-          <form th:action="@{/api/login/vista}" method="get">
+          <form method="get">
             <button type="submit" class="btn btn-ghost">
               <i data-lucide="log-out"></i>
               Cerrar Sesión
@@ -76,24 +76,24 @@
           <section id="module-usuarios" class="module active">
             <div class="card">
               <h3>Nuevo usuario</h3>
-              <p class="muted" th:if="${resultado == 'ok'}">Usuario creado correctamente.</p>
-              <p class="muted" th:if="${resultado == 'error'}">No se pudo crear el usuario.</p>
-              <form class="inline-form" th:action="@{/api/usuario/crear}" th:object="${nuevoUsuario}" method="post">
+              <p class="muted" >Usuario creado correctamente.</p>
+              <p class="muted" >No se pudo crear el usuario.</p>
+              <form class="inline-form" method="post">
                 <div class="form-grid">
                   <label class="field">
                     <span>Usuario</span>
-                    <input type="text" th:field="*{nombre}" placeholder="Usuario" required />
+                    <input type="text" placeholder="Usuario" required />
                   </label>
                   <label class="field">
                     <span>Contrasena</span>
-                    <input type="password" th:field="*{contrasena}" placeholder="********" required />
+                    <input type="password" placeholder="********" required />
                   </label>
                   <label class="field">
                     <span>Rol</span>
-                    <select th:field="*{rol}" required>
+                    <select required>
                       <option value="" disabled selected>Seleccione un rol</option>
-                      <option th:value="Mesero">Mesero</option>
-                      <option th:value="Cajero">Cajero</option>
+                      <option >Mesero</option>
+                      <option >Cajero</option>
                     </select>
                   </label>
                 </div>
@@ -114,12 +114,10 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr th:each="usuarioItem : ${usuarios}">
-                    <td th:text="${usuarioItem.nombre}">admin</td>
+                  <tr>
+                    <td >admin</td>
                     <td>
-                      <span class="badge"
-                        th:classappend="${usuarioItem.rol == 'Administrador'} ? ' badge-purple' : (${usuarioItem.rol == 'Cajero'} ? ' badge-blue' : ' badge-orange')"
-                        th:text="${usuarioItem.rol}">Rol</span>
+                      <span class="badge">Rol</span>
                     </td>
                     <td><span class="badge badge-green">Activo</span></td>
                   </tr>
@@ -133,7 +131,7 @@
   </div>
 
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script th:src="@{/js/app.js}" defer></script>
+  <script src="/ERP_MarcoDesarrolloWeb/src/main/resources/static/js/app.js"></script>
 
 </body>
 

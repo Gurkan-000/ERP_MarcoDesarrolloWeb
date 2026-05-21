@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ERP - Inicio</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" href="/ERP_MarcoDesarrolloWeb/src/main/resources/static/css/styles.css" />
 </head>
 <body>
 
@@ -50,13 +50,13 @@
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar" th:text="${#strings.substring(usuarioSesion.nombre,0,1)}">A</div>
+            <div class="user-avatar">A</div>
             <div class="user-meta">
-              <p th:text="${usuarioSesion.nombre}">Usuario</p>
+              <p >Usuario</p>
               <span>Usuario</span>
             </div>
           </div>
-          <form th:action="@{/api/login/vista}" method="get">
+          <form method="get">
             <button type="submit" class="btn btn-ghost">
               <i data-lucide="log-out"></i>
               Cerrar Sesion
@@ -83,14 +83,9 @@
             <div class="tab-content active" id="pos-salon">
               <div class="card">
                 <h3>Mapa de Mesas</h3>
-                <div class="table-grid" id="mesa-grid" th:data-mesa-seleccionada="${mesaSeleccionada}">
-                  <button class="table-card" type="button" th:each="mesa : ${mesas}"
-                    th:data-mesa="${mesa.numero}"
-                    th:data-estado="${mesa.estado}"
-                    th:data-has-pedidos="${mesa.pedido != null and !#lists.isEmpty(mesa.pedido.detalles)}"
-                    th:classappend="${mesa.estado == 'Ocupada'} ? ' status-occupied' : ' status-free'">
-                    <span class="table-number" th:text="${mesa.numero}">1</span>
-                    <span th:text="${mesa.estado}">Libre</span>
+                <div class="table-grid" id="mesa-grid">
+                    <span class="table-number">1</span>
+                    <span>Libre</span>
                   </button>
                 </div>
               </div>
@@ -103,21 +98,19 @@
                     </div>
                     <span class="badge" id="mesa-estado">Libre</span>
                   </div>
-                  <form class="inline-form" th:action="@{/api/venta/mesa/pedido}" th:object="${pedidoMesa}" method="post">
-                    <input type="hidden" th:field="*{mesaNumero}" id="mesa-input" />
+                  <form class="inline-form" method="post">
+                    <input type="hidden"/>
                     <div class="form-grid">
                       <label class="field">
                         <span>Producto</span>
-                        <select th:field="*{productoNombre}">
+                        <select>
                           <option value="" disabled selected>Seleccione un producto</option>
-                          <option th:each="producto : ${productos}"
-                            th:value="${producto.nombre}"
-                            th:text="|${producto.nombre} - S/ ${producto.precio}|"></option>
+                          <!-- productos_option -->
                         </select>
                       </label>
                       <label class="field">
                         <span>Cantidad</span>
-                        <input type="number" min="1" placeholder="1" th:field="*{cantidad}" />
+                        <input type="number" min="1" placeholder="1" />
                       </label>
                     </div>
                     <div class="form-actions">
@@ -125,8 +118,8 @@
                     </div>
                   </form>
                   <div class="form-actions form-actions-end hidden" id="mesa-ocupar-wrapper">
-                    <form th:action="@{/api/venta/mesa/ocupar}" th:object="${pedidoAccion}" method="post">
-                      <input type="hidden" th:field="*{mesaNumero}" id="mesa-ocupar-input" />
+                    <form method="post">
+                      <input type="hidden" id="mesa-ocupar-input" />
                       <button class="btn btn-muted" type="submit">Marcar mesa ocupada</button>
                     </form>
                   </div>
@@ -144,15 +137,14 @@
                       <i data-lucide="clipboard-list"></i>
                       <p>Selecciona una mesa para ver sus pedidos.</p>
                     </div>
-                    <div class="mesa-pedidos-list hidden" th:each="mesa : ${mesas}"
-                      th:data-mesa="${mesa.numero}" th:data-total="${mesa.total}">
+                    <div class="mesa-pedidos-list hidden">
                       <div class="list">
-                        <div class="list-item" th:each="detalle : ${mesa.pedido != null ? mesa.pedido.detalles : {}}">
+                        <div class="list-item">
                           <div>
-                            <p class="title" th:text="${detalle.productoNombre}">Producto</p>
-                            <span class="badge" th:text="|x${detalle.cantidad}|">x1</span>
+                            <p class="title" >Producto</p>
+                            <span class="badge">x1</span>
                           </div>
-                          <strong th:text="|S/ ${detalle.total}|">S/ 0.00</strong>
+                          <strong>S/ 0.00</strong>
                         </div>
                       </div>
                     </div>
@@ -164,25 +156,23 @@
               <div class="split-layout">
                 <div class="card">
                   <h3>Registrar venta</h3>
-                  <form class="inline-form" th:action="@{/api/venta/pedido/cobrar}" th:object="${pedidoRapido}" method="post">
-                    <input type="hidden" name="canal" th:value="'Para Llevar'" />
+                  <form class="inline-form" method="post">
+                    <input type="hidden" name="canal"/>
                     <div class="form-grid">
                       <label class="field">
                         <span>Producto</span>
-                        <select th:field="*{productoNombre}">
+                        <select>
                           <option value="" disabled selected>Seleccione un producto</option>
-                          <option th:each="producto : ${productos}"
-                            th:value="${producto.nombre}"
-                            th:text="|${producto.nombre} - S/ ${producto.precio}|"></option>
+                          <!-- productos_options -->
                         </select>
                       </label>
                       <label class="field">
                         <span>Cantidad</span>
-                        <input type="number" min="1" placeholder="1" th:field="*{cantidad}" />
+                        <input type="number" min="1" placeholder="1"/>
                       </label>
                       <label class="field">
                         <span>Metodo de pago</span>
-                        <select th:field="*{metodoPago}">
+                        <select>
                           <option value="Efectivo">Efectivo</option>
                           <option value="Tarjeta">Tarjeta</option>
                           <option value="Otro">Otro</option>
@@ -206,14 +196,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <th:block th:each="ventaItem : ${ventas}">
-                        <tr th:if="${ventaItem.canal == 'Para Llevar'}">
-                          <td th:text="${ventaItem.productoNombre}"></td>
-                          <td th:text="${ventaItem.cantidad}"></td>
-                          <td th:text="|S/ ${ventaItem.total}|"></td>
-                          <td th:text="${ventaItem.metodoPago}"></td>
-                        </tr>
-                      </th:block>
+                      <!-- ventana_item_ventas -->
                     </tbody>
                   </table>
                 </div>
@@ -223,25 +206,23 @@
               <div class="split-layout">
                 <div class="card">
                   <h3>Registrar venta</h3>
-                  <form class="inline-form" th:action="@{/api/venta/pedido/cobrar}" th:object="${pedidoRapido}" method="post">
-                    <input type="hidden" name="canal" th:value="'Delivery'" />
+                  <form class="inline-form">
+                    <input type="hidden" name="canal" />
                     <div class="form-grid">
                       <label class="field">
                         <span>Producto</span>
-                        <select th:field="*{productoNombre}">
+                        <select>
                           <option value="" disabled selected>Seleccione un producto</option>
-                          <option th:each="producto : ${productos}"
-                            th:value="${producto.nombre}"
-                            th:text="|${producto.nombre} - S/ ${producto.precio}|"></option>
+                          <!-- OPCIONES DE PRODUCTO  -->
                         </select>
                       </label>
                       <label class="field">
                         <span>Cantidad</span>
-                        <input type="number" min="1" placeholder="1" th:field="*{cantidad}" />
+                        <input type="number" min="1" placeholder="1" />
                       </label>
                       <label class="field">
                         <span>Metodo de pago</span>
-                        <select th:field="*{metodoPago}">
+                        <select>
                           <option value="Efectivo">Efectivo</option>
                           <option value="Tarjeta">Tarjeta</option>
                           <option value="Otro">Otro</option>
@@ -265,14 +246,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <th:block th:each="ventaItem : ${ventas}">
-                        <tr th:if="${ventaItem.canal == 'Delivery'}">
-                          <td th:text="${ventaItem.productoNombre}"></td>
-                          <td th:text="${ventaItem.cantidad}"></td>
-                          <td th:text="|S/ ${ventaItem.total}|"></td>
-                          <td th:text="${ventaItem.metodoPago}"></td>
-                        </tr>
-                      </th:block>
+                      <!-- Aqui va ventana_item -->
                     </tbody>
                   </table>
                 </div>
@@ -307,12 +281,12 @@
         <span>Total</span>
         <strong id="cobro-total">S/ 0.00</strong>
       </div>
-      <form class="inline-form" th:action="@{/api/venta/mesa/cobrar}" th:object="${pedidoCobro}" method="post">
-        <input type="hidden" th:field="*{mesaNumero}" id="cobro-mesa-input" />
+      <form class="inline-form" method="post">
+        <input type="hidden" id="cobro-mesa-input" />
         <div class="form-grid">
           <label class="field">
             <span>Metodo de pago</span>
-            <select th:field="*{metodoPago}">
+            <select>
               <option value="Efectivo">Efectivo</option>
               <option value="Tarjeta">Tarjeta</option>
               <option value="Otro">Otro</option>
@@ -328,7 +302,7 @@
   </div>
 
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script th:src="@{/js/app.js}" defer></script>
+  <script src="/ERP_MarcoDesarrolloWeb/src/main/resources/static/js/app.js"></script>
 
 </body>
 </html>
