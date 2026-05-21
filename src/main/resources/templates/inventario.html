@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ERP - Inicio</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERP - Inventario</title>
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
+
 <body>
-        <div class="app-root">
+  <div class="app-root">
     <section id="erp-app" class="erp-app">
       <aside class="sidebar">
         <div class="sidebar-brand">
@@ -49,13 +51,13 @@
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar" th:text="${#strings.substring(usuarioSesion.nombre,0,1)}">A</div>
+            <div id="user-avatar" class="user-avatar">U</div>
             <div class="user-meta">
-              <p th:text="${usuarioSesion.nombre}">Usuario</p>
-              <span>Usuario</span>
+              <p id="user-session-name">Usuario</p>
+              <span id="user-session-role">Rol</span>
             </div>
           </div>
-          <form th:action="@{/api/login/vista}" method="get">
+          <form id="logout-form" action="/api/login/vista" method="get">
             <button type="submit" class="btn btn-ghost">
               <i data-lucide="log-out"></i>
               Cerrar Sesión
@@ -71,7 +73,7 @@
         </header>
 
         <main class="content-area">
-         <section class="module active">
+          <section class="module active">
             <div class="module-header">
               <div class="tab-row">
                 <button class="tab active" data-tab="inv-stock">Stock Actual</button>
@@ -88,11 +90,8 @@
                       <th>Stock</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr th:each="producto:${productos}">
-                      <td th:text="${producto.nombre}"></td>
-                      <td th:text="${producto.stock}"></td>
-                    </tr>
+                  <tbody id="tabla-stock-body">
+                    <!-- Filas cargadas dinámicamente por la API REST -->
                   </tbody>
                 </table>
               </div>
@@ -100,7 +99,7 @@
 
             <div class="tab-content" id="inv-actualizar">
               <div class="card">
-                <form th:action="@{/api/inventario/stock/guardar}" method="post">
+                <form id="form-actualizar-stock">
                   <table class="data-table stock-editor-table">
                     <thead>
                       <tr>
@@ -109,20 +108,12 @@
                         <th>Nuevo stock</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr th:each="producto:${productos}">
-                        <td th:text="${producto.nombre}"></td>
-                        <td th:text="${producto.stock}"></td>
-                        <td>
-                          <input type="hidden" name="productoNombre" th:value="${producto.nombre}" />
-                          <input type="number" min="0" class="stock-spinner" name="nuevoStock"
-                            th:value="${producto.stock}" />
-                        </td>
-                      </tr>
+                    <tbody id="tabla-edicion-stock-body">
+                      <!-- Filas con inputs generados dinámicamente -->
                     </tbody>
                   </table>
                   <div class="form-actions form-actions-end">
-                    <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                    <button id="btn-guardar-stock" class="btn btn-primary" type="submit">Guardar cambios</button>
                   </div>
                 </form>
               </div>
@@ -133,8 +124,9 @@
     </section>
   </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
-  <script th:src="@{/js/app.js}" defer></script>
-
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="/js/app.js" defer></script>
+  <script src="/js/inventario.js" defer></script>
 </body>
+
 </html>
