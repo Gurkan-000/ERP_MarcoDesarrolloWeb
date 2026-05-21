@@ -49,13 +49,13 @@
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar" th:text="${#strings.substring(usuarioSesion.nombre,0,1)}">A</div>
+            <div class="user-avatar">A</div>
             <div class="user-meta">
-              <p th:text="${usuarioSesion.nombre}">Usuario</p>
+              <p>Usuario</p>
               <span>Usuario</span>
             </div>
           </div>
-          <form th:action="@{/api/login/vista}" method="get">
+          <form>
             <button type="submit" class="btn btn-ghost">
               <i data-lucide="log-out"></i>
               Cerrar Sesión
@@ -74,16 +74,15 @@
                     <section id="module-catalogo" class="module active">
             <div class="module-header">
               <div class="tab-row">
-                <a class="tab" data-tab="cat-productos" th:href="@{/api/catalogo/vistaProducto}">
+                <a class="tab" data-tab="cat-productos">
                   <i data-lucide="package"></i>Productos
                 </a>
-                <a class="tab active" data-tab="cat-categorias" th:href="@{/api/catalogo/vistaCategoria}">
+                <a class="tab active" data-tab="cat-categorias">
                   <i data-lucide="layers"></i>Categorias
                 </a>
               </div>
               <div class="catalog-actions">
-                <button class="btn btn-muted catalog-action" type="button" data-action="open-form"
-                  data-target="cat-categorias">
+                <button class="btn btn-muted catalog-action" type="button" data-action="open-form" data-target="cat-categorias">
                   <i data-lucide="plus"></i>
                   Nueva categoria
                 </button>
@@ -100,22 +99,17 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr th:each="categoria:${categorias}">
-                        <td th:text="${categoria.nombre}"></td>
-                        <td th:text="${categoria.productos.size()}"></td>
-                        <td><span class="badge badge-green" th:text="${categoria.estado}"></span></td>
-                    </tr>
                   </tbody>
                 </table>
-                <form class="inline-form hidden" id="form-cat-categorias" th:action="@{/api/catalogo/crearCategoria}" th:object="${categoria}" method="post">
+                <form class="inline-form hidden">
                   <div class="form-grid">
                     <label class="field">
                       <span>Categoria</span>
-                      <input type="text" placeholder="Ej. Combos" th:field="*{nombre}"/>
+                      <input type="text" placeholder="Ej. Combos"/>
                     </label>
                     <label class="field">
                       <span>Estado</span>
-                      <select th:field="*{estado}">
+                      <select>
                         <option value="activo">Activo</option>
                         <option value="inactivo">Inactivo</option>
                       </select>
@@ -134,8 +128,8 @@
     </section>
   </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
-  <script th:src="@{/js/app.js}" defer></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script th:src="/js/app.js" defer></script>
 
 </body>
 </html>
