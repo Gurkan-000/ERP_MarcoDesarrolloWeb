@@ -1,26 +1,50 @@
-package com.example.erp.models;
+package com.example.erp.entities;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
 public class Pedido {
 
+    private UUID idPedido;
+
+    @OneToOne
     private Mesa mesa;
+
+    @Column(
+            length = 30
+    )
     private String canal;
+
+    @OneToMany(
+        mappedBy="pedido"
+    )
     private List<DetallePedido> detalles = new ArrayList<>();
-    private double total;
+
+    @Column(
+        precision=5,
+        scale=2
+    )
+    private BigDecimal total;
 
     private Integer mesaNumero;
-    private String productoNombre;
-    private int cantidad;
+
+    private Integer cantidad;
+
+    @Column(
+            length = 30
+    )
     private String metodoPago;
 
     public Pedido(Mesa mesa, String canal) {
@@ -36,11 +60,11 @@ public class Pedido {
                 .findFirst()
                 .orElse(null);
 
-        double precio = producto.getPrecio();
-        double totalDetalle = precio * cantidadFinal;
+        BigDecimal precio = producto.getPrecio();
+        BigDecimal totalDetalle = precio.multiply(new BigDecimal(cantidadFinal));
 
         if (existente == null) {
-            detalles.add(new DetallePedido(producto.getNombre(), cantidadFinal, precio, totalDetalle));
+            detalles.add(new DetallePedido(cantidadFinal, producto.getNombre(), precio, totalDetalle));
         } else {
             existente.setCantidad(existente.getCantidad() + cantidadFinal);
             existente.setTotal(existente.getTotal() + totalDetalle);
@@ -51,7 +75,7 @@ public class Pedido {
 
     public void limpiar() {
         detalles.clear();
-        total = 0;
+        total = new BigDecimal(0);
     }
 
     private void recalcularTotal() {

@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.erp.models.CajaEstado;
-import com.example.erp.models.MovimientoCaja;
+import com.example.erp.entities.CajaEstado;
+import com.example.erp.entities.MovimientoCaja;
 import com.example.erp.services.CajaService;
 import com.example.erp.services.UsuarioService;
 

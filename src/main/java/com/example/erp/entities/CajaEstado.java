@@ -1,4 +1,4 @@
-package com.example.erp.models;
+package com.example.erp.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

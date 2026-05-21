@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.erp.models.CajaEstado;
-import com.example.erp.models.MovimientoCaja;
-import com.example.erp.models.Venta;
+import com.example.erp.entities.CajaEstado;
+import com.example.erp.entities.MovimientoCaja;
+import com.example.erp.entities.Venta;
 
 @Service
 public class CajaService {

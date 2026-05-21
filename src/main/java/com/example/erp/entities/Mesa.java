@@ -1,19 +1,31 @@
-package com.example.erp.models;
+package com.example.erp.entities;
 
-import lombok.AllArgsConstructor;
+import java.math.BigDecimal;
+
+import org.hibernate.validator.constraints.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class Mesa {
 
-    private int numero;
+    private UUID idMesa;
+    private Integer numero;
+
+    @Column(
+        length=30
+    )
     private String estado;
+
+    @OneToOne
     private Pedido pedido;
-    private double total;
+
+    private BigDecimal total;
 
     public Mesa(int numero, String estado) {
         this.numero = numero;
@@ -29,11 +41,11 @@ public class Mesa {
     }
 
     public void actualizarTotal() {
-        total = pedido != null ? pedido.getTotal() : 0;
+        total = pedido != null ? pedido.getTotal() : new BigDecimal(0);
     }
 
     public void limpiarPedido() {
         pedido = null;
-        total = 0;
+        total = new BigDecimal(0);
     }
 }

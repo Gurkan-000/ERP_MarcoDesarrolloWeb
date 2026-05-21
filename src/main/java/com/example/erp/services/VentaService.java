@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.erp.models.Mesa;
-import com.example.erp.models.Pedido;
-import com.example.erp.models.DetallePedido;
-import com.example.erp.models.Producto;
-import com.example.erp.models.Venta;
+import com.example.erp.entities.DetallePedido;
+import com.example.erp.entities.Mesa;
+import com.example.erp.entities.Pedido;
+import com.example.erp.entities.Producto;
+import com.example.erp.entities.Venta;
 
 @Service
 public class VentaService {

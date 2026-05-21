@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.erp.models.Usuario;
+import com.example.erp.entities.Usuario;
 import com.example.erp.services.UsuarioService;
 
 import jakarta.servlet.http.HttpSession;
