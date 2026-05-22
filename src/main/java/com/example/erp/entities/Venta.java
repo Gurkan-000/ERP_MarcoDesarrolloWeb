@@ -1,20 +1,38 @@
 package com.example.erp.entities;
 
-import lombok.AllArgsConstructor;
+import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class Venta {
-
+    @Column(
+        length = 30
+    )
     private String productoNombre;
-    private int cantidad;
-    private double precioUnitario;
-    private double total;
+
+    private Integer cantidad;
+
+    private BigDecimal precioUnitario;
+
+    @Column(
+        precision = 5,
+        scale = 2
+    )
+    private BigDecimal total;
+
+    @Column(
+        length = 30
+    )
     private String metodoPago;
+
+    @Column(
+        length = 30
+    )
     private String canal;
 
 }
