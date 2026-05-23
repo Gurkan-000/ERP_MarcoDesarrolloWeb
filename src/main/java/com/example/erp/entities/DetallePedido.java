@@ -1,11 +1,13 @@
 package com.example.erp.entities;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
-import org.hibernate.validator.constraints.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -22,6 +24,8 @@ import lombok.Setter;
 )
 public class DetallePedido {
 
+    @Id
+    @UuidGenerator
     private UUID idDetallePedido;
 
     @Column(
@@ -33,19 +37,19 @@ public class DetallePedido {
 
     @Column(
             precision = 5,
-            scale = 2
+            scale = 1
     )
     private BigDecimal precioUnitario;
 
     @Column(
             precision = 5,
-            scale = 2
+            scale = 1
     )
     private BigDecimal total;
 
     @ManyToOne
     @JoinColumn(
-        name="idPedido"
+            name = "idPedido"
     )
     private Pedido pedido;
 
@@ -56,7 +60,5 @@ public class DetallePedido {
         this.productoNombre = productoNombre;
         this.total = total;
     }
-
-
 
 }

@@ -2,6 +2,8 @@ package com.example.erp.entities;
 
 import java.util.List;
 
+import com.example.erp.entities.enums.Rol;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

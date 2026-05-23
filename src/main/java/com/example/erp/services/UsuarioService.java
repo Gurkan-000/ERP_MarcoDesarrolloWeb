@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.erp.entities.Rol;
 import com.example.erp.entities.Usuario;
+import com.example.erp.entities.enums.Rol;
 
 import jakarta.servlet.http.HttpSession;
 
