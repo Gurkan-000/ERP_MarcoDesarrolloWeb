@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ERP - Inicio</title>
-    <link rel="stylesheet" href="/ERP_MarcoDesarrolloWeb/src/main/resources/static/css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERP - Inicio</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
+
 <body>
-    <div class="app-root">
+  <div class="app-root">
     <section id="erp-app" class="erp-app">
       <aside class="sidebar">
         <div class="sidebar-brand">
@@ -99,8 +101,9 @@
     </div>
   </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
-   <script src="/ERP_MarcoDesarrolloWeb/src/main/resources/static/js/app.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script th:src="@{/js/app.js}"></script>
 
 </body>
+
 </html>

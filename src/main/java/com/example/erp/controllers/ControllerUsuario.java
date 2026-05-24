@@ -14,7 +14,7 @@ import com.example.erp.services.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/api/usuario")
+@RequestMapping("/usuario")
 public class ControllerUsuario {
 
     private final UsuarioService usuarioService;

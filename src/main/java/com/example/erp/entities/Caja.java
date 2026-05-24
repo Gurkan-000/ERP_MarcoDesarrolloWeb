@@ -1,6 +1,7 @@
 package com.example.erp.entities;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -12,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -61,5 +63,8 @@ public class Caja {
             scale = 1
     )
     private BigDecimal egresos;
+
+    @OneToMany(mappedBy="caja")
+    private List<MovimientoCaja> movientos;
 
 }

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
-@RequestMapping("/api/caja")
+@RequestMapping("/caja")
 public class ControllerCaja {
 
 }

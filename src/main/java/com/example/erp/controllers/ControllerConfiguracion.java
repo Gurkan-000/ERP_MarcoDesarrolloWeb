@@ -10,7 +10,7 @@ import com.example.erp.services.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/api/configuracion")
+@RequestMapping("/configuracion")
 public class ControllerConfiguracion {
 
     private final UsuarioService usuarioService;

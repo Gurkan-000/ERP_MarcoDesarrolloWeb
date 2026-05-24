@@ -8,9 +8,12 @@ import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +21,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(
         name = "Categorias"
@@ -34,15 +39,13 @@ public class Categoria {
     private String nombre;
 
     @OneToMany(
-            mappedBy = "categoria"
+            mappedBy = "categoria",
+            fetch=FetchType.LAZY
     )
-    private List<Producto> productos = new ArrayList<>();
+    private final List<Producto> productos = new ArrayList<>();
 
-    public Categoria(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public void agregarProducto(Producto producto) {
+    public void addProducto(Producto producto){
+        producto.setCategoria(this);
         productos.add(producto);
     }
 

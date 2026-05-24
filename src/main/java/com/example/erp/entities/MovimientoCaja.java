@@ -9,9 +9,13 @@ import com.example.erp.entities.enums.MetodoPago;
 import com.example.erp.entities.enums.Tipo;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +25,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(
+        name="MovimientosCaja"
+)
 public class MovimientoCaja {
 
     @Id
@@ -43,5 +51,10 @@ public class MovimientoCaja {
             scale = 1
     )
     private BigDecimal monto;
+
+    @ManyToOne
+    @JoinColumn(name = "idCaja")
+    private Caja caja;
+
 
 }
