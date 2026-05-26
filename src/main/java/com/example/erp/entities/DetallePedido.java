@@ -7,17 +7,22 @@ import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Getter @Setter
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
+
 @Entity
 @Table(
         name = "DetallesPedidos"
@@ -27,11 +32,6 @@ public class DetallePedido {
     @Id
     @UuidGenerator
     private UUID idDetallePedido;
-
-    @Column(
-            length = 30
-    )
-    private String productoNombre;
 
     private Integer cantidad;
 
@@ -47,18 +47,23 @@ public class DetallePedido {
     )
     private BigDecimal total;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(
             name = "idPedido"
     )
     private Pedido pedido;
 
-    public DetallePedido(Integer cantidad, Pedido pedido, BigDecimal precioUnitario, String productoNombre, BigDecimal total) {
-        this.cantidad = cantidad;
-        this.pedido = pedido;
-        this.precioUnitario = precioUnitario;
-        this.productoNombre = productoNombre;
-        this.total = total;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(
+            name = "idProducto"
+    )
+    private Producto producto;
+
+    public void calcularTotal(){
+        precioUnitario = precioUnitario != null ? precioUnitario : BigDecimal.ZERO;
+        cantidad = cantidad != null ? cantidad : 0;
+
+        total = precioUnitario.multiply(new BigDecimal(cantidad));
     }
 
 }
