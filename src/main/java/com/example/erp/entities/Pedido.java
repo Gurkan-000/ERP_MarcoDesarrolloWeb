@@ -7,12 +7,20 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.example.erp.entities.enums.MetodoPago;
+import com.example.erp.entities.enums.TipoPedido;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,9 +28,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Builder
+
 @Table(
-        name="Pedidos"
+        name = "Pedidos"
 )
 public class Pedido {
 
@@ -30,37 +41,35 @@ public class Pedido {
     @UuidGenerator
     private UUID idPedido;
 
-    @OneToOne(mappedBy="pedido")
-    private Mesa mesa;
+    private TipoPedido tipoPedido;
 
     @Column(
-            length = 30
-    )
-    private String canal;
-
-    @OneToMany(
-            mappedBy = "pedido"
-    )
-    private List<DetallePedido> detalles = new ArrayList<>();
-
-    @Column(
-            precision = 5,
-            scale = 2
+            precision = 6,
+            scale = 1
     )
     private BigDecimal total;
 
-    private Integer mesaNumero;
+    @Enumerated(EnumType.STRING)
+    private MetodoPago metodoPago;
 
-    private Integer cantidad;
-
-    @Column(
-            length = 30
+    @OneToMany(
+            mappedBy = "pedido",
+            fetch = FetchType.LAZY
     )
-    private String metodoPago;
+    private final List<DetallePedido> detalles = new ArrayList<>();
 
-    public Pedido(Mesa mesa, String canal) {
-        this.mesa = mesa;
-        this.canal = canal;
+    @OneToOne(mappedBy = "pedido", fetch = FetchType.LAZY)
+    private Mesa mesa;
+
+    public void addDetallePedido(DetallePedido detallePedido) {
+        detallePedido.setPedido(this);
+        detalles.add(detallePedido);
+    }
+
+    public void calcularTotal() {
+        total = detalles.stream()
+                .map(DetallePedido::getTotal)
+                .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
 
 }

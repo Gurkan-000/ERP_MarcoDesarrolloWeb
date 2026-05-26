@@ -1,6 +1,7 @@
 package com.example.erp.entities;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,9 +13,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +26,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 
 @Entity
 public class Caja {
@@ -50,13 +54,7 @@ public class Caja {
             precision = 6,
             scale = 1
     )
-    private BigDecimal ingresosEfectivo;
-
-    @Column(
-            precision = 6,
-            scale = 1
-    )
-    private BigDecimal ingresosOtros;
+    private BigDecimal ingresos;
 
     @Column(
             precision = 6,
@@ -64,7 +62,20 @@ public class Caja {
     )
     private BigDecimal egresos;
 
-    @OneToMany(mappedBy="caja")
-    private List<MovimientoCaja> movientos;
+    @OneToMany(mappedBy = "caja", fetch = FetchType.LAZY)
+    private final List<MovimientoCaja> movimientos = new ArrayList<>();
+
+    public void addMovimiento(MovimientoCaja movimiento) {
+        movimiento.setCaja(this);
+        movimientos.add(movimiento);
+    }
+
+    public void recalcularMontoActual() {
+        BigDecimal inicial = (this.montoInicial != null) ? this.montoInicial : BigDecimal.ZERO;
+        BigDecimal entradas = (this.ingresos != null) ? this.ingresos : BigDecimal.ZERO;
+        BigDecimal salidas = (this.egresos != null) ? this.egresos : BigDecimal.ZERO;
+
+        this.montoActual = inicial.add(entradas).subtract(salidas);
+    }
 
 }

@@ -11,17 +11,23 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
+
 @Table(
     name="Mesas"
 )
@@ -36,7 +42,7 @@ public class Mesa {
     @Enumerated(EnumType.STRING)
     private EstadoMesa estado;
 
-    @OneToOne
+    @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="idPedido")
     private Pedido pedido;
 
@@ -46,25 +52,4 @@ public class Mesa {
     )
     private BigDecimal total;
 
-    public Mesa(int numero, EstadoMesa estado) {
-        this.numero = numero;
-        this.estado = estado;
-    }
-
-    public void asignarPedido(Pedido pedido) {
-        this.pedido = pedido;
-        if (pedido != null && pedido.getMesa() == null) {
-            pedido.setMesa(this);
-        }
-        actualizarTotal();
-    }
-
-    public void actualizarTotal() {
-        total = pedido != null ? pedido.getTotal() : new BigDecimal(0);
-    }
-
-    public void limpiarPedido() {
-        pedido = null;
-        total = new BigDecimal(0);
-    }
 }

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.erp.DTOs.request.RequestActualizarStockProducto;
 import com.example.erp.DTOs.request.RequestProducto;
 import com.example.erp.DTOs.response.ResponseProducto;
 import com.example.erp.entities.Categoria;
@@ -61,7 +62,16 @@ public class ProductoService {
 
     }
 
+    @Transactional
+    public ResponseProducto actualizarProducto(RequestActualizarStockProducto requestStockProducto, UUID idProducto){
 
+        Producto producto = obtenerProducto(idProducto);
+
+        producto.setStock(requestStockProducto.getStock());
+
+        return MapperProducto.toDTO(producto);
+
+    }
 
 
 }
