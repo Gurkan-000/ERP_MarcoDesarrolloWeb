@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/catalogo")
+@CrossOrigin("http://127.0.0.1:3307")
 public class ControllerCatalogo {
 
     private final ProductoService productoService;

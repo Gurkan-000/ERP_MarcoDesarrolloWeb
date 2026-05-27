@@ -18,4 +18,6 @@ public class ResponseCategoria {
 
     private String nombre;
 
+    private Integer productos;
+
 }

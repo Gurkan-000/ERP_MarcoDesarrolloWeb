@@ -5,3 +5,9 @@ const initLogin = () => {
 };
 
 document.addEventListener('DOMContentLoaded', initLogin);
+
+document.getElementById("btnLogin").addEventListener("click",()=>{
+
+  window.location.href = 'venta.html';
+
+});

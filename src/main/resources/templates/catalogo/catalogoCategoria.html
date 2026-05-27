@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ERP - Inicio</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERP - Inicio</title>
+  <link rel="stylesheet" href="../../static/css/styles.css">
 </head>
+
 <body>
-    <div class="app-root">
+  <div class="app-root">
     <section id="erp-app" class="erp-app">
       <aside class="sidebar">
         <div class="sidebar-brand">
@@ -19,32 +21,30 @@
         </div>
 
         <nav class="sidebar-nav">
-          <th:block th:if="${usuarioSesion != null}" th:each="vista : ${usuarioSesion.vistas}">
-            <a class="nav-item" th:href="@{/api/venta/vista}" th:if="${vista == 'venta'}">
-              <i data-lucide="shopping-bag"></i>
-              Punto de Venta
-            </a>
-            <a class="nav-item" th:href="@{/api/caja/vista}" th:if="${vista == 'caja'}">
-              <i data-lucide="wallet"></i>
-              Caja
-            </a>
-            <a class="nav-item" th:href="@{/api/inventario/vista}" th:if="${vista == 'inventario'}">
-              <i data-lucide="package"></i>
-              Inventario
-            </a>
-            <a class="nav-item active" th:href="@{/api/catalogo/vistaProducto}" th:if="${vista == 'catalogo'}">
-              <i data-lucide="layout-dashboard"></i>
-              Catalogo
-            </a>
-            <a class="nav-item" th:href="@{/api/usuario/vista}" th:if="${vista == 'usuario'}">
-              <i data-lucide="users"></i>
-              Usuarios
-            </a>
-            <a class="nav-item" th:href="@{/api/configuracion/vista}" th:if="${vista == 'configuracion'}">
-              <i data-lucide="settings"></i>
-              Configuraciones
-            </a>
-          </th:block>
+          <a class="nav-item" href="../venta.html">
+            <i data-lucide="shopping-bag"></i>
+            Punto de Venta
+          </a>
+          <a class="nav-item" href="../caja.html">
+            <i data-lucide="wallet"></i>
+            Caja
+          </a>
+          <a class="nav-item" href="../inventario.html">
+            <i data-lucide="package"></i>
+            Inventario
+          </a>
+          <a class="nav-item active" href="catalogoProducto.html">
+            <i data-lucide="layout-dashboard"></i>
+            Catalogo
+          </a>
+          <a class="nav-item" href="../usuario.html">
+            <i data-lucide="users"></i>
+            Usuarios
+          </a>
+          <a class="nav-item" href="../configuracion.html">
+            <i data-lucide="settings"></i>
+            Configuraciones
+          </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -71,18 +71,19 @@
         </header>
 
         <main class="content-area">
-                    <section id="module-catalogo" class="module active">
+          <section id="module-catalogo" class="module active">
             <div class="module-header">
               <div class="tab-row">
-                <a class="tab" data-tab="cat-productos">
+                <a class="tab" data-tab="cat-productos" href="catalogoProducto.html">
                   <i data-lucide="package"></i>Productos
                 </a>
-                <a class="tab active" data-tab="cat-categorias">
+                <a class="tab active" data-tab="cat-categorias" href="catalogoCategoria.html">
                   <i data-lucide="layers"></i>Categorias
                 </a>
               </div>
               <div class="catalog-actions">
-                <button class="btn btn-muted catalog-action" type="button" data-action="open-form" data-target="cat-categorias">
+                <button class="btn btn-primary catalog-action" type="button" data-action="open-form"
+                  data-target="cat-categorias">
                   <i data-lucide="plus"></i>
                   Nueva categoria
                 </button>
@@ -95,28 +96,20 @@
                     <tr>
                       <th>Categoria</th>
                       <th>Productos</th>
-                      <th>Estado</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="tbodyCategoria">
                   </tbody>
                 </table>
-                <form class="inline-form hidden">
+                <form class="inline-form hidden" id="form-cat-categorias">
                   <div class="form-grid">
                     <label class="field">
                       <span>Categoria</span>
-                      <input type="text" placeholder="Ej. Combos"/>
-                    </label>
-                    <label class="field">
-                      <span>Estado</span>
-                      <select>
-                        <option value="activo">Activo</option>
-                        <option value="inactivo">Inactivo</option>
-                      </select>
+                      <input id="txtNombreCategoria" type="text" placeholder="Ej. Combos" />
                     </label>
                   </div>
                   <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Guardar</button>
+                    <button id="btnGuardarCategoria" class="btn btn-primary" type="submit">Guardar</button>
                     <button class="btn btn-muted" type="button" data-action="cancel-form">Cancelar</button>
                   </div>
                 </form>
@@ -129,7 +122,9 @@
   </div>
 
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script th:src="@{/js/app.js}"></script>
+  <script src="../../static/js/app.js"></script>
+  <script src="../../static/js/APIs_Categoria.js"></script>
 
 </body>
+
 </html>

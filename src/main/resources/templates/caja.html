@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ERP - Inicio</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 
 <body>
@@ -21,32 +21,30 @@
         </div>
 
         <nav class="sidebar-nav">
-          <th:block th:if="${usuarioSesion != null}" th:each="vista : ${usuarioSesion.vistas}">
-            <a class="nav-item" th:href="@{/api/venta/vista}" th:if="${vista == 'venta'}">
-              <i data-lucide="shopping-bag"></i>
-              Punto de Venta
-            </a>
-            <a class="nav-item active" th:href="@{/api/caja/vista}" th:if="${vista == 'caja'}">
-              <i data-lucide="wallet"></i>
-              Caja
-            </a>
-            <a class="nav-item" th:href="@{/api/inventario/vista}" th:if="${vista == 'inventario'}">
-              <i data-lucide="package"></i>
-              Inventario
-            </a>
-            <a class="nav-item" th:href="@{/api/catalogo/vistaProducto}" th:if="${vista == 'catalogo'}">
-              <i data-lucide="layout-dashboard"></i>
-              Catalogo
-            </a>
-            <a class="nav-item" th:href="@{/api/usuario/vista}" th:if="${vista == 'usuario'}">
-              <i data-lucide="users"></i>
-              Usuarios
-            </a>
-            <a class="nav-item" th:href="@{/api/configuracion/vista}" th:if="${vista == 'configuracion'}">
-              <i data-lucide="settings"></i>
-              Configuraciones
-            </a>
-          </th:block>
+          <a class="nav-item" href="venta.html">
+            <i data-lucide="shopping-bag"></i>
+            Punto de Venta
+          </a>
+          <a class="nav-item active" href="caja.html">
+            <i data-lucide="wallet"></i>
+            Caja
+          </a>
+          <a class="nav-item" href="inventario.html">
+            <i data-lucide="package"></i>
+            Inventario
+          </a>
+          <a class="nav-item" href="catalogo/catalogoProducto.html">
+            <i data-lucide="layout-dashboard"></i>
+            Catalogo
+          </a>
+          <a class="nav-item" href="usuario.html">
+            <i data-lucide="users"></i>
+            Usuarios
+          </a>
+          <a class="nav-item" href="configuracion.html">
+            <i data-lucide="settings"></i>
+            Configuraciones
+          </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -76,13 +74,13 @@
             <div class="split-layout">
               <div class="card">
                 <h3>Estado de Caja</h3>
-                <div >
-                  <p class="muted" >Turno Abierto</p>
+                <div>
+                  <p class="muted">Turno Abierto</p>
                   <div class="stat-card">
                     <div>
                       <p>Monto actual</p>
                       <h4 class="text-success">S/ 0.00</h4>
-                      <p class="muted monto-inicial" >Monto
+                      <p class="muted monto-inicial">Monto
                         inicial: S/ 0.00</p>
                     </div>
                   </div>
@@ -90,7 +88,7 @@
                     <div class="form-grid">
                       <label class="field">
                         <span>Concepto</span>
-                        <input type="text" placeholder="Ej. Compra de hielo"/>
+                        <input type="text" placeholder="Ej. Compra de hielo" />
                       </label>
                       <label class="field">
                         <span>Tipo</span>
@@ -109,7 +107,7 @@
                       </label>
                       <label class="field">
                         <span>Monto</span>
-                        <input type="number" step="0.1" min="0" placeholder="Ej. 15.00"/>
+                        <input type="number" step="0.1" min="0" placeholder="Ej. 15.00" />
                       </label>
                     </div>
                     <div class="form-actions">
@@ -122,12 +120,12 @@
                     </form>
                   </div>
                 </div>
-                <div >
+                <div>
                   <p class="muted">Turno Cerrado</p>
                   <div class="stat-card">
                     <div>
                       <p>Ultimo monto</p>
-                      <h4 class="text-info" >S/ 0.00</h4>
+                      <h4 class="text-info">S/ 0.00</h4>
                     </div>
                   </div>
                   <form class="inline-form" method="post">
@@ -166,7 +164,7 @@
   </div>
 
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script th:src="@{/js/app.js}"></script>
+  <script src="../static/js/app.js"></script>
 
 </body>
 

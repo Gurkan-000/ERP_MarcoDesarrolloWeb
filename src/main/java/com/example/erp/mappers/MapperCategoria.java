@@ -18,6 +18,7 @@ public class MapperCategoria {
         return ResponseCategoria.builder()
                 .idCategoria(categoria.getIdCategoria())
                 .nombre(categoria.getNombre())
+                .productos(categoria.getProductos().size())
                 .build();
     }
 
