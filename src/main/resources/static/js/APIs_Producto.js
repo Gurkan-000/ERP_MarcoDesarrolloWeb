@@ -37,57 +37,122 @@ const cargarTablaProducto = async () => {
 
 cargarTablaProducto();
 
-// const btnGuardarCategoria = document.getElementById("btnGuardarCategoria");
+const llenarComboCategoria = async () => {
+    try { 
 
-// btnGuardarCategoria.addEventListener("click", (e) => {
+        const combo = document.getElementById('comboCategorias');
 
-//     e.preventDefault();
+        const response = await fetch('http://localhost:8080/api/catalogo/listarCategorias');
 
-//     const txtNombreCategoria = document.getElementById("txtNombreCategoria");
-//     const requestCategoria = {
-//         "nombre": txtNombreCategoria.value
-//     }
+        if(!response.ok) {
 
-//     insertarCategoria(requestCategoria);
+            console.log("Ocurrió un error listando categorias con el fetch");
 
-//     const form_cat = document.getElementById("form-cat-categorias");
-//     form_cat.classList.add('hidden');
-//     txtNombreCategoria.value = " ";
-// });
+        } else { 
 
-// const insertarCategoria = async (requestCategoria) => {
+            const data = await response.json();
 
-//     try {
+            data.forEach(categoria => {
 
-//         const response = await fetch('http://localhost:8080/api/catalogo/crearCategoria', {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json"
-//             },
-//             body: JSON.stringify(requestCategoria)
-//         });
+                const option = document.createElement("option");
 
-//         const data = await response.json();
+                option.value = categoria.idCategoria;
+                option.textContent = categoria.nombre;
 
-//         if (!response.ok) {
-//             console.log(data);
-//         } else {
+                combo.appendChild(option);
 
-//             const tbody = document.getElementById("tbodyCategoria");
-//             const rowTBody = document.createElement("tr");
+            })
+        }
+    } catch (error) {
 
-//             rowTBody.dataset.id = data.idCategoria;
+        console.log(error);
 
-//             rowTBody.innerHTML = `
-//                 <td>${data.nombre}</td>
-//                 <td>${data.productos}</td>
-//             `;
+    }
+}
 
-//             tbody.appendChild(rowTBody);
-//         }
+llenarComboCategoria();
 
-//     } catch (error) {
-//         console.log(error)
-//     }
+const btnGuardarProducto = document.getElementById('btnGuardarProducto');
 
-// }
+btnGuardarProducto.addEventListener("click", async (e) => {
+    
+    e.preventDefault();
+
+    const nombreProducto = document.getElementById('productoNombre');
+
+    const combo = document.getElementById('comboCategorias');
+    const idCategoria = combo.value;
+
+    const precioProducto = document.getElementById('precioProducto');
+
+    const stockProducto = document.getElementById('stockProducto');
+
+    const requestProducto = {
+        "nombre" : nombreProducto.value,
+        "stock" : Number(stockProducto.value),
+        "precio" : Number(precioProducto.value)
+    }
+
+    //VALIDAR SI SE HA SELECCIONADO CATEGORIA PORQUE QUIZA PUEDA DAR ERROR XD
+    if (!idCategoria) {
+
+        alert("Seleccione una categoría");
+
+    return;
+    }
+
+    await insertarProducto(requestProducto, idCategoria);
+
+    const form = document.getElementById('form-cat-productos');
+    form.classList.add('hidden');
+    nombreProducto.value = "";
+    precioProducto.value = "";
+    stockProducto.value = "";
+    document.getElementById('comboCategorias').selectedIndex = 0;
+
+})
+
+const insertarProducto = async (requestProducto, idCategoria) => {
+    try {
+
+        const response = await fetch(`http://localhost:8080/api/catalogo/crearProducto/categoria/${idCategoria}`, 
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(requestProducto)
+            });
+
+        const data = await response.json();
+
+        if(!response.ok) {
+
+            console.log("Ocurrió un error creando el producto al usar FETCH /crearProducto/categoria/idCat - line 103", data);
+
+        } else {
+
+            console.log("Producto creado, BABY!")
+
+            const tBody = document.getElementById("tbodyProducto");
+            const rowtBody = document.createElement("tr");
+
+            rowtBody.dataset.id = data.idProducto;
+
+            rowtBody.innerHTML = `
+                <td>${data.nombre}</td>
+                <td>${data.nombreCategoria}</td>
+                <td>${data.precio}</td>
+            `;
+
+            tBody.appendChild(rowtBody);
+
+        }
+    } catch (error) {
+
+        console.log(error);
+
+    }
+}

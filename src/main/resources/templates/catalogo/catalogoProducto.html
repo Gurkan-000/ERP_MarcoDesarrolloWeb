@@ -106,26 +106,25 @@
                   <div class="form-grid">
                     <label class="field">
                       <span>Producto</span>
-                      <input type="text" placeholder="Ej. Combo Clasico" />
+                      <input id="productoNombre" type="text" placeholder="Ej. Combo Clasico" />
                     </label>
                     <label class="field">
                       <span>Categoria</span>
-                      <select name="categoriaNombre">
+                      <select id="comboCategorias" name="categoriaNombre">
                         <option value="" disabled selected>Seleccione una categoria</option>
-                        <option></option>
                       </select>
                     </label>
                     <label class="field">
                       <span>Precio</span>
-                      <input type="number" step="0.1" placeholder="Ej. 18.90" />
+                      <input id="precioProducto" type="number" step="0.1" placeholder="Ej. 18.90" />
                     </label>
                     <label class="field">
                       <span>Stock</span>
-                      <input type="number" placeholder="Ej. 10" />
+                      <input id="stockProducto" type="number" placeholder="Ej. 10" />
                     </label>
                   </div>
                   <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Guardar</button>
+                    <button id="btnGuardarProducto" class="btn btn-primary" type="submit">Guardar</button>
                     <button class="btn btn-muted" type="button" data-action="cancel-form">Cancelar</button>
                   </div>
                 </form>

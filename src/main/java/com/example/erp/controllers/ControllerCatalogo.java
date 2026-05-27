@@ -27,7 +27,9 @@ import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/catalogo")
-@CrossOrigin("http://127.0.0.1:3307")
+@CrossOrigin(origins = {
+    "http://127.0.0.1:5500",
+    "http://localhost:5500" })
 public class ControllerCatalogo {
 
     private final ProductoService productoService;
