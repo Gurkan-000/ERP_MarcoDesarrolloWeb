@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +21,8 @@ import com.example.erp.services.VentaService;
 
 import jakarta.validation.Valid;
 
-@Controller
-@RequestMapping("/venta")
+@RestController
+@RequestMapping("/api/venta")
 public class ControllerVenta {
 
     private final VentaService ventaService;
@@ -46,11 +46,11 @@ public class ControllerVenta {
     }
 
     @PostMapping("/realizarPedido")
-    public ResponseEntity<Void> realizarPedido(@Valid @RequestBody RequestPedido requestPedido) {
+    public ResponseEntity<ResponsePedido> realizarPedido(@Valid @RequestBody RequestPedido requestPedido) {
 
-        ventaService.insertarPedido(requestPedido);
+        ResponsePedido responsePedido = ventaService.insertarPedido(requestPedido);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(responsePedido);
     }
 
     @PostMapping("/agregarDetallePedido/{idPedido}")

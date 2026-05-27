@@ -256,8 +256,15 @@ const init = () => {
   if (openReset) openReset.addEventListener('click', openModal);
   if (cancelReset) cancelReset.addEventListener('click', closeModal);
   if (confirmReset) {
-    confirmReset.addEventListener('click', () => {
-      if (resetForm) resetForm.submit();
+    confirmReset.addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/inventario/reiniciar', { method: 'POST' });
+        if (response.ok) {
+          alert('Inventario reiniciado correctamente');
+        }
+      } catch (error) {
+        console.error('Error resetting inventory:', error);
+      }
       closeModal();
     });
   }

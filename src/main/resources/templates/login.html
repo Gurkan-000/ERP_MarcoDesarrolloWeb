@@ -11,7 +11,6 @@
     <div class="app-root">
 
     <section class="login-screen">
-      
       <div class="login-card">
         <div class="login-brand">
           <div class="login-icon" aria-hidden="true">
@@ -21,22 +20,25 @@
           <p>Ingresa tus credenciales</p>
         </div>
 
-        <form method="post" class="login-form">
+        <form th:action="@{/login/autenticar}" method="post" class="login-form">
+          
           <div class="input-group">
             <span class="input-icon" aria-hidden="true"><i data-lucide="user"></i></span>
-            <input type="text" placeholder="Usuario" autocomplete="username" required/>
+            <input type="text" name="nombre" placeholder="Usuario" autocomplete="username" required/>
           </div>
           <div class="input-group">
             <span class="input-icon" aria-hidden="true"><i data-lucide="key-round"></i></span>
-            <input type="password" placeholder="Contraseña" autocomplete="current-password" required/>
+            <input type="password" name="contrasena" placeholder="Contraseña" autocomplete="current-password" required/>
           </div>
-          <p id="login-error" class="form-error" aria-live="polite"></p>
+          
+          <p id="login-error" class="form-error" aria-live="polite" th:if="${error}">Usuario o contraseña incorrectos.</p>
+          
           <button class="btn btn-primary" type="submit">
             <span class="btn-spinner" aria-hidden="true"></span>
             Ingresar
           </button>
         </form>
-
+      </div>
     </section>
     </div>
 

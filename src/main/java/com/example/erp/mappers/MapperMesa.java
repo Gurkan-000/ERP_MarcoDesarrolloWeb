@@ -10,6 +10,7 @@ public class MapperMesa {
                 .idMesa(mesa.getIdMesa())
                 .numero(mesa.getNumero())
                 .estado(mesa.getEstado())
+                .idPedido(mesa.getPedido() != null ? mesa.getPedido().getIdPedido() : null)
                 .build();
     }
 

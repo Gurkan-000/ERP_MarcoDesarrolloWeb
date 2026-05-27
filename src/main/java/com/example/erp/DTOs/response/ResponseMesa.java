@@ -22,4 +22,6 @@ public class ResponseMesa {
 
     private EstadoMesa estado;
 
+    private UUID idPedido;
+
 }

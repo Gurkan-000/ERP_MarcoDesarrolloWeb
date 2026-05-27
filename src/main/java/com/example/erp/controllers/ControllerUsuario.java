@@ -1,20 +1,19 @@
 package com.example.erp.controllers;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.erp.entities.Usuario;
 import com.example.erp.services.UsuarioService;
 
-import jakarta.servlet.http.HttpSession;
-
-@Controller
-@RequestMapping("/usuario")
+@RestController
+@RequestMapping("/api/usuario")
 public class ControllerUsuario {
 
     private final UsuarioService usuarioService;
@@ -23,30 +22,17 @@ public class ControllerUsuario {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/vista")
-    public String usuarioVista(Model model, 
-                                HttpSession session, 
-                                @RequestParam(required = false) String resultado) {
-
-        boolean acceso = usuarioService.validarAcceso(session, "usuario");
-        if (acceso) {
-            model.addAttribute("usuarioSesion", usuarioService.obtenerDeSesion(session));
-            model.addAttribute("nuevoUsuario", new Usuario());
-            model.addAttribute("usuarios", usuarioService.listarUsuarios());
-            model.addAttribute("resultado", resultado);
-            
-            return "usuario";
-        } 
-    
-        return "redirect:/api/login/vista";
+    @GetMapping("/listar")
+    public ResponseEntity<List<Usuario>> listarUsuarios() {
+        return ResponseEntity.ok(usuarioService.listarUsuarios());
     }
 
     @PostMapping("/crear")
-    public String crearUsuario(@ModelAttribute Usuario nuevoUsuario,
-                                HttpSession session) {
-
+    public ResponseEntity<Void> crearUsuario(@RequestBody Usuario nuevoUsuario) {
         boolean creado = usuarioService.crearUsuario(nuevoUsuario);
-        return "redirect:/api/usuario/vista?resultado=" + (creado ? "ok" : "error");
-
+        if (creado) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 }

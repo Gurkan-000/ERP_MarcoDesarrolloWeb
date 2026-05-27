@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +24,8 @@ import jakarta.validation.Valid;
 
 
 
-@Controller
-@RequestMapping("/catalogo")
+@RestController
+@RequestMapping("/api/catalogo")
 public class ControllerCatalogo {
 
     private final ProductoService productoService;

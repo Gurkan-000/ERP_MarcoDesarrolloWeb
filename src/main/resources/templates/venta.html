@@ -21,27 +21,27 @@
 
         <nav class="sidebar-nav">
           <th:block th:if="${usuarioSesion != null}" th:each="vista : ${usuarioSesion.vistas}">
-            <a class="nav-item active" th:href="@{/api/venta/vista}" th:if="${vista == 'venta'}">
+            <a class="nav-item active" th:href="@{/venta}" th:if="${vista == 'venta'}">
               <i data-lucide="shopping-bag"></i>
               Punto de Venta
             </a>
-            <a class="nav-item" th:href="@{/api/caja/vista}" th:if="${vista == 'caja'}">
+            <a class="nav-item" th:href="@{/caja}" th:if="${vista == 'caja'}">
               <i data-lucide="wallet"></i>
               Caja
             </a>
-            <a class="nav-item" th:href="@{/api/inventario/vista}" th:if="${vista == 'inventario'}">
+            <a class="nav-item" th:href="@{/inventario}" th:if="${vista == 'inventario'}">
               <i data-lucide="package"></i>
               Inventario
             </a>
-            <a class="nav-item" th:href="@{/api/catalogo/vistaProducto}" th:if="${vista == 'catalogo'}">
+            <a class="nav-item" th:href="@{/catalogo/productos}" th:if="${vista == 'catalogo'}">
               <i data-lucide="layout-dashboard"></i>
               Catalogo
             </a>
-            <a class="nav-item" th:href="@{/api/usuario/vista}" th:if="${vista == 'usuario'}">
+            <a class="nav-item" th:href="@{/usuarios}" th:if="${vista == 'usuario'}">
               <i data-lucide="users"></i>
               Usuarios
             </a>
-            <a class="nav-item" th:href="@{/api/configuracion/vista}" th:if="${vista == 'configuracion'}">
+            <a class="nav-item" th:href="@{/configuracion}" th:if="${vista == 'configuracion'}">
               <i data-lucide="settings"></i>
               Configuraciones
             </a>
@@ -84,9 +84,7 @@
               <div class="card">
                 <h3>Mapa de Mesas</h3>
                 <div class="table-grid" id="mesa-grid">
-                    <span class="table-number">1</span>
-                    <span>Libre</span>
-                  </button>
+                  <!-- Mesas will be loaded here dynamically -->
                 </div>
               </div>
               <div id="pos-salon-details" class="split-layout hidden">
@@ -206,14 +204,13 @@
               <div class="split-layout">
                 <div class="card">
                   <h3>Registrar venta</h3>
-                  <form class="inline-form">
-                    <input type="hidden" name="canal" />
+                  <form class="inline-form" id="form-delivery">
+                    <input type="hidden" name="canal" value="DELIVERY" />
                     <div class="form-grid">
                       <label class="field">
                         <span>Producto</span>
-                        <select>
+                        <select data-type="product-select">
                           <option value="" disabled selected>Seleccione un producto</option>
-                          <!-- OPCIONES DE PRODUCTO  -->
                         </select>
                       </label>
                       <label class="field">
@@ -303,6 +300,7 @@
 
   <script src="https://unpkg.com/lucide@latest"></script>
   <script th:src="@{/js/app.js}"></script>
+  <script th:src="@{/js/venta.js}"></script>
 
 </body>
 </html>

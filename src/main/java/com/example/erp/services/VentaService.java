@@ -68,12 +68,20 @@ public class VentaService {
     }
 
     @Transactional
-    public void insertarPedido(RequestPedido requestPedido) {
+    public ResponsePedido insertarPedido(RequestPedido requestPedido) {
 
         Pedido pedido = MapperPedido.toEntity(requestPedido);
 
-        pedidoRepository.save(pedido);
+        if (requestPedido.getIdMesa() != null) {
+            Mesa mesa = mesaRepository.findById(requestPedido.getIdMesa())
+                    .orElseThrow(() -> new EntidadNoEncontradaException("Mesa no encontrada"));
+            mesa.setPedido(pedido);
+            mesa.setEstado(EstadoMesa.OCUPADO);
+        }
 
+        pedido = pedidoRepository.save(pedido);
+
+        return MapperPedido.toDTO(pedido);
     }
 
     @Transactional
@@ -104,8 +112,12 @@ public class VentaService {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Pedido no existente"));
 
+        String concepto = (pedido.getMesa() != null) 
+                ? "Pedido de la mesa " + pedido.getMesa().getNumero() 
+                : "Venta rápida " + pedido.getTipoPedido();
+
         RequestMovimientoCaja requestMovimientoCaja = RequestMovimientoCaja.builder()
-                .concepto("Pedido de la mesa " + pedido.getMesa().getNumero())
+                .concepto(concepto)
                 .metodo(pedido.getMetodoPago())
                 .tipo(Tipo.INGRESO)
                 .monto(pedido.getTotal())

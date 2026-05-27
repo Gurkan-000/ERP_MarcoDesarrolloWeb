@@ -5,9 +5,9 @@ import java.util.Optional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.erp.entities.Usuario;
 import com.example.erp.services.UsuarioService;
@@ -34,17 +34,22 @@ public class ControllerLogin {
     }
 
     @PostMapping("/autenticar")
-    public String autenticacionUsuario(@ModelAttribute Usuario usuario, HttpSession session) {
+    public String autenticacionUsuario(
+            @RequestParam String nombre, 
+            @RequestParam String contrasena, 
+            HttpSession session, 
+            Model model) {
 
-        Optional<Usuario> usuarioOptional = usuarioService.autenticar(usuario.getNombre(), usuario.getContrasena());
+        Optional<Usuario> usuarioOptional = usuarioService.autenticar(nombre, contrasena);
 
         if (usuarioOptional.isPresent()) {
             Usuario usuarioAutenticado = usuarioOptional.get();
             usuarioService.guardarEnSesion(session, usuarioAutenticado);
-            return "redirect:/api/venta/vista";
+            return "redirect:/venta";
         }
         
+        // Si las credenciales fallan, enviamos un aviso a la vista
+        model.addAttribute("error", true);
         return "login";
     }
-
 }
