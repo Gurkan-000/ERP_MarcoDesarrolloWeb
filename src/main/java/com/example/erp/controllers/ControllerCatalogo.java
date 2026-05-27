@@ -45,7 +45,7 @@ public class ControllerCatalogo {
     }
 
     @PostMapping("/crearCategoria")
-    public ResponseEntity<ResponseCategoria> insertarCategoria(@RequestBody RequestCategoria requestCategoria) {
+    public ResponseEntity<ResponseCategoria> insertarCategoria(@Valid @RequestBody RequestCategoria requestCategoria) {
         
         ResponseCategoria responseCategoria = categoriaService.insertarCategoria(requestCategoria);
         
