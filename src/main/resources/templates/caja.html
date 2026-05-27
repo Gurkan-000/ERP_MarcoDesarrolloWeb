@@ -55,7 +55,7 @@
               <span>Usuario</span>
             </div>
           </div>
-          <form method="get">
+          <form>
             <button type="submit" class="btn btn-ghost">
               <i data-lucide="log-out"></i>
               Cerrar Sesión
@@ -74,7 +74,7 @@
             <div class="split-layout">
               <div class="card">
                 <h3>Estado de Caja</h3>
-                <div>
+                <div id="divCajaTurnoAbierto" class="hidden">
                   <p class="muted">Turno Abierto</p>
                   <div class="stat-card">
                     <div>
@@ -84,7 +84,7 @@
                         inicial: S/ 0.00</p>
                     </div>
                   </div>
-                  <form class="inline-form" method="post">
+                  <form class="inline-form">
                     <div class="form-grid">
                       <label class="field">
                         <span>Concepto</span>
@@ -100,8 +100,9 @@
                       <label class="field">
                         <span>Metodo</span>
                         <select>
-                          <option value="Efectivo">Efectivo</option>
+                          <option value="EFECTIVO">Efectivo</option>
                           <option value="Tarjeta">Tarjeta</option>
+                          <option value="YAPE">Tarjeta</option>
                           <option value="Otro">Otro</option>
                         </select>
                       </label>
@@ -115,12 +116,12 @@
                     </div>
                   </form>
                   <div class="form-actions form-actions-end">
-                    <form method="post">
-                      <button class="btn btn-danger" type="submit">Cerrar Turno</button>
+                    <form>
+                      <button id="btnCerrarTurno" class="btn btn-danger" type="submit">Cerrar Turno</button>
                     </form>
                   </div>
                 </div>
-                <div>
+                <div id="divCajaTurnoCerrado" class="">
                   <p class="muted">Turno Cerrado</p>
                   <div class="stat-card">
                     <div>
@@ -128,7 +129,7 @@
                       <h4 class="text-info">S/ 0.00</h4>
                     </div>
                   </div>
-                  <form class="inline-form" method="post">
+                  <form class="inline-form">
                     <div class="form-grid">
                       <label class="field">
                         <span>Nuevo monto inicial</span>
@@ -136,7 +137,7 @@
                       </label>
                     </div>
                     <div class="form-actions">
-                      <button class="btn btn-primary" type="submit">Abrir Turno</button>
+                      <button id="btnAbrirTurno" class="btn btn-primary" type="submit">Abrir Turno</button>
                     </div>
                   </form>
                 </div>
@@ -165,6 +166,7 @@
 
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="../static/js/app.js"></script>
+  <script src="../static/js/APIs_Caja.js"></script>
 
 </body>
 
