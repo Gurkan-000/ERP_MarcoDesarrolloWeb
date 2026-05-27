@@ -142,7 +142,7 @@ const insertarProducto = async (requestProducto, idCategoria) => {
             rowtBody.dataset.id = data.idProducto;
 
             rowtBody.innerHTML = `
-                <td>${data.nombre}</td>
+                <td>${data.nombreProducto}</td>
                 <td>${data.nombreCategoria}</td>
                 <td>${data.precio}</td>
             `;
