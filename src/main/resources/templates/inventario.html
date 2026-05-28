@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ERP - Inicio</title>
+  <title>ERP - Inventario</title>
+  
   <link rel="stylesheet" href="../static/css/styles.css">
 </head>
-
 <body>
   <div class="app-root">
     <section id="erp-app" class="erp-app">
@@ -55,12 +54,10 @@
               <span>Usuario</span>
             </div>
           </div>
-          <form>
-            <button type="submit" class="btn btn-ghost">
-              <i data-lucide="log-out"></i>
-              Cerrar Sesión
-            </button>
-          </form>
+          <button type="button" class="btn btn-ghost" id="btn-logout">
+            <i data-lucide="log-out"></i>
+            Cerrar Sesión
+          </button>
         </div>
       </aside>
 
@@ -79,6 +76,7 @@
               </div>
             </div>
 
+            <!-- Pestaña: Stock Actual -->
             <div class="tab-content active" id="inv-stock">
               <div class="card">
                 <table class="data-table">
@@ -88,15 +86,19 @@
                       <th>Stock</th>
                     </tr>
                   </thead>
-                  <tbody>
-                  </tbody>
+                  <tbody id="tbody-stock-actual"></tbody>
                 </table>
+                <div id="stock-actual-empty" class="empty-state hidden">
+                  <i data-lucide="package"></i>
+                  <p>No hay productos en el inventario</p>
+                </div>
               </div>
             </div>
 
+            <!-- Pestaña: Actualizar Stock -->
             <div class="tab-content" id="inv-actualizar">
               <div class="card">
-                <form>
+                <form id="form-actualizar-stock">
                   <table class="data-table stock-editor-table">
                     <thead>
                       <tr>
@@ -105,11 +107,15 @@
                         <th>Nuevo stock</th>
                       </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
+                    <tbody id="tbody-actualizar-stock"></tbody>
                   </table>
-                  <div class="form-actions form-actions-end">
-                    <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                  <div id="actualizar-stock-empty" class="empty-state hidden">
+                    <i data-lucide="package"></i>
+                    <p>No hay productos para actualizar</p>
+                  </div>
+                  <div class="form-actions form-actions-end" id="actualizar-stock-actions">
+                    <button type="button" class="btn btn-muted" id="btn-cancelar-actualizacion">Cancelar</button>
+                    <button class="btn btn-primary" type="submit" id="btn-guardar-stock">Guardar cambios</button>
                   </div>
                 </form>
               </div>
@@ -120,10 +126,12 @@
     </section>
   </div>
 
+
+  <div id="toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;"></div>
+
   <script src="https://unpkg.com/lucide@latest"></script>
+
   <script src="../static/js/app.js"></script>
   <script src="../static/js/APIS_Inventario.js"></script>
-
 </body>
-
 </html>
