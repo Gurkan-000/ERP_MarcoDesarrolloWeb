@@ -25,17 +25,40 @@ public class GlobalException {
 
     }
 
+    @ExceptionHandler(AutenticacionException.class)
+    public ResponseEntity<ResponseError> autenticacionException(AutenticacionException ex) {
+
+        ResponseError error = ResponseError.builder().CodigoHttp(401)
+                .mensajes(Arrays.asList(ex.getMessage()))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
+
     public ResponseEntity<ResponseError> campoMetodoInvalido(MethodArgumentNotValidException ex) {
 
         List<String> mensajes = ex.getBindingResult().getAllErrors().stream()
                 .map(e -> e.getDefaultMessage()).toList();
 
-        ResponseError error = ResponseError.builder().CodigoHttp(404)
+        ResponseError error = ResponseError.builder().CodigoHttp(400)
                 .mensajes(mensajes)
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
+    }
+
+    @ExceptionHandler(ReglaDeNegocioException.class)
+    public ResponseEntity<ResponseError> campoMetodoInvalido(ReglaDeNegocioException ex) {
+
+        ResponseError error = ResponseError.builder().CodigoHttp(409)
+                .mensajes(Arrays.asList(ex.getMessage()))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
 
     }
 

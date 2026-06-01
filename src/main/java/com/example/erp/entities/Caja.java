@@ -1,6 +1,7 @@
 package com.example.erp.entities;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -61,6 +62,10 @@ public class Caja {
             scale = 1
     )
     private BigDecimal egresos;
+
+    private LocalDateTime fechaApertura;
+    
+    private LocalDateTime fechaCierre;
 
     @OneToMany(mappedBy = "caja", fetch = FetchType.LAZY)
     private final List<MovimientoCaja> movimientos = new ArrayList<>();

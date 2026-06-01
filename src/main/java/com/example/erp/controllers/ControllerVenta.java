@@ -4,25 +4,26 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.erp.DTOs.request.RequestDetallePedido;
 import com.example.erp.DTOs.request.RequestPedido;
 import com.example.erp.DTOs.response.ResponseDetallePedido;
-import com.example.erp.DTOs.response.ResponsePedido;
-import com.example.erp.entities.enums.TipoPedido;
+import com.example.erp.DTOs.response.ResponseMesa;
 import com.example.erp.services.VentaService;
 
 import jakarta.validation.Valid;
 
-@Controller
+@RestController
 @RequestMapping("/venta")
+@CrossOrigin("*")
 public class ControllerVenta {
 
     private final VentaService ventaService;
@@ -31,33 +32,57 @@ public class ControllerVenta {
         this.ventaService = ventaService;
     }
 
-    @GetMapping("/detallePedidosMesa/{idMesa}")
-    public ResponseEntity<List<ResponseDetallePedido>> obtenerDetallesPedidoPorMesa(@PathVariable UUID idMesa) {
-        List<ResponseDetallePedido> responseDetallePedidos = ventaService.obtenerDetallesPedidoPorMesa(idMesa);
+    @GetMapping("/listarMesas")
+    public ResponseEntity<List<ResponseMesa>> obtenerMesas() {
+        List<ResponseMesa> responseMesas = ventaService.obtenerMesas();
 
-        return ResponseEntity.ok().body(responseDetallePedidos);
+        return ResponseEntity.ok().body(responseMesas);
     }
 
-    @GetMapping("/obtenerPedidosPorTipo")
-    public ResponseEntity<List<ResponsePedido>> obtenerPedidosPorTipo(@RequestParam(required = true) TipoPedido tipoPedido) {
-        List<ResponsePedido> responsePedidos = ventaService.obtenerPedidosPorTipo(tipoPedido);
+    @PostMapping("/cobrarPedido")
+    public ResponseEntity<Void> cobrarPedido(@Valid @RequestBody RequestPedido requestPedido) {
 
-        return ResponseEntity.ok().body(responsePedidos);
-    }
-
-    @PostMapping("/realizarPedido")
-    public ResponseEntity<Void> realizarPedido(@Valid @RequestBody RequestPedido requestPedido) {
-
-        ventaService.insertarPedido(requestPedido);
+        ventaService.cobrarPedido(requestPedido);
 
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/agregarDetallePedido/{idPedido}")
-    public ResponseEntity<Void> agregarDetallePedido(@PathVariable UUID idPedido, @Valid @RequestBody RequestDetallePedido requestDetallePedido) {
+    @PostMapping("/validarDetallePedido")
+    public ResponseEntity<Boolean> validarDetallePedido(@Valid @RequestBody RequestDetallePedido requestDetallePedido) {
 
-        ventaService.insertarDetallePedido(requestDetallePedido, idPedido);
+        boolean pedidoValido = ventaService.validarDetallePedido(requestDetallePedido);
 
+        return ResponseEntity.ok().body(pedidoValido);
+    }
+
+    @GetMapping("/detallePedidosPorPedido/{idPedido}")
+    public ResponseEntity<List<ResponseDetallePedido>> obtenerDetallesPedidoPorPedido(@PathVariable UUID idPedido) {
+        List<ResponseDetallePedido> responseDetallePedidos = ventaService.obtenerDetallesPedidoPorPedido(idPedido);
+
+        return ResponseEntity.ok().body(responseDetallePedidos);
+    }
+
+    @PutMapping("/agregarDetallePedidoAlaMesa/{idMesa}")
+    public ResponseEntity<Void> agregarDetallePedidoAlaMesa(@PathVariable UUID idMesa, @Valid @RequestBody RequestDetallePedido requestDetallePedido) {
+
+        ventaService.agregarDetallePedidoAlaMesa(idMesa, requestDetallePedido);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/ocuparMesa/{idMesa}")
+    public ResponseEntity<Void> ocuparMesa(@PathVariable UUID idMesa, @Valid @RequestBody RequestPedido requestPedido) {
+
+        ventaService.ocuparMesa(idMesa, requestPedido);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/cobrarMesa/{idMesa}")
+    public ResponseEntity<Void> cobrarMesa(@PathVariable UUID idMesa){
+
+        ventaService.cobrarMesa(idMesa);
+    
         return ResponseEntity.noContent().build();
     }
 

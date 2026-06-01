@@ -22,7 +22,7 @@ public class CategoriaService {
         this.categoriaRepository = categoriaRepository;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<ResponseCategoria> obtenerCategorias() {
 
         return categoriaRepository.findAll().stream()
@@ -34,14 +34,14 @@ public class CategoriaService {
     public Categoria obtenerCategoria(UUID idCategoria) {
 
         Categoria categoria = categoriaRepository.findById(idCategoria)
-                                                .orElseThrow(() -> new EntidadNoEncontradaException("Categoria no encontrado")); 
+                .orElseThrow(() -> new EntidadNoEncontradaException("Categoria no encontrado"));
 
         return categoria;
 
     }
 
     @Transactional
-    public ResponseCategoria insertarCategoria(RequestCategoria requestCategoria){
+    public ResponseCategoria insertarCategoria(RequestCategoria requestCategoria) {
 
         Categoria categoria = MapperCategoria.toEntity(requestCategoria);
 
@@ -51,5 +51,25 @@ public class CategoriaService {
 
     }
 
+    @Transactional
+    public void eliminarCategoria(UUID idCategoria) {
+
+        Categoria categoria = categoriaRepository.findById(idCategoria)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Categoria no encontrado"));
+
+        categoriaRepository.delete(categoria);
+
+    }
+
+    @Transactional
+    public ResponseCategoria editarCategoria(RequestCategoria requestCategoria, UUID idCategoria) {
+
+        Categoria categoria = categoriaRepository.findById(idCategoria)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Categoria no encontrada"));
+
+        categoria.setNombre(requestCategoria.getNombre());
+
+        return MapperCategoria.toDTO(categoria);
+    }
 
 }

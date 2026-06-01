@@ -1,22 +1,23 @@
-package com.example.erp.entities;
+package com.example.erp.DTOs.request;
 
-
-import com.example.erp.entities.enums.Rol;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Usuario {
+public class RequestAuthUsuario {
 
+    @NotBlank(message = "Nombre de usuario no valido")
     private String nombre;
+
+    @NotBlank(message = "Contraseña no valida")
     private String contrasena;
-    private Rol rol;
 
 }

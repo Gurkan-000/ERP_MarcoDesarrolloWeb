@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'http://localhost:8080/api';
 let productosGlobales = [];
 
 
@@ -12,45 +12,24 @@ const btnGuardarStock = document.getElementById('btn-guardar-stock');
 const btnCancelarActualizacion = document.getElementById('btn-cancelar-actualizacion');
 const toastContainer = document.getElementById('toast-container');
 
-
 const mostrarToast = (mensaje, tipo = 'info') => {
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${tipo}`;
-  toast.style.cssText = `
-    padding: 12px 16px;
-    border-radius: 12px;
-    background: ${tipo === 'error' ? 'var(--red-500)' : tipo === 'success' ? 'var(--green-500)' : 'var(--zinc-800)'};
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    animation: slideIn 0.3s ease;
-  `;
-  toast.textContent = mensaje;
-  toastContainer.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
-  }, 4000);
+    const toast = document.createElement('div');
+
+    toast.className = `toast toast-${tipo}`;
+    toast.textContent = mensaje;
+
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('toast-hide');
+
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
 };
-
-
-if (!document.getElementById('toast-animations')) {
-  const style = document.createElement('style');
-  style.id = 'toast-animations';
-  style.textContent = `
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-  `;
-  document.head.appendChild(style);
-}
 
 const cargarProductos = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/catalogo/listarProductos`);
+    const response = await fetch(`${BASE_URL}/catalogo/listarProductos`);
     
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
@@ -61,11 +40,6 @@ const cargarProductos = async () => {
     
     renderizarStockActual(data);
     renderizarActualizarStock(data);
-    
-    
-    if (window.lucide?.createIcons) {
-      window.lucide.createIcons();
-    }
     
   } catch (error) {
     console.error('Error al cargar productos:', error);
@@ -78,7 +52,6 @@ const renderizarStockActual = (productos) => {
   
   if (productos.length === 0) {
     stockActualEmpty.classList.remove('hidden');
-    if (window.lucide?.createIcons) window.lucide.createIcons();
     return;
   }
   
@@ -86,7 +59,7 @@ const renderizarStockActual = (productos) => {
   
   productos.forEach(producto => {
     const row = document.createElement('tr');
-    const stockClass = producto.stock > 10 ? 'badge-green' : producto.stock > 5 ? 'badge-orange' : 'badge-purple';
+    const stockClass = producto.stock > 10 ? 'badge-green' : producto.stock > 5 ? 'badge-orange' : 'badge-red';
     row.innerHTML = `
       <td><strong>${producto.nombreProducto}</strong></td>
       <td>
@@ -105,7 +78,6 @@ const renderizarActualizarStock = (productos) => {
   if (productos.length === 0) {
     actualizarStockEmpty.classList.remove('hidden');
     actualizarStockActions.classList.add('hidden');
-    if (window.lucide?.createIcons) window.lucide.createIcons();
     return;
   }
   
@@ -135,17 +107,13 @@ const renderizarActualizarStock = (productos) => {
     tbodyActualizarStock.appendChild(row);
   });
   
-
-  if (window.lucide?.createIcons) {
-    window.lucide.createIcons();
-  }
 };
 
 const actualizarStockProducto = async (idProducto, nuevoStock, nombreProducto) => {
   try {
     const requestBody = { stock: nuevoStock };
     
-    const response = await fetch(`${API_BASE_URL}/catalogo/cantidadProducto/${idProducto}`, {
+    const response = await fetch(`${BASE_URL}/catalogo/cantidadProducto/${idProducto}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)
@@ -182,6 +150,7 @@ const guardarCambiosStock = async () => {
         stockAnterior: productoOriginal.stock,
         stockNuevo: nuevoStock
       });
+
     }
   });
   
@@ -190,7 +159,6 @@ const guardarCambiosStock = async () => {
     return;
   }
   
-
   const confirmacion = confirm(`¿Estás seguro de actualizar ${cambios.length} producto(s)?\n\n${
     cambios.map(c => `• ${c.nombreProducto}: ${c.stockAnterior} → ${c.stockNuevo}`).join('\n')
   }`);
@@ -252,16 +220,87 @@ if (btnCancelarActualizacion) {
   btnCancelarActualizacion.addEventListener('click', cancelarActualizacion);
 }
 
+const verificarSesionActiva = async () => {
 
-document.addEventListener('DOMContentLoaded', () => {
-  cargarProductos();
-  
+    try {
 
-  if (window.lucide?.createIcons) {
-    window.lucide.createIcons();
-  }
+        const response = await fetch(`${BASE_URL}/usuario/sesionActiva`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            return null;
+        } else {
+            return data;
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+const cargarSecciones = (sesionActiva) => {
+
+    if (sesionActiva.rol === "Administrador") {
+        return;
+    }
+
+    if (sesionActiva.rol === "Mesero") {
+        document.getElementById("navSeccionCaja").classList.add("hidden");
+        document.getElementById("navSeccionInventario").classList.add("hidden");
+        document.getElementById("navSeccionCatalogo").classList.add("hidden");
+        document.getElementById("navSeccionUsuario").classList.add("hidden");
+        document.getElementById("navSeccionConfiguracion").classList.add("hidden");
+    }
+
+    if (sesionActiva.rol === "Cajero") {
+        document.getElementById("navSeccionInventario").classList.add("hidden");
+        document.getElementById("navSeccionCatalogo").classList.add("hidden");
+        document.getElementById("navSeccionUsuario").classList.add("hidden");
+        document.getElementById("navSeccionConfiguracion").classList.add("hidden");
+    }
+
+}
+
+document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    try {
+
+        const response = await fetch(`http://localhost:8080/api/usuario/cerrarSesion`, {
+            method: 'PUT'
+        });
+
+        if (!response.ok) {
+            console.log("Ocurrio un error");
+        } else {
+            window.location.href = 'login.html';
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
 });
 
+document.addEventListener("DOMContentLoaded", async (e) => {
+
+    e.preventDefault();
+    
+    const sesionActiva = await verificarSesionActiva();
+
+    if (sesionActiva == null) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    document.getElementById("infoUsuario").textContent = sesionActiva.nombre;
+    document.getElementById("infoRol").textContent = sesionActiva.rol;
+    document.getElementById("infoAvatar").textContent = sesionActiva.rol.charAt(0).toUpperCase();
+
+    cargarSecciones(sesionActiva);
+
+    cargarProductos();
+});
 
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('tab') && e.target.dataset.tab === 'inv-stock') {

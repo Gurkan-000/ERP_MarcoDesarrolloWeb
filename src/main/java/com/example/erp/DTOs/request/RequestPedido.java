@@ -1,9 +1,12 @@
 package com.example.erp.DTOs.request;
 
 
+import java.util.List;
+
 import com.example.erp.entities.enums.MetodoPago;
 import com.example.erp.entities.enums.TipoPedido;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,5 +25,9 @@ public class RequestPedido {
 
     @NotNull(message="Tipo de pedido invalido")
     private TipoPedido tipoPedido;
+
+    @NotNull(message="Detalles pedido invalido")
+    @NotEmpty(message="Detalles del pedido vacio")
+    private List<RequestDetallePedido> detalles;
 
 }

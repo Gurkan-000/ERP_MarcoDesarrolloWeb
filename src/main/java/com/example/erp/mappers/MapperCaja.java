@@ -1,6 +1,7 @@
 package com.example.erp.mappers;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.example.erp.DTOs.request.RequestAperturaCaja;
 import com.example.erp.DTOs.response.ResponseAperturaCaja;
@@ -17,6 +18,8 @@ public class MapperCaja {
                 .montoActual(requestCaja.getMontoInicial())
                 .ingresos(new BigDecimal(0))
                 .egresos(new BigDecimal(0))
+                .fechaApertura(LocalDateTime.now())
+                .fechaCierre(null)
                 .build();
 
     }

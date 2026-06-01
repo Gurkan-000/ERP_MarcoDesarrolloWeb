@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ERP - Inventario</title>
-  
+
   <link rel="stylesheet" href="../static/css/styles.css">
 </head>
+
 <body>
   <div class="app-root">
     <section id="erp-app" class="erp-app">
@@ -20,27 +22,27 @@
         </div>
 
         <nav class="sidebar-nav">
-          <a class="nav-item" href="venta.html">
+          <a id="navSeccionVenta" class="nav-item" href="venta.html">
             <i data-lucide="shopping-bag"></i>
             Punto de Venta
           </a>
-          <a class="nav-item" href="caja.html">
+          <a id="navSeccionCaja" class="nav-item" href="caja.html">
             <i data-lucide="wallet"></i>
             Caja
           </a>
-          <a class="nav-item active" href="inventario.html">
+          <a id="navSeccionInventario" class="nav-item active" href="inventario.html">
             <i data-lucide="package"></i>
             Inventario
           </a>
-          <a class="nav-item" href="catalogo/catalogoProducto.html">
+          <a id="navSeccionCatalogo" class="nav-item" href="catalogo/catalogoProducto.html">
             <i data-lucide="layout-dashboard"></i>
             Catalogo
           </a>
-          <a class="nav-item" href="usuario.html">
+          <a id="navSeccionUsuario" class="nav-item" href="usuario.html">
             <i data-lucide="users"></i>
             Usuarios
           </a>
-          <a class="nav-item" href="configuracion.html">
+          <a id="navSeccionConfiguracion" class="nav-item" href="configuracion.html">
             <i data-lucide="settings"></i>
             Configuraciones
           </a>
@@ -48,13 +50,13 @@
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar">A</div>
+            <div id="infoAvatar" class="user-avatar">A</div>
             <div class="user-meta">
-              <p>Usuario</p>
-              <span>Usuario</span>
+              <p id="infoUsuario">Usuario</p>
+              <span id="infoRol">Usuario</span>
             </div>
           </div>
-          <button type="button" class="btn btn-ghost" id="btn-logout">
+          <button type="button" id="btnCerrarSesion" class="btn btn-ghost" id="btn-logout">
             <i data-lucide="log-out"></i>
             Cerrar Sesión
           </button>
@@ -127,11 +129,13 @@
   </div>
 
 
-  <div id="toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;"></div>
+  <div id="toast-container" class="toastFixed"></div>
 
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <script src="../static/js/app.js"></script>
   <script src="../static/js/APIS_Inventario.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
 </body>
+
 </html>

@@ -1,20 +1,22 @@
 package com.example.erp.DTOs.response;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
+import com.example.erp.entities.enums.Rol;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class ResponseCierreCaja {
+public class ResponseUsuario {
 
-    private BigDecimal ultimoMonto;
+    private String nombre;
 
-    private LocalDateTime fechaCierre;
+    private Rol rol;
 
 }

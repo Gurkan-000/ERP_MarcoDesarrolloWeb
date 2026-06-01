@@ -22,27 +22,27 @@
         </div>
 
         <nav class="sidebar-nav">
-          <a class="nav-item active" href="venta.html">
+          <a id="navSeccionVenta" class="nav-item active" href="venta.html">
             <i data-lucide="shopping-bag"></i>
             Punto de Venta
           </a>
-          <a class="nav-item" href="caja.html">
+          <a id="navSeccionCaja" class="nav-item" href="caja.html">
             <i data-lucide="wallet"></i>
             Caja
           </a>
-          <a class="nav-item" href="inventario.html">
+          <a id="navSeccionInventario" class="nav-item" href="inventario.html">
             <i data-lucide="package"></i>
             Inventario
           </a>
-          <a class="nav-item" href="catalogo/catalogoProducto.html">
+          <a id="navSeccionCatalogo" class="nav-item" href="catalogo/catalogoProducto.html">
             <i data-lucide="layout-dashboard"></i>
             Catalogo
           </a>
-          <a class="nav-item" href="usuario.html">
+          <a id="navSeccionUsuario" class="nav-item" href="usuario.html">
             <i data-lucide="users"></i>
             Usuarios
           </a>
-          <a class="nav-item" href="configuracion.html">
+          <a id="navSeccionConfiguracion" class="nav-item" href="configuracion.html">
             <i data-lucide="settings"></i>
             Configuraciones
           </a>
@@ -50,14 +50,14 @@
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar">A</div>
+            <div id="infoAvatar" class="user-avatar">A</div>
             <div class="user-meta">
-              <p>Usuario</p>
-              <span>Usuario</span>
+              <p id="infoUsuario">Usuario</p>
+              <span id="infoRol">Usuario</span>
             </div>
           </div>
           <form>
-            <button type="submit" class="btn btn-ghost">
+            <button type="submit" id="btnCerrarSesion" class="btn btn-ghost">
               <i data-lucide="log-out"></i>
               Cerrar Sesion
             </button>
@@ -76,38 +76,16 @@
             <div class="module-header">
               <div class="tab-row">
                 <button class="tab active" data-tab="pos-salon"><i data-lucide="users"></i>Salon</button>
-                <button class="tab" data-tab="pos-llevar"><i data-lucide="shopping-bag"></i>Para Llevar</button>
-                <button class="tab" data-tab="pos-delivery"><i data-lucide="truck"></i>Delivery</button>
+                <button class="tab" data-tab="pos-llevar" id="btnTabLlevar"><i data-lucide="shopping-bag"></i>Para
+                  Llevar</button>
+                <button class="tab" data-tab="pos-delivery" id="btnTabDelivery"><i
+                    data-lucide="truck"></i>Delivery</button>
               </div>
             </div>
             <div class="tab-content active" id="pos-salon">
               <div class="card">
                 <h3>Mapa de Mesas</h3>
                 <div class="table-grid" id="mesa-grid">
-                  <button class="table-card">
-                    <span class="table-number">1</span>
-                    <span>Libre</span>
-                  </button>
-                  <button class="table-card">
-                    <span class="table-number">2</span>
-                    <span>Libre</span>
-                  </button>
-                  <button class="table-card">
-                    <span class="table-number">3</span>
-                    <span>Libre</span>
-                  </button>
-                  <button class="table-card">
-                    <span class="table-number">4</span>
-                    <span>Libre</span>
-                  </button>
-                  <button class="table-card">
-                    <span class="table-number">5</span>
-                    <span>Libre</span>
-                  </button>
-                  <button class="table-card">
-                    <span class="table-number">6</span>
-                    <span>Libre</span>
-                  </button>
                 </div>
               </div>
               <div id="pos-salon-details" class="split-layout hidden">
@@ -174,103 +152,65 @@
               </div>
             </div>
             <div class="tab-content" id="pos-llevar">
-              <div class="split-layout">
-                <div class="card">
-                  <h3>Registrar venta</h3>
-                  <form class="inline-form">
-                    <input type="hidden" name="canal" />
-                    <div class="form-grid">
-                      <label class="field">
-                        <span>Producto</span>
-                        <select>
-                          <option value="" disabled selected>Seleccione un producto</option>
-                          <!-- productos_options -->
-                        </select>
-                      </label>
-                      <label class="field">
-                        <span>Cantidad</span>
-                        <input type="number" min="1" placeholder="1" />
-                      </label>
-                      <label class="field">
-                        <span>Metodo de pago</span>
-                        <select>
-                          <option value="Efectivo">Efectivo</option>
-                          <option value="Tarjeta">Tarjeta</option>
-                          <option value="Otro">Otro</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div class="form-actions">
-                      <button class="btn btn-primary" type="submit">Registrar pago</button>
-                    </div>
-                  </form>
-                </div>
-                <div class="card">
-                  <h3>Ventas recientes</h3>
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Total</th>
-                        <th>Pago</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <!-- ventana_item_ventas -->
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <div id="divPedidoLlevar" data-tipo-pedido="LLEVAR"></div>
             </div>
             <div class="tab-content" id="pos-delivery">
-              <div class="split-layout">
-                <div class="card">
-                  <h3>Registrar venta</h3>
-                  <form class="inline-form">
-                    <input type="hidden" name="canal" />
-                    <div class="form-grid">
-                      <label class="field">
-                        <span>Producto</span>
-                        <select>
-                          <option value="" disabled selected>Seleccione un producto</option>
-                          <!-- OPCIONES DE PRODUCTO  -->
-                        </select>
-                      </label>
-                      <label class="field">
-                        <span>Cantidad</span>
-                        <input type="number" min="1" placeholder="1" />
-                      </label>
-                      <label class="field">
-                        <span>Metodo de pago</span>
-                        <select>
-                          <option value="Efectivo">Efectivo</option>
-                          <option value="Tarjeta">Tarjeta</option>
-                          <option value="Otro">Otro</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div class="form-actions">
-                      <button class="btn btn-primary" type="submit">Registrar pago</button>
-                    </div>
-                  </form>
-                </div>
-                <div class="card">
-                  <h3>Ventas recientes</h3>
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Total</th>
-                        <th>Pago</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <!-- Aqui va ventana_item -->
-                    </tbody>
-                  </table>
-                </div>
+              <div id="divPedidoDelivery" data-tipo-pedido="DELIVERY"></div>
+            </div>
+            <div id="divPedidoRegistro" class="split-layout hidden">
+              <div class="card">
+                <h3>Registrar Pedido</h3>
+                <form class="inline-form">
+                  <input type="hidden" name="canal" id="txtPedidoCanal" />
+                  <div class="form-grid">
+                    <label class="field">
+                      <span>Producto</span>
+                      <select id="comboProductoPedido">
+                        <option value="" disabled selected>Seleccione un producto</option>
+                        <!-- productos_options -->
+                      </select>
+                    </label>
+                    <label class="field">
+                      <span>Cantidad</span>
+                      <input id="txtCantidadPedido" type="number" min="1" placeholder="1" />
+                    </label>
+                    <label class="field">
+                      <span>Metodo de pago</span>
+                      <select id="comboMetodoPagoPedido">
+                        <option value="EFECTIVO">Efectivo</option>
+                        <option value="TARJETA">Tarjeta</option>
+                        <option value="YAPE">Yape</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="form-actions">
+                    <button class="btn btn-primary hidden" type="button" id="btnRegistrarPagoPedido">Registrar
+                      Pago</button>
+                    <button class="btn btn-muted" type="button" id="btnAgregarPedido">Agregar al Pedido</button>
+                  </div>
+                </form>
+              </div>
+              <div class="card">
+                <h3>Pedidos Agregados</h3>
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Cantidad</th>
+                      <th>Pago</th>
+                      <th>Pago Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbodyPedidosAgregados">
+                    <!-- ventana_item_ventas -->
+                  </tbody>
+                  <tfoot id="tfootTotalPedido" class="hidden">
+                    <tr>
+                      <td colspan="3"><strong>Total</strong></td>
+                      <td><strong id="txtTotalPedido">S/ 0.00</strong></td>
+                    </tr>
+                  </tfoot>
+                </table>
               </div>
             </div>
           </section>
@@ -315,15 +255,29 @@
           </label>
         </div>
         <div class="form-actions">
-          <button class="btn btn-primary" type="submit">Cobrar y liberar</button>
-          <button class="btn btn-muted" type="button" id="cobro-cancel">Cancelar</button>
+          <button id="btnCobrarMesa" class="btn btn-primary" type="submit">Cobrar y liberar</button>
+          <button id="btnCancelar" class="btn btn-muted" type="button" id="cobro-cancel">Cancelar</button>
         </div>
       </form>
     </div>
   </div>
 
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <div id="caja-cerrada-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-icon" aria-hidden="true"><i data-lucide="lock"></i></div>
+      <h3>Caja cerrada</h3>
+      <p class="muted">No puedes ingresar al punto de venta hasta aperturar la caja.</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" type="button" id="caja-cerrada-ir">Ir a Caja</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toastFixed"></div>
+
   <script src="../static/js/app.js"></script>
+  <script src="../static/js/APIs_PuntoVenta.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
 </body>
 

@@ -4,13 +4,14 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.erp.DTOs.request.RequestAperturaCaja;
 import com.example.erp.DTOs.request.RequestMovimientoCaja;
@@ -21,9 +22,9 @@ import com.example.erp.services.CajaService;
 
 import jakarta.validation.Valid;
 
-
-@Controller
+@RestController
 @RequestMapping("/caja")
+@CrossOrigin("*")
 public class ControllerCaja {
 
     private final CajaService cajaService;
@@ -47,6 +48,21 @@ public class ControllerCaja {
 
         return ResponseEntity.ok(responseMovimientoCaja);
     }
+
+    @GetMapping("/obtenerCajaAbierta")
+    public ResponseEntity<ResponseAperturaCaja> obtenerCajaAbierta() {
+        ResponseAperturaCaja responseMovimientoCaja = cajaService.obtenerCajaAbierta();
+
+        return ResponseEntity.ok(responseMovimientoCaja);
+    }
+    
+    @GetMapping("/obtenerUltimaCajaCerrada")
+    public ResponseEntity<ResponseCierreCaja> obtenerUltimaCajaCerrada() {
+        ResponseCierreCaja responseCierreCaja = cajaService.obtenerUltimaCajaCerrada();
+
+        return ResponseEntity.ok(responseCierreCaja);
+    }
+    
 
     @PostMapping("/registrarMovimiento/{idCaja}")
     public ResponseEntity<ResponseMovimientoCaja> registrarMovimiento(@PathVariable UUID idCaja, @Valid @RequestBody RequestMovimientoCaja requestMovimiento) {

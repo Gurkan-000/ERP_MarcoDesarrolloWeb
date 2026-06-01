@@ -1,13 +1,11 @@
 package com.example.erp.entities;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
 import com.example.erp.entities.enums.EstadoMesa;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,9 +23,9 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Builder
 
+@Entity
 @Table(
     name="Mesas"
 )
@@ -46,10 +44,9 @@ public class Mesa {
     @JoinColumn(name="idPedido")
     private Pedido pedido;
 
-    @Column(
-        precision=6,
-        scale=1
-    )
-    private BigDecimal total;
+    public void asignarPedidoAlaMesa(Pedido pedido){
+        pedido.setMesa(this);
+        this.pedido = pedido;
+    }
 
 }
