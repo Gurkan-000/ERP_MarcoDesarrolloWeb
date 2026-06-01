@@ -22,7 +22,7 @@ public class MapperProducto {
 
         return Producto.builder()
                 .nombre(requestProducto.getNombre())
-                .stock(requestProducto.getStock())
+                .stock(0)
                 .precio(requestProducto.getPrecio())
                 .build();
 

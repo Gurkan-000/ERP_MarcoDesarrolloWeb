@@ -21,27 +21,27 @@
         </div>
 
         <nav class="sidebar-nav">
-          <a class="nav-item" href="venta.html">
+          <a id="navSeccionVenta" class="nav-item" href="venta.html">
             <i data-lucide="shopping-bag"></i>
             Punto de Venta
           </a>
-          <a class="nav-item" href="caja.html">
+          <a id="navSeccionCaja" class="nav-item" href="caja.html">
             <i data-lucide="wallet"></i>
             Caja
           </a>
-          <a class="nav-item" href="inventario.html">
+          <a id="navSeccionInventario" class="nav-item" href="inventario.html">
             <i data-lucide="package"></i>
             Inventario
           </a>
-          <a class="nav-item" href="catalogo/catalogoProducto.html">
+          <a id="navSeccionCatalogo" class="nav-item" href="catalogo/catalogoProducto.html">
             <i data-lucide="layout-dashboard"></i>
             Catalogo
           </a>
-          <a class="nav-item active" href="usuario.html">
+          <a id="navSeccionUsuario" class="nav-item active" href="usuario.html">
             <i data-lucide="users"></i>
             Usuarios
           </a>
-          <a class="nav-item" href="configuracion.html">
+          <a id="navSeccionConfiguracion" class="nav-item" href="configuracion.html">
             <i data-lucide="settings"></i>
             Configuraciones
           </a>
@@ -49,14 +49,14 @@
 
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="user-avatar">A</div>
+            <div id="infoAvatar" class="user-avatar">A</div>
             <div class="user-meta">
-              <p>Usuario</p>
-              <span>Usuario</span>
+              <p id="infoUsuario">Usuario</p>
+              <span id="infoRol">Usuario</span>
             </div>
           </div>
           <form>
-            <button type="submit" class="btn btn-ghost">
+            <button type="submit" id="btnCerrarSesion" class="btn btn-ghost">
               <i data-lucide="log-out"></i>
               Cerrar Sesión
             </button>
@@ -72,31 +72,31 @@
 
         <main class="content-area">
           <section id="module-usuarios" class="module active">
-            <div class="card">
+            <div id="formUsuario" class="card">
               <h3>Nuevo usuario</h3>
-              <p class="muted hidden" >Usuario creado correctamente.</p>
-              <p class="muted hidden" >No se pudo crear el usuario.</p>
+              <p class="muted hidden">Usuario creado correctamente.</p>
+              <p class="muted hidden">No se pudo crear el usuario.</p>
               <form class="inline-form">
                 <div class="form-grid">
                   <label class="field">
                     <span>Usuario</span>
-                    <input type="text" placeholder="Usuario" required />
+                    <input id="txtUsuario" type="text" placeholder="Usuario" required />
                   </label>
                   <label class="field">
-                    <span>Contrasena</span>
-                    <input type="password" placeholder="********" required />
+                    <span>Contraseña</span>
+                    <input id="txtContrasena" type="password" placeholder="********" required />
                   </label>
                   <label class="field">
                     <span>Rol</span>
-                    <select required>
+                    <select id="comboRol" required>
                       <option value="" disabled selected>Seleccione un rol</option>
-                      <option >Mesero</option>
-                      <option >Cajero</option>
+                      <option value="Mesero">Mesero</option>
+                      <option value="Cajero">Cajero</option>
                     </select>
                   </label>
                 </div>
                 <div class="form-actions">
-                  <button class="btn btn-primary" type="submit">Guardar</button>
+                  <button id="btnGuardarUsuario" class="btn btn-primary" type="button">Guardar</button>
                 </div>
               </form>
             </div>
@@ -110,13 +110,7 @@
                     <th>Rol</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td >admin</td>
-                    <td>
-                      <span class="badge">Rol</span>
-                    </td>
-                  </tr>
+                <tbody id="tbodyUsuario">
                 </tbody>
               </table>
             </div>
@@ -126,8 +120,12 @@
     </section>
   </div>
 
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <div id="toast-container" class="toastFixed"></div>
+
+
   <script src="../static/js/app.js"></script>
+  <script src="../static/js/APIs_Usuario.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
 </body>
 

@@ -59,6 +59,45 @@ const initLucideIcons = (attempt = 0) => {
   }
 };
 
+let lucideObserver = null;
+const scheduleLucideRefresh = (() => {
+  let scheduled = false;
+  return () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    });
+  };
+})();
+
+const initLucideObserver = () => {
+  if (!('MutationObserver' in window)) return;
+  if (lucideObserver || !document.body) return;
+
+  lucideObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type !== 'childList') continue;
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType !== 1) continue;
+        if (node.matches && node.matches('[data-lucide], .lucide')) {
+          scheduleLucideRefresh();
+          return;
+        }
+        if (node.querySelector && node.querySelector('[data-lucide], .lucide')) {
+          scheduleLucideRefresh();
+          return;
+        }
+      }
+    }
+  });
+
+  lucideObserver.observe(document.body, { childList: true, subtree: true });
+};
+
 const updateCatalogActions = (activeTabId) => {
   if (!catalogActions.length) return;
   catalogActions.forEach((button) => {
@@ -230,6 +269,13 @@ const handleMesaClick = (event) => {
   }
 };
 
+// document.getElementById("btnUsuario").addEventListener("click",(e) => {
+
+//   document.getElementById("formUsuario").classList.remove("hidden");
+//   document.getElementById("btnUsuario").classList.add("hidden");
+
+// });
+
 const initMesas = () => {
   if (!mesaGrid) return;
   const mesaSeleccionada = mesaGrid.dataset.mesaSeleccionada;
@@ -298,6 +344,7 @@ const init = () => {
 
   initMesas();
 
+  initLucideObserver();
   initLucideIcons();
 };
 

@@ -21,17 +21,17 @@
           <p>Ingresa tus credenciales</p>
         </div>
 
-        <form class="login-form">
+        <form class="login-form" id="formLogin">
           <div class="input-group">
             <span class="input-icon" aria-hidden="true"><i data-lucide="user"></i></span>
-            <input type="text" placeholder="Usuario" required/>
+            <input type="text" id="txtUsuario" placeholder="Usuario" required/>
           </div>
           <div class="input-group">
             <span class="input-icon" aria-hidden="true"><i data-lucide="key-round"></i></span>
-            <input type="password" placeholder="Contraseña" required/>
+            <input type="password" id="txtContraseña" placeholder="Contraseña" required/>
           </div>
           <p id="login-error" class="form-error" aria-live="polite"></p>
-          <button class="btn btn-primary" type="submit" id="btnLogin">
+          <button type="submit" id="btnIngresar" class="btn btn-primary" type="button">
             <span class="btn-spinner" aria-hidden="true"></span>
             Ingresar
           </button>
@@ -40,8 +40,10 @@
     </section>
     </div>
 
+    <div id="toast-container" class="toastFixed"></div>
+
+    <script src="../static/js/APIs_Login.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="../static/js/login.js"></script>
 
 </body>
 </html>

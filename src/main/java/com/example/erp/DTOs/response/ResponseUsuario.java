@@ -1,22 +1,22 @@
-package com.example.erp.entities;
+package com.example.erp.DTOs.response;
 
 
 import com.example.erp.entities.enums.Rol;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Builder
-public class Usuario {
+public class ResponseUsuario {
 
     private String nombre;
-    private String contrasena;
+
     private Rol rol;
 
 }

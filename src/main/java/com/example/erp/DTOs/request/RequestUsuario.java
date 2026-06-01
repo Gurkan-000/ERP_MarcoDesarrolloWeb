@@ -1,10 +1,9 @@
 package com.example.erp.DTOs.request;
 
-import java.math.BigDecimal;
+import com.example.erp.entities.enums.Rol;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,13 +14,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RequestProducto {
+public class RequestUsuario {
 
-    @NotBlank(message="Campo nombre esta vacio")
+    @NotBlank(message = "Nombre de usuario no valido")
     private String nombre;
 
-    @NotNull(message="Precio invalido")
-    @Positive(message="Ingrese un precio numero mayor a cero")
-    private BigDecimal precio;
+    @NotBlank(message = "Contraseña no valida")
+    private String contrasena;
+
+    @NotNull(message = "Rol no valido")
+    private Rol rol;
 
 }

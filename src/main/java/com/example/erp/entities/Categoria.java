@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,15 +15,14 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 @Entity
 @Table(
         name = "Categorias"
@@ -40,7 +40,8 @@ public class Categoria {
 
     @OneToMany(
             mappedBy = "categoria",
-            fetch=FetchType.LAZY
+            fetch=FetchType.LAZY,
+            cascade=CascadeType.REMOVE
     )
     private final List<Producto> productos = new ArrayList<>();
 

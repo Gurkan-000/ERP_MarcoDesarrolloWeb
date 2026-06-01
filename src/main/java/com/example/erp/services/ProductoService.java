@@ -13,23 +13,21 @@ import com.example.erp.entities.Categoria;
 import com.example.erp.entities.Producto;
 import com.example.erp.exceptions.EntidadNoEncontradaException;
 import com.example.erp.mappers.MapperProducto;
+import com.example.erp.repositories.CategoriaRepository;
 import com.example.erp.repositories.ProductoRepository;
-
-
 
 @Service
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    private final CategoriaService categoriaService;
-
-    public ProductoService(ProductoRepository productoRepository, CategoriaService categoriaService) {
+    public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository) {
         this.productoRepository = productoRepository;
-        this.categoriaService = categoriaService;
+        this.categoriaRepository = categoriaRepository;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<ResponseProducto> obtenerProductos() {
 
         return productoRepository.findAll().stream()
@@ -38,19 +36,11 @@ public class ProductoService {
 
     }
 
-    public Producto obtenerProducto(UUID idProducto) {
-
-        Producto producto = productoRepository.findById(idProducto)
-                                                .orElseThrow(() -> new EntidadNoEncontradaException("Producto no encontrado")); 
-
-        return producto;
-
-    }
-
     @Transactional
-    public ResponseProducto insertarProducto(RequestProducto requestProducto, UUID idCategoria){
+    public ResponseProducto insertarProducto(RequestProducto requestProducto, UUID idCategoria) {
 
-        Categoria categoria = categoriaService.obtenerCategoria(idCategoria);
+        Categoria categoria = categoriaRepository.findById(idCategoria)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Categoria no encontrado"));
 
         Producto producto = MapperProducto.toEntity(requestProducto);
 
@@ -63,9 +53,10 @@ public class ProductoService {
     }
 
     @Transactional
-    public ResponseProducto actualizarProducto(RequestActualizarStockProducto requestStockProducto, UUID idProducto){
+    public ResponseProducto actualizarProducto(RequestActualizarStockProducto requestStockProducto, UUID idProducto) {
 
-        Producto producto = obtenerProducto(idProducto);
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Producto no encontrado"));
 
         producto.setStock(requestStockProducto.getStock());
 
@@ -73,5 +64,31 @@ public class ProductoService {
 
     }
 
+    @Transactional
+    public void eliminarProducto(UUID idProducto) {
+
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Producto no encontrado"));
+
+        productoRepository.delete(producto);
+
+    }
+
+    @Transactional
+    public ResponseProducto editarProducto(RequestProducto requestProducto, UUID idProducto, UUID idCategoria) {
+
+        Categoria categoria = categoriaRepository.findById(idCategoria)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Categoria no encontrado"));
+
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Producto no encontrado"));
+
+        producto.setNombre(requestProducto.getNombre());
+        producto.setPrecio(requestProducto.getPrecio());
+
+        producto.setCategoria(categoria);
+
+        return MapperProducto.toDTO(producto);
+    }
 
 }
