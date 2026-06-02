@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ERP - Dashboard</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+
+<body>
+    <div class="app-root">
+        <section id="erp-app" class="erp-app">
+
+            <aside class="sidebar">
+                <div class="sidebar-brand">
+                    <div class="brand-icon" aria-hidden="true">
+                        <i data-lucide="shopping-bag"></i>
+                    </div>
+                    <div>
+                        <h2>Lo Esencial</h2>
+                        <p>ERP Broasteria</p>
+                    </div>
+                </div>
+                <nav class="sidebar-nav">
+                    <a class="nav-item" href="venta.html">
+                        <i data-lucide="shopping-bag"></i>
+                        Punto de Venta
+                    </a>
+                    <a class="nav-item" href="caja.html">
+                        <i data-lucide="wallet"></i>
+                        Caja
+                    </a>
+                    <a class="nav-item" href="inventario.html">
+                        <i data-lucide="package"></i>
+                        Inventario
+                    </a>
+                    <a class="nav-item" href="catalogo/catalogoProducto.html">
+                        <i data-lucide="layout-dashboard"></i>
+                        Catalogo
+                    </a>
+                    <a class="nav-item" href="usuario.html">
+                        <i data-lucide="users"></i>
+                        Usuarios
+                    </a>
+                    <a class="nav-item active" href="dashboard.html">
+                        <i data-lucide="settings"></i>
+                        Dashboard
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="user-chip">
+                        <div class="user-avatar">A</div>
+                        <div class="user-meta">
+                            <p>Administrador</p>
+                            <span>Admin</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost" onclick="window.location.href='login.html'">
+                        <i data-lucide="log-out"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </aside>
+
+
+            <div class="main-content">
+                <header class="topbar">
+                    <h2>Dashboard</h2>
+                    <p id="today-date"></p>
+                </header>
+                <main class="content-area">
+
+                    <!-- TARJETAS SUPERIORES -->
+                    <div class="table-grid">
+                        <div class="card">
+                            <div class="stat-card">
+                                <div>
+                                    <p class="muted">Ventas Hoy</p>
+                                    <h4 class="text-success">S/ 0.00</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="stat-card">
+                                <div>
+                                    <p class="muted">Pedidos</p>
+                                    <h4>0</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="stat-card">
+                                <div>
+                                    <p class="muted">Mesas Ocupadas</p>
+                                    <h4 class="text-warning">0/6</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="stat-card">
+                                <div>
+                                    <p class="muted">Productos</p>
+                                    <h4>0</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- CONTENEDOR DE GRÁFICAS -->
+                    <div class="split-layout" style="margin-top: 20px;">
+                        <div class="card">
+                            <h3>Ingresos vs Egresos</h3>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="graficoCaja"></canvas>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Pedidos por Tipo</h3>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="graficoPedidos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- ACCIONES RÁPIDAS -->
+                    <div class="card" style="margin-top: 20px;">
+                        <h3>Acciones Rápidas</h3>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="window.location.href='venta.html'">
+                                <i data-lucide="shopping-bag"></i>
+                                Nueva Venta
+                            </button>
+                            <button class="btn btn-muted" onclick="window.location.href='caja.html'">
+                                <i data-lucide="wallet"></i>
+                                Abrir Caja
+                            </button>
+                            <button class="btn btn-muted" onclick="window.location.href='inventario.html'">
+                                <i data-lucide="package"></i>
+                                Ver Inventario
+                            </button>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../static/js/app.js"></script>
+    <script src="../static/js/APIs_Dashboard.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+
+</html>
