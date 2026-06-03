@@ -1,6 +1,7 @@
 package com.example.erp.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -240,14 +241,27 @@ public class VentaService {
 
         producto.setStock(producto.getStock() - requestDetallePedido.getCantidad());
 
-        DetallePedido detallePedido = new DetallePedido();
+        Optional<DetallePedido> detalleExistente = pedido.getDetalles().stream()
+                .filter(d -> d.getProducto().equals(producto))
+                .findFirst();
 
-        detallePedido.setCantidad(requestDetallePedido.getCantidad());
-        detallePedido.setProducto(producto);
-        detallePedido.setPrecioUnitario(producto.getPrecio());
-        detallePedido.calcularTotal();
+        if(detalleExistente.isPresent()){
+            detalleExistente.get().setCantidad(detalleExistente.get().getCantidad() + requestDetallePedido.getCantidad());
+            detalleExistente.get().calcularTotal();
+        }else{
+            DetallePedido detallePedido = new DetallePedido();
+    
+            detallePedido.setCantidad(requestDetallePedido.getCantidad());
+            detallePedido.setProducto(producto);
+            detallePedido.setPrecioUnitario(producto.getPrecio());
+            detallePedido.calcularTotal();
+    
+            detallePedidoRepository.save(detallePedido);
 
-        detallePedidoRepository.save(detallePedido);
+            pedido.addDetallePedido(detallePedido);
+        }
+
+        pedido.calcularTotal();
 
     }
 
