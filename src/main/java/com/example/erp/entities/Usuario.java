@@ -5,7 +5,6 @@ import com.example.erp.entities.enums.Rol;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

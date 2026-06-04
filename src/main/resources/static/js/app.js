@@ -7,7 +7,7 @@ const confirmReset = document.getElementById('confirm-reset');
 const resetForm = document.getElementById('reset-form');
 
 const mesaGrid = document.getElementById('mesa-grid');
-const mesaDetails = document.getElementById('pos-salon-details');
+const mesaDetails = document.getElementById('divMesaPedidos');
 const mesaSelected = document.getElementById('mesa-selected');
 const mesaEstado = document.getElementById('mesa-estado');
 const mesaInput = document.getElementById('mesa-input');

@@ -17,6 +17,7 @@ import com.example.erp.DTOs.request.RequestDetallePedido;
 import com.example.erp.DTOs.request.RequestPedido;
 import com.example.erp.DTOs.response.ResponseDetallePedido;
 import com.example.erp.DTOs.response.ResponseMesa;
+import com.example.erp.DTOs.response.ResponsePedido;
 import com.example.erp.services.VentaService;
 
 import jakarta.validation.Valid;
@@ -30,6 +31,13 @@ public class ControllerVenta {
 
     public ControllerVenta(VentaService ventaService) {
         this.ventaService = ventaService;
+    }
+
+    @GetMapping("/listarPedidos")
+    public ResponseEntity<List<ResponsePedido>> obtenerPedidos() {
+        List<ResponsePedido> responsePedido = ventaService.obtenerPedidos();
+
+        return ResponseEntity.ok().body(responsePedido);
     }
 
     @GetMapping("/listarMesas")

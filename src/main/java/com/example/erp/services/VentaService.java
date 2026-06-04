@@ -45,7 +45,8 @@ public class VentaService {
     private final CajaRepository cajaRepository;
 
     public VentaService(MesaRepository mesaRepository, PedidoRepository pedidoRepository,
-            DetallePedidoRepository detallePedidoRepository, ProductoRepository productoRepository, CajaService cajaService, CajaRepository cajaRepository) {
+                        DetallePedidoRepository detallePedidoRepository, ProductoRepository productoRepository, CajaService cajaService, CajaRepository cajaRepository) {
+                
         this.mesaRepository = mesaRepository;
         this.pedidoRepository = pedidoRepository;
         this.detallePedidoRepository = detallePedidoRepository;
@@ -57,6 +58,12 @@ public class VentaService {
             mesaRepository.save(Mesa.builder().estado(EstadoMesa.LIBRE).numero(i).build());
         }
 
+    }
+
+    public List<ResponsePedido> obtenerPedidos() {
+        return pedidoRepository.findAll().stream()
+                .map(MapperPedido::toDTO)
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -245,17 +252,17 @@ public class VentaService {
                 .filter(d -> d.getProducto().equals(producto))
                 .findFirst();
 
-        if(detalleExistente.isPresent()){
+        if (detalleExistente.isPresent()) {
             detalleExistente.get().setCantidad(detalleExistente.get().getCantidad() + requestDetallePedido.getCantidad());
             detalleExistente.get().calcularTotal();
-        }else{
+        } else {
             DetallePedido detallePedido = new DetallePedido();
-    
+
             detallePedido.setCantidad(requestDetallePedido.getCantidad());
             detallePedido.setProducto(producto);
             detallePedido.setPrecioUnitario(producto.getPrecio());
             detallePedido.calcularTotal();
-    
+
             detallePedidoRepository.save(detallePedido);
 
             pedido.addDetallePedido(detallePedido);

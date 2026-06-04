@@ -75,7 +75,8 @@
           <section class="module active">
             <div class="module-header">
               <div class="tab-row">
-                <button class="tab active" data-tab="pos-salon"><i data-lucide="users"></i>Salon</button>
+                <button class="tab active" data-tab="pos-salon" id="btnTabLocal"><i
+                    data-lucide="users"></i>Salon</button>
                 <button class="tab" data-tab="pos-llevar" id="btnTabLlevar"><i data-lucide="shopping-bag"></i>Para
                   Llevar</button>
                 <button class="tab" data-tab="pos-delivery" id="btnTabDelivery"><i
@@ -88,7 +89,7 @@
                 <div class="table-grid" id="mesa-grid">
                 </div>
               </div>
-              <div id="pos-salon-details" class="split-layout hidden">
+              <div id="divMesaPedidos" class="split-layout hidden">
                 <div class="card">
                   <div class="mesa-header">
                     <div class="mesa-meta">
@@ -102,52 +103,41 @@
                     <div class="form-grid">
                       <label class="field">
                         <span>Producto</span>
-                        <select>
+                        <select id="comboProductoMesa">
                           <option value="" disabled selected>Seleccione un producto</option>
-                          <!-- productos_option -->
                         </select>
                       </label>
                       <label class="field">
                         <span>Cantidad</span>
-                        <input type="number" min="1" placeholder="1" />
-                      </label>
+                        <input id="txtCantidadMesa" type="number" min="1" placeholder="1" /> </label>
                     </div>
                     <div class="form-actions">
-                      <button class="btn btn-primary" type="submit">Agregar pedido</button>
+                      <button class="btn btn-primary"  id="btnAgregarPedidoMesa" type="submit">Agregar pedido</button>
+                      <button class="btn btn-primary hidden" id="btnOcupar" type="submit">Marcar mesa ocupada</button>
                     </div>
                   </form>
-                  <div class="form-actions form-actions-end hidden" id="mesa-ocupar-wrapper">
-                    <form>
-                      <input type="hidden" id="mesa-ocupar-input" />
-                      <button class="btn btn-muted" type="submit">Marcar mesa ocupada</button>
-                    </form>
-                  </div>
                 </div>
                 <div class="card">
-                  <div class="mesa-header">
-                    <div class="mesa-meta">
-                      <h3>Ventas recientes</h3>
-                      <p class="muted">Pedidos pendientes para esta mesa.</p>
-                    </div>
-                    <span class="pill info" id="mesa-total">S/ 0.00</span>
-                  </div>
-                  <div id="mesa-pedidos-panel">
-                    <div class="empty-state" id="mesa-sin-pedidos">
-                      <i data-lucide="clipboard-list"></i>
-                      <p>Selecciona una mesa para ver sus pedidos.</p>
-                    </div>
-                    <div class="mesa-pedidos-list hidden">
-                      <div class="list">
-                        <div class="list-item">
-                          <div>
-                            <p class="title">Producto</p>
-                            <span class="badge">x1</span>
-                          </div>
-                          <strong>S/ 0.00</strong>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <h3>Pedidos Agregados</h3>
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Pago</th>
+                        <th>Pago Total</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbodyPedidosMesaAgregados">
+                      <!-- ventana_item_ventas -->
+                    </tbody>
+                    <tfoot id="tfootTotalPedidoMesa" class="hidden">
+                      <tr>
+                        <td colspan="3"><strong>Total</strong></td>
+                        <td><strong id="txtTotalPedidoMesa">S/ 0.00</strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
               </div>
             </div>
@@ -186,7 +176,7 @@
                   <div class="form-actions">
                     <button class="btn btn-primary hidden" type="button" id="btnRegistrarPagoPedido">Registrar
                       Pago</button>
-                    <button class="btn btn-muted" type="button" id="btnAgregarPedido">Agregar al Pedido</button>
+                    <button class="btn btn-primary" type="button" id="btnAgregarPedido">Agregar al Pedido</button>
                   </div>
                 </form>
               </div>

@@ -1,12 +1,13 @@
 
 const BASE_URL = "http://localhost:8080/api";
 
-const detallesPedidoLlevar = [];
-const detallesPedidoDelivery = [];
-const detllesPedidoLocal = [];
+const detallesPedidoLlevar = new Map();
+const detallesPedidoDelivery = new Map();
+const detallesPedidoLocal = new Map();
 const productosMap = new Map();
 
 let tipoPedidoActivo = "LLEVAR";
+let MesaActiva = null;
 
 const toastContainer = document.getElementById('toast-container');
 const mostrarToast = (mensaje, tipo = 'info') => {
@@ -74,7 +75,9 @@ const cargarMesas = async () => {
                 <span>${estadoMesa}</span>
                 `;
 
+                detallesPedidoLocal.set(mesa.idMesa, new Map());
                 mesaGridVenta.appendChild(botonMesa);
+
             });
         }
     } catch (error) {
@@ -92,9 +95,11 @@ const cargarProductos = async () => {
             const data = await response.json();
 
             const comboProductoPedido = document.getElementById("comboProductoPedido");
-            comboProductoPedido.innerHTML = `
-            <option value="" disabled selected>Seleccione un producto</option>
-			`;
+            const comboProductoMesa = document.getElementById("comboProductoMesa"); // Capturamos el nuevo select
+
+            const optionDefault = `<option value="" disabled selected>Seleccione un producto</option>`;
+            comboProductoPedido.innerHTML = optionDefault;
+            if (comboProductoMesa) comboProductoMesa.innerHTML = optionDefault;
 
             data.forEach((producto) => {
                 const option = document.createElement("option");
@@ -102,7 +107,9 @@ const cargarProductos = async () => {
                 option.textContent = producto.nombreProducto;
 
                 productosMap.set(producto.idProducto, producto);
-                comboProductoPedido.appendChild(option);
+
+                comboProductoPedido.appendChild(option.cloneNode(true));
+                if (comboProductoMesa) comboProductoMesa.appendChild(option);
             });
         }
     } catch (error) {
@@ -167,18 +174,18 @@ const renderDetallesPedido = () => {
 
     const tbodyPedidosAgregados = document.getElementById("tbodyPedidosAgregados");
     const txtTotalPedido = document.getElementById("txtTotalPedido");
+    const tfootTotalPedido = document.getElementById("tfootTotalPedido");
 
     tbodyPedidosAgregados.innerHTML = "";
-
     let total = 0;
 
     detalles.forEach((detalle) => {
         const fila = document.createElement("tr");
         fila.innerHTML = `
-        <td>${detalle.nombreProducto}</td>
-        <td>${detalle.cantidad}</td>
-        <td>${formatoMoneda(detalle.precioUnitario)}</td>
-        <td>${formatoMoneda(detalle.total)}</td>
+            <td>${detalle.nombreProducto}</td>
+            <td>${detalle.cantidad}</td>
+            <td>${formatoMoneda(detalle.precioUnitario)}</td>
+            <td>${formatoMoneda(detalle.total)}</td>
         `;
 
         total += detalle.total;
@@ -187,17 +194,51 @@ const renderDetallesPedido = () => {
 
     txtTotalPedido.textContent = formatoMoneda(total);
 
-    const tieneDetalles = detalles.length > 0;
-    const tfootTotalPedido = document.getElementById("tfootTotalPedido");
-
-    if (detalles.length > 0) {
+    if (detalles.size > 0) {
         tfootTotalPedido.classList.remove("hidden");
         btnRegistrarPagoPedido.classList.remove("hidden");
     } else {
         tfootTotalPedido.classList.add("hidden");
         btnRegistrarPagoPedido.classList.add("hidden");
     }
+};
 
+
+const renderDetallesMesa = () => {
+    const tbodyPedidosMesaAgregados = document.getElementById("tbodyPedidosMesaAgregados");
+    const txtTotalPedidoMesa = document.getElementById("txtTotalPedidoMesa");
+    const tfootTotalPedidoMesa = document.getElementById("tfootTotalPedidoMesa");
+
+    tbodyPedidosMesaAgregados.innerHTML = "";
+
+    if (!MesaActiva) {
+        txtTotalPedidoMesa.textContent = formatoMoneda(0);
+        tfootTotalPedidoMesa.classList.add("hidden");
+        return;
+    }
+
+    const mapDetallesMesa = detallesPedidoLocal.get(MesaActiva.idMesa) || new Map();
+    let total = 0;
+
+    mapDetallesMesa.forEach((detalle) => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+            <td>${detalle.nombreProducto}</td>
+            <td>${detalle.cantidad}</td>
+            <td>${formatoMoneda(detalle.precioUnitario)}</td>
+            <td>${formatoMoneda(detalle.total)}</td>
+        `;
+        total += detalle.total;
+        tbodyPedidosMesaAgregados.appendChild(fila);
+    });
+
+    txtTotalPedidoMesa.textContent = formatoMoneda(total);
+
+    if (mapDetallesMesa.size > 0) {
+        tfootTotalPedidoMesa.classList.remove("hidden");
+    } else {
+        tfootTotalPedidoMesa.classList.add("hidden");
+    }
 };
 
 
@@ -232,8 +273,15 @@ btnAgregarPedido.addEventListener("click", async (e) => {
         total
     };
 
-    const detallesPorTipo = tipoPedidoActivo === "DELIVERY" ? detallesPedidoDelivery : detallesPedidoLlevar;
-    detallesPorTipo.push(detalle);
+    const mapActivo = tipoPedidoActivo === "DELIVERY" ? detallesPedidoDelivery : detallesPedidoLlevar;
+
+    if (mapActivo.has(detalle.idProducto)) {
+        const productoExistente = mapActivo.get(detalle.idProducto);
+        productoExistente.cantidad += detalle.cantidad;
+        productoExistente.total = productoExistente.cantidad * productoExistente.precioUnitario;
+    } else {
+        mapActivo.set(detalle.idProducto, detalle);
+    }
 
     txtCantidadPedido.value = "";
     comboProductoPedido.selectedIndex = 0;
@@ -246,31 +294,37 @@ btnRegistrarPagoPedido.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const comboMetodoPagoPedido = document.getElementById("comboMetodoPagoPedido");
-    const detalles = tipoPedidoActivo === "DELIVERY" ? detallesPedidoDelivery : detallesPedidoLlevar;
+    const mapActivo = tipoPedidoActivo === "DELIVERY" ? detallesPedidoDelivery : detallesPedidoLlevar;
 
     const requestPedido = {
         metodoPago: comboMetodoPagoPedido.value,
         tipoPedido: tipoPedidoActivo,
-        detalles: detalles.map((detalle) => ({
+        detalles: Array.from(mapActivo.values()).map((detalle) => ({
             idProducto: detalle.idProducto,
             cantidad: detalle.cantidad
         }))
     };
 
     const pagoCorrecto = await cobrarPedido(requestPedido);
-    detalles.length = 0;
-    renderDetallesPedido(tipoPedidoActivo);
+    if (pagoCorrecto) {
+        mapActivo.clear();
+        renderDetallesPedido();
+    }
 });
 
 
 const divPedidoRegistro = document.getElementById("divPedidoRegistro");
+const divMesaPedidos = document.getElementById("divMesaPedidos");
+
 const btnTabLlevar = document.getElementById("btnTabLlevar");
 const btnTabDelivery = document.getElementById("btnTabDelivery");
+const btnTabLocal = document.getElementById("btnTabLocal");
 
 const divPedidoLlevar = document.getElementById("divPedidoLlevar");
 btnTabLlevar.addEventListener("click", () => {
     divPedidoLlevar.appendChild(divPedidoRegistro);
     divPedidoRegistro.classList.remove("hidden");
+    divMesaPedidos.classList.add("hidden");
     tipoPedidoActivo = "LLEVAR";
     renderDetallesPedido();
 });
@@ -279,9 +333,107 @@ const divPedidoDelivery = document.getElementById("divPedidoDelivery");
 btnTabDelivery.addEventListener("click", () => {
     divPedidoDelivery.appendChild(divPedidoRegistro);
     divPedidoRegistro.classList.remove("hidden");
+    divMesaPedidos.classList.add("hidden");
     tipoPedidoActivo = "DELIVERY";
     renderDetallesPedido();
 });
+
+btnTabLocal.addEventListener("click", () => {
+    tipoPedidoActivo = "LOCAL";
+    divPedidoRegistro.classList.add("hidden");
+    divMesaPedidos.classList.remove("hidden");
+    renderDetallesMesa();
+});
+
+const btnOcupar = document.getElementById("btnOcupar");
+btnOcupar.addEventListener("click",(e)=>{
+
+    e.preventDefault();
+
+    
+
+});
+
+const btnAgregarPedidoMesa = document.getElementById("btnAgregarPedidoMesa");
+btnAgregarPedidoMesa.addEventListener("click", async (e) => {
+
+    e.preventDefault();
+
+    if (MesaActiva == null) {
+        mostrarToast("Por favor, selecciona una mesa primero", "info");
+        return;
+    }
+
+    const comboProductoMesa = document.getElementById("comboProductoMesa");
+    const txtCantidadMesa = document.getElementById("txtCantidadMesa");
+
+    const requestDetalle = {
+        idProducto: comboProductoMesa.value,
+        cantidad: Number(txtCantidadMesa.value)
+    };
+
+    const detalleValido = await validarDetallePedido(requestDetalle);
+
+    if (!detalleValido) {
+        mostrarToast("La cantidad ingresada supera el stock", "error");
+        return;
+    }
+
+    btnOcupar.classList.remove("hidden");
+    const producto = productosMap.get(requestDetalle.idProducto);
+    const precioUnitario = Number(producto.precio);
+    const total = precioUnitario * requestDetalle.cantidad;
+
+    const detalle = {
+        idProducto: comboProductoMesa.value,
+        nombreProducto: producto.nombreProducto,
+        cantidad: Number(txtCantidadMesa.value),
+        precioUnitario,
+        total
+    };
+
+    const mapMesa = detallesPedidoLocal.get(MesaActiva.idMesa);
+
+    if (mapMesa.has(detalle.idProducto)) {
+        const productoExistente = mapMesa.get(detalle.idProducto);
+        productoExistente.cantidad += detalle.cantidad;
+        productoExistente.total = productoExistente.cantidad * productoExistente.precioUnitario;
+    } else {
+        mapMesa.set(detalle.idProducto, detalle);
+    }
+
+    txtCantidadMesa.value = "";
+    comboProductoMesa.selectedIndex = 0;
+
+    renderDetallesMesa();
+
+});
+
+const mesaGridVenta = document.getElementById("mesa-grid");
+mesaGridVenta.addEventListener("click", (event) => {
+
+    const boton = event.target.closest(".table-card");
+    if (!boton) return;
+
+    MesaActiva = boton;
+    const numeroMesa = boton.dataset.mesa;
+    const estadoMesa = boton.dataset.estado;
+
+
+    document.getElementById("mesa-selected").textContent = `Mesa ${numeroMesa}`;
+    document.getElementById("mesa-estado").textContent = estadoMesa;
+
+    if(detallesPedidoLocal.get(MesaActiva.idMesa).size > 0){
+        console.log("Tiene pedisos");
+        btnOcupar.classList.remove("hidden");
+    }else{
+        btnOcupar.classList.add("hidden");
+    }
+
+    renderDetallesMesa();
+
+});
+
 
 const verificarSesionActiva = async () => {
 
