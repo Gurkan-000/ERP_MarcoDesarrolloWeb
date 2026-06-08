@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.erp.DTOs.request.RequestDetallePedido;
+import com.example.erp.DTOs.request.RequestMetodoPago;
 import com.example.erp.DTOs.request.RequestPedido;
 import com.example.erp.DTOs.response.ResponseDetallePedido;
 import com.example.erp.DTOs.response.ResponseMesa;
@@ -48,24 +49,24 @@ public class ControllerVenta {
     }
 
     @PostMapping("/cobrarPedido")
-    public ResponseEntity<Void> cobrarPedido(@Valid @RequestBody RequestPedido requestPedido) {
+    public ResponseEntity<String> cobrarPedido(@Valid @RequestBody RequestPedido requestPedido) {
 
-        ventaService.cobrarPedido(requestPedido);
+        String mensaje = ventaService.cobrarPedido(requestPedido);
+
+        return ResponseEntity.ok().body(mensaje);
+    }
+
+    @PostMapping("/validarDetallePedido")
+    public ResponseEntity<Void> validarDetallePedido(@Valid @RequestBody RequestDetallePedido requestDetallePedido) {
+
+        ventaService.validarDetallePedido(requestDetallePedido);
 
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/validarDetallePedido")
-    public ResponseEntity<Boolean> validarDetallePedido(@Valid @RequestBody RequestDetallePedido requestDetallePedido) {
-
-        boolean pedidoValido = ventaService.validarDetallePedido(requestDetallePedido);
-
-        return ResponseEntity.ok().body(pedidoValido);
-    }
-
-    @GetMapping("/detallePedidosPorPedido/{idPedido}")
-    public ResponseEntity<List<ResponseDetallePedido>> obtenerDetallesPedidoPorPedido(@PathVariable UUID idPedido) {
-        List<ResponseDetallePedido> responseDetallePedidos = ventaService.obtenerDetallesPedidoPorPedido(idPedido);
+    @GetMapping("/detallePedidosPorMesa/{idMesa}")
+    public ResponseEntity<List<ResponseDetallePedido>> obtenerDetallesPedidoPorMesa(@PathVariable UUID idMesa) {
+        List<ResponseDetallePedido> responseDetallePedidos = ventaService.obtenerDetallesPedidoPorMesa(idMesa);
 
         return ResponseEntity.ok().body(responseDetallePedidos);
     }
@@ -87,11 +88,11 @@ public class ControllerVenta {
     }
 
     @PutMapping("/cobrarMesa/{idMesa}")
-    public ResponseEntity<Void> cobrarMesa(@PathVariable UUID idMesa){
+    public ResponseEntity<String> cobrarMesa(@PathVariable UUID idMesa, @Valid @RequestBody RequestMetodoPago requestMetodoPago){
 
-        ventaService.cobrarMesa(idMesa);
+        String mensaje = ventaService.cobrarMesa(idMesa, requestMetodoPago);
     
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(mensaje);
     }
 
 }

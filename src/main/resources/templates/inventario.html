@@ -128,6 +128,22 @@
     </section>
   </div>
 
+  <div id="modal-confirmar-stock" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-icon" aria-hidden="true"><i data-lucide="package-check"></i></div>
+      <h3>Confirmar Actualización</h3>
+      <p class="muted">Revisa los cambios antes de guardar:</p>
+
+      <div id="lista-cambios-stock"
+        class="modal-inventario">
+      </div>
+
+      <div class="form-actions">
+        <button id="btnConfirmarCambiosStock" class="btn btn-primary" type="button">Sí, actualizar</button>
+        <button id="btnCancelarCambiosStock" class="btn btn-muted" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
   <div id="toast-container" class="toastFixed"></div>
 

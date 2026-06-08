@@ -170,7 +170,7 @@ const updateMesaEstadoBadge = (estado) => {
   const estadoTexto = estado || 'Libre';
   mesaEstado.textContent = estadoTexto;
   mesaEstado.classList.remove('badge-green', 'badge-orange');
-  if (estadoTexto === 'Ocupada') {
+  if (estadoTexto === 'OCUPADO') {
     mesaEstado.classList.add('badge-orange');
   } else {
     mesaEstado.classList.add('badge-green');
@@ -211,7 +211,7 @@ const updateMesaPedidosPanel = (mesaNumero) => {
 
 const showMesaDetails = (mesaNumero, estado, button) => {
   if (!mesaDetails) return;
-  mesaDetails.classList.remove('hidden');
+  // mesaDetails.classList.remove('hidden');
   if (mesaSelected) mesaSelected.textContent = `Mesa ${mesaNumero}`;
   updateMesaEstadoBadge(estado);
   setMesaSelected(mesaNumero);
@@ -223,8 +223,8 @@ const showMesaDetails = (mesaNumero, estado, button) => {
   const hasPedidosButton = button ? button.dataset.hasPedidos === 'true' : false;
   const hasPedidos = hasPedidosPanel || hasPedidosButton;
   if (mesaOcuparWrapper) {
-    const shouldShow = hasPedidos && estado !== 'Ocupada';
-    mesaOcuparWrapper.classList.toggle('hidden', !shouldShow);
+    const shouldShow = hasPedidos && estado !== 'OCUPADO';
+    // mesaOcuparWrapper.classList.toggle('hidden', !shouldShow);
   }
 };
 
@@ -264,17 +264,10 @@ const handleMesaClick = (event) => {
   const mesaNumero = button.dataset.mesa;
   const estado = button.dataset.estado || 'Libre';
   showMesaDetails(mesaNumero, estado, button);
-  if (estado === 'Ocupada') {
+  if (estado === 'OCUPADO') {
     openMesaOcupadaModal(mesaNumero);
   }
 };
-
-// document.getElementById("btnUsuario").addEventListener("click",(e) => {
-
-//   document.getElementById("formUsuario").classList.remove("hidden");
-//   document.getElementById("btnUsuario").classList.add("hidden");
-
-// });
 
 const initMesas = () => {
   if (!mesaGrid) return;

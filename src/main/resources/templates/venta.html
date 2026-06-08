@@ -112,8 +112,9 @@
                         <input id="txtCantidadMesa" type="number" min="1" placeholder="1" /> </label>
                     </div>
                     <div class="form-actions">
-                      <button class="btn btn-primary"  id="btnAgregarPedidoMesa" type="submit">Agregar pedido</button>
-                      <button class="btn btn-primary hidden" id="btnOcupar" type="submit">Marcar mesa ocupada</button>
+                      <button class="btn btn-primary" id="btnAgregarPedidoMesa" type="submit">Agregar pedido</button>
+                      <button class="btn btn-primary hidden" id="btnOcuparMesa" type="submit">Marcar mesa
+                        ocupada</button>
                     </div>
                   </form>
                 </div>
@@ -164,19 +165,10 @@
                       <span>Cantidad</span>
                       <input id="txtCantidadPedido" type="number" min="1" placeholder="1" />
                     </label>
-                    <label class="field">
-                      <span>Metodo de pago</span>
-                      <select id="comboMetodoPagoPedido">
-                        <option value="EFECTIVO">Efectivo</option>
-                        <option value="TARJETA">Tarjeta</option>
-                        <option value="YAPE">Yape</option>
-                      </select>
-                    </label>
                   </div>
                   <div class="form-actions">
-                    <button class="btn btn-primary hidden" type="button" id="btnRegistrarPagoPedido">Registrar
-                      Pago</button>
                     <button class="btn btn-primary" type="button" id="btnAgregarPedido">Agregar al Pedido</button>
+                    <button class="btn btn-primary hidden" type="button" id="btnRegistrarPagoPedido">Registrar Pago</button>
                   </div>
                 </form>
               </div>
@@ -209,15 +201,45 @@
     </section>
   </div>
 
-  <div id="mesa-ocupada-modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div id="modal-cobro-pedido" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-icon" aria-hidden="true"><i data-lucide="shopping-bag"></i></div>
+      <h3>Cobrar Pedido</h3>
+      <p class="muted" id="tipo-pedido-label">Modalidad</p>
+
+      <div class="cobro-total" style="margin-bottom: 1rem;">
+        <span>Total a Pagar</span>
+        <strong id="modal-pedido-total-monto">S/ 0.00</strong>
+      </div>
+
+      <form class="inline-form" id="formCobroPedido">
+        <div class="form-grid">
+          <label class="field">
+            <span>Método de pago</span>
+            <select id="comboMetodoPagoModal">
+              <option value="EFECTIVO">Efectivo</option>
+              <option value="TARJETA">Tarjeta</option>
+              <option value="YAPE">Yape</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button id="btnConfirmarCompraPedido" class="btn btn-primary" type="button">Comprar</button>
+          <button id="btnCancelarCompraPedido" class="btn btn-muted" type="button">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="divModalMesaOcupada" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-icon" aria-hidden="true"><i data-lucide="help-circle"></i></div>
       <h3>Mesa ocupada</h3>
       <p class="muted" id="mesa-ocupada-label">Mesa</p>
       <div class="modal-actions">
-        <button class="btn btn-primary" type="button" id="mesa-ocupada-agregar">Agregar pedido</button>
-        <button class="btn btn-danger" type="button" id="mesa-ocupada-cobrar">Cobrar</button>
-        <button class="btn btn-muted" type="button" id="mesa-ocupada-cancel">Cancelar</button>
+        <button class="btn btn-primary" id="btnMesaOcupadaAgregar">Agregar pedido</button>
+        <button class="btn btn-danger" id="btnMesaOcupadaCobrar">Cobrar</button>
+        <button class="btn btn-muted" id="btnMesaOcupadaCancel">Cancelar</button>
       </div>
     </div>
   </div>
@@ -227,26 +249,29 @@
       <div class="modal-icon" aria-hidden="true"><i data-lucide="wallet"></i></div>
       <h3>Cobro de mesa</h3>
       <p class="muted" id="cobro-mesa-label">Mesa</p>
-      <div id="cobro-list" class="list"></div>
+
+      <div id="cobro-lista-detalles" class="list" style="margin-bottom: 1rem;"></div>
+
       <div class="cobro-total">
         <span>Total</span>
-        <strong id="cobro-total">S/ 0.00</strong>
+        <strong id="cobro-total-monto">S/ 0.00</strong>
       </div>
-      <form class="inline-form">
+
+      <form class="inline-form" id="formCobroMesa">
         <input type="hidden" id="cobro-mesa-input" />
         <div class="form-grid">
           <label class="field">
             <span>Metodo de pago</span>
-            <select>
-              <option value="Efectivo">Efectivo</option>
-              <option value="Tarjeta">Tarjeta</option>
-              <option value="Otro">Otro</option>
+            <select id="comboMetodoPagoCobro">
+              <option value="EFECTIVO">Efectivo</option>
+              <option value="TARJETA">Tarjeta</option>
+              <option value="YAPE">Yape</option>
             </select>
           </label>
         </div>
         <div class="form-actions">
-          <button id="btnCobrarMesa" class="btn btn-primary" type="submit">Cobrar y liberar</button>
-          <button id="btnCancelar" class="btn btn-muted" type="button" id="cobro-cancel">Cancelar</button>
+          <button id="btnConfirmarCobro" class="btn btn-primary" type="button">Cobrar y liberar</button>
+          <button id="btnCancelarCobro" class="btn btn-muted" type="button">Cancelar</button>
         </div>
       </form>
     </div>
@@ -258,7 +283,7 @@
       <h3>Caja cerrada</h3>
       <p class="muted">No puedes ingresar al punto de venta hasta aperturar la caja.</p>
       <div class="modal-actions">
-        <button class="btn btn-primary" type="button" id="caja-cerrada-ir">Ir a Caja</button>
+        <button class="btn btn-primary" type="button" id="caja-cerrada-ir"></button>
       </div>
     </div>
   </div>
