@@ -8,6 +8,7 @@ const productosMap = new Map();
 
 let tipoPedidoActivo = "LLEVAR";
 let MesaActiva = null;
+let rolUsuarioActivo = null; //variable para saber el rol de usuario sin volver a consultar la api
 
 
 const toastContainer = document.getElementById('toast-container');
@@ -580,6 +581,14 @@ mesaGridVenta.addEventListener("click", () => {
 
     if (estadoMesa === "OCUPADO") {
 
+        // Ocultar el boton Cobrar si el usuario es Mesero
+        const btnCobrarModal = document.getElementById("btnMesaOcupadaCobrar");
+        if (rolUsuarioActivo === "Mesero") {
+            btnCobrarModal.classList.add("hidden");
+        } else {
+            btnCobrarModal.classList.remove("hidden");
+        }
+
         divModalMesaOcupada.classList.remove("hidden");
 
     } else {
@@ -721,6 +730,8 @@ const verificarSesionActiva = async () => {
 
 const cargarSecciones = (sesionActiva) => {
 
+    rolUsuarioActivo = sesionActiva.rol;
+
     if (sesionActiva.rol === "Administrador") {
         return;
     }
@@ -731,6 +742,10 @@ const cargarSecciones = (sesionActiva) => {
         document.getElementById("navSeccionCatalogo").classList.add("hidden");
         document.getElementById("navSeccionUsuario").classList.add("hidden");
         document.getElementById("navSeccionConfiguracion").classList.add("hidden");
+
+        // Ocultar tabs de Para Llevar y Delivery: el mesero solo atiende salon
+        document.getElementById("btnTabLlevar").classList.add("hidden");
+        document.getElementById("btnTabDelivery").classList.add("hidden");
     }
 
     if (sesionActiva.rol === "Cajero") {
