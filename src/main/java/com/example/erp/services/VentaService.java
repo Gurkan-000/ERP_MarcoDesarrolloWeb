@@ -41,9 +41,9 @@ public class VentaService {
     private final PedidoRepository pedidoRepository;
     private final DetallePedidoRepository detallePedidoRepository;
     private final ProductoRepository productoRepository;
+    private final CajaRepository cajaRepository;
 
     private final CajaService cajaService;
-    private final CajaRepository cajaRepository;
 
     public VentaService(MesaRepository mesaRepository, PedidoRepository pedidoRepository,
             DetallePedidoRepository detallePedidoRepository, ProductoRepository productoRepository, CajaService cajaService, CajaRepository cajaRepository) {
@@ -58,7 +58,6 @@ public class VentaService {
         for (int i = 1; i <= 6; i++) {
             mesaRepository.save(Mesa.builder().estado(EstadoMesa.LIBRE).numero(i).build());
         }
-
     }
 
     public List<ResponsePedido> obtenerPedidos() {
@@ -91,12 +90,9 @@ public class VentaService {
 
     @Transactional(readOnly = true)
     public List<ResponseMesa> obtenerMesas() {
-
-        List<ResponseMesa> responseMesas = mesaRepository.findAll().stream()
+        return mesaRepository.findAllByOrderByNumeroAsc().stream()
                 .map(MapperMesa::toDTO)
                 .toList();
-
-        return responseMesas;
     }
 
     @Transactional
