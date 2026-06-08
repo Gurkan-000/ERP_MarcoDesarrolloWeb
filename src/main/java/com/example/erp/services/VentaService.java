@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.erp.DTOs.request.RequestDetallePedido;
+import com.example.erp.DTOs.request.RequestMetodoPago;
 import com.example.erp.DTOs.request.RequestMovimientoCaja;
 import com.example.erp.DTOs.request.RequestPedido;
 import com.example.erp.DTOs.response.ResponseDetallePedido;
@@ -45,8 +46,8 @@ public class VentaService {
     private final CajaRepository cajaRepository;
 
     public VentaService(MesaRepository mesaRepository, PedidoRepository pedidoRepository,
-                        DetallePedidoRepository detallePedidoRepository, ProductoRepository productoRepository, CajaService cajaService, CajaRepository cajaRepository) {
-                
+            DetallePedidoRepository detallePedidoRepository, ProductoRepository productoRepository, CajaService cajaService, CajaRepository cajaRepository) {
+
         this.mesaRepository = mesaRepository;
         this.pedidoRepository = pedidoRepository;
         this.detallePedidoRepository = detallePedidoRepository;
@@ -74,10 +75,12 @@ public class VentaService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseDetallePedido> obtenerDetallesPedidoPorPedido(UUID idPedido) {
+    public List<ResponseDetallePedido> obtenerDetallesPedidoPorMesa(UUID idMesa) {
 
-        Pedido pedido = pedidoRepository.findById(idPedido)
+        Mesa mesa = mesaRepository.findById(idMesa)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Mesa no encontrada"));
+
+        Pedido pedido = mesa.getPedido();
 
         List<ResponseDetallePedido> responseDetallePedidos = detallePedidoRepository.findByPedido(pedido).stream()
                 .map(MapperDetallePedido::toDTO)
@@ -97,7 +100,7 @@ public class VentaService {
     }
 
     @Transactional
-    public void cobrarPedido(RequestPedido requestPedido) {
+    public String cobrarPedido(RequestPedido requestPedido) {
 
         Caja caja = cajaRepository.findByEstado(EstadoCaja.ABIERTO)
                 .orElseThrow(() -> new ReglaDeNegocioException("No se puede cobrar con la caja cerrada"));
@@ -147,15 +150,19 @@ public class VentaService {
 
         cajaService.registrarMovimientoPedido(requestMovimientoCaja, caja.getIdCaja());
 
+        return "Cobrado Exitosamente";
     }
 
     @Transactional(readOnly = true)
-    public boolean validarDetallePedido(RequestDetallePedido requestDetalle) {
+    public void validarDetallePedido(RequestDetallePedido requestDetalle) {
 
         Producto producto = productoRepository.findById(requestDetalle.getIdProducto())
                 .orElseThrow(() -> new EntidadNoEncontradaException("Producto no encontrado"));
 
-        return requestDetalle.getCantidad() <= producto.getStock();
+        if (requestDetalle.getCantidad() > producto.getStock()) {
+            throw new ReglaDeNegocioException("Stock insuficiente");
+        }
+
     }
 
     @Transactional
@@ -198,7 +205,7 @@ public class VentaService {
     }
 
     @Transactional
-    public void cobrarMesa(UUID idMesa) {
+    public String cobrarMesa(UUID idMesa, RequestMetodoPago requestMetodoPago) {
 
         Caja caja = cajaRepository.findByEstado(EstadoCaja.ABIERTO)
                 .orElseThrow(() -> new ReglaDeNegocioException("No se puede cobrar con la caja cerrada"));
@@ -225,6 +232,8 @@ public class VentaService {
 
         mesa.setEstado(EstadoMesa.LIBRE);
         mesa.setPedido(null);
+
+        return "Cobrado Exitosamente";
     }
 
     @Transactional

@@ -1,7 +1,7 @@
 package com.example.erp.services;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,9 +71,11 @@ public class CajaService {
         Caja caja = cajaRepository.findTopByEstadoOrderByFechaCierreDesc(EstadoCaja.CERRADO)
                 .orElseThrow(() -> new EntidadNoEncontradaException("No existe caja cerrada"));
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
         ResponseCierreCaja responseCierreCaja = ResponseCierreCaja.builder()
                 .ultimoMonto(caja.getMontoActual())
-                .fechaCierre(caja.getFechaCierre())
+                .fechaCierre(caja.getFechaCierre().format(formatter))
                 .build();
 
         return responseCierreCaja;
@@ -150,9 +152,11 @@ public class CajaService {
         caja.setEstado(EstadoCaja.CERRADO);
         caja.setFechaCierre(LocalDateTime.now());
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
         ResponseCierreCaja responseCierreCaja = ResponseCierreCaja.builder()
                 .ultimoMonto(caja.getMontoActual())
-                .fechaCierre(caja.getFechaCierre())
+                .fechaCierre(caja.getFechaCierre().format(formatter))
                 .build();
 
         return responseCierreCaja;

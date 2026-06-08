@@ -9,6 +9,7 @@ const productosMap = new Map();
 let tipoPedidoActivo = "LLEVAR";
 let MesaActiva = null;
 
+
 const toastContainer = document.getElementById('toast-container');
 const mostrarToast = (mensaje, tipo = 'info') => {
     const toast = document.createElement('div');
@@ -24,6 +25,7 @@ const mostrarToast = (mensaje, tipo = 'info') => {
         setTimeout(() => toast.remove(), 300);
     }, 4000);
 };
+
 
 const formatoMoneda = (valor) => `S/ ${Number(valor).toFixed(2)}`;
 
@@ -47,6 +49,7 @@ const obtenerCajaAbierta = async () => {
 
 }
 
+
 const cargarMesas = async () => {
     try {
         const response = await fetch(`${BASE_URL}/venta/listarMesas`);
@@ -62,14 +65,16 @@ const cargarMesas = async () => {
 
             data.forEach((mesa) => {
                 const botonMesa = document.createElement("button");
-                const estadoMesa = mesa.estado === "OCUPADO" ? "Ocupada" : "Libre";
+                const estadoMesa = mesa.estado === "OCUPADO" ? "OCUPADO" : "LIBRE";
 
                 botonMesa.id = "btnMesa";
                 botonMesa.type = "button";
-                botonMesa.classList.add("table-card");
+                botonMesa.classList.add(`table-card`);
+                botonMesa.classList.add(`${mesa.estado === "OCUPADO" ? "status-occupied" : "status-free"}`);
                 botonMesa.dataset.mesa = mesa.numero;
                 botonMesa.dataset.estado = estadoMesa;
                 botonMesa.dataset.idMesa = mesa.idMesa;
+
                 botonMesa.innerHTML = `
                 <span class="table-number">${mesa.numero}</span>
                 <span>${estadoMesa}</span>
@@ -84,6 +89,7 @@ const cargarMesas = async () => {
         console.log(error);
     }
 };
+
 
 const cargarProductos = async () => {
     try {
@@ -117,6 +123,7 @@ const cargarProductos = async () => {
     }
 };
 
+
 const validarDetallePedido = async (requestDetalle) => {
     try {
         const response = await fetch(`${BASE_URL}/venta/validarDetallePedido`, {
@@ -127,31 +134,6 @@ const validarDetallePedido = async (requestDetalle) => {
             body: JSON.stringify(requestDetalle)
         });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            data.mensajes.forEach(m => {
-                mostrarToast(m, "error");
-            });
-            return false;
-        }
-
-        return Boolean(data);
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
-};
-
-const cobrarPedido = async (requestPedido) => {
-    try {
-        const response = await fetch(`${BASE_URL}/venta/cobrarPedido`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(requestPedido)
-        });
 
         if (!response.ok) {
             const data = await response.json();
@@ -163,11 +145,127 @@ const cobrarPedido = async (requestPedido) => {
 
         return true;
     } catch (error) {
+        console.log(error);
+        return false;
+    }
+};
+
+
+const cobrarPedido = async (requestPedido) => {
+    try {
+        const response = await fetch(`${BASE_URL}/venta/cobrarPedido`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestPedido)
+        });
+
+        const data = await response.text();
+
+        if (!response.ok) {
+            data.mensajes.forEach(m => {
+                mostrarToast(m, "error");
+            });
+            return false;
+        }
+
+        mostrarToast(data, "success");
+        return true;
+    } catch (error) {
         mostrarToast("Ocurrio un error inesperado", "error");
         return false;
     }
 };
 
+
+const ocuparMesa = async (requestPedido, idMesa) => {
+    try {
+        const response = await fetch(`${BASE_URL}/venta/ocuparMesa/${idMesa}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestPedido)
+        });
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => null);
+            if (data && data.mensajes) {
+                data.mensajes.forEach(m => mostrarToast(m, "error"));
+            } else {
+                mostrarToast("Error al ocupar la mesa", "error");
+            }
+            return false;
+        }
+
+        return true;
+
+    } catch (error) {
+        mostrarToast("Ocurrió un error inesperado", "error");
+        return false;
+    }
+};
+
+const cobrarMesa = async (idMesa, metodoPago) => {
+    try {
+        const response = await fetch(`${BASE_URL}/venta/cobrarMesa/${idMesa}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ metodoPago: metodoPago })
+        });
+
+        const data = await response.text();
+
+        if (!response.ok) {
+            data.mensajes.forEach(m => {
+                mostrarToast(m, "error");
+            });
+            return false;
+        }
+
+        mostrarToast(data, "success");
+        return true;
+    } catch (error) {
+        mostrarToast("Ocurrio un error inesperado", "error");
+        return false;
+    }
+};
+
+const agregarDetalleAlaMesa = async (idMesa, requestDetallePedido) => {
+    try {
+        const response = await fetch(`${BASE_URL}/venta/agregarDetallePedidoAlaMesa/${idMesa}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestDetallePedido)
+        });
+        if (!response.ok) {
+            data.mensajes.forEach(m => {
+                mostrarToast(m, "error");
+            });
+            return false;
+        }
+        return true;
+    } catch (error) {
+        mostrarToast("Ocurrio un error inesperado", "error");
+        return false;
+    }
+};
+
+const obtenerDetallesPedidoPorMesa = async (idMesa) => {
+    try {
+        const response = await fetch(`${BASE_URL}/venta/detallePedidosPorMesa/${idMesa}`);
+
+        if (!response.ok) {
+            mostrarToast("Error al obtener los detalles de la mesa", "error");
+            return [];
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.log(error);
+        mostrarToast("Error de conexión", "error");
+        return [];
+    }
+};
 
 const renderDetallesPedido = () => {
     const detalles = tipoPedidoActivo === "DELIVERY" ? detallesPedidoDelivery : detallesPedidoLlevar;
@@ -217,7 +315,7 @@ const renderDetallesMesa = () => {
         return;
     }
 
-    const mapDetallesMesa = detallesPedidoLocal.get(MesaActiva.idMesa) || new Map();
+    const mapDetallesMesa = detallesPedidoLocal.get(MesaActiva.dataset.idMesa) || new Map();
     let total = 0;
 
     mapDetallesMesa.forEach((detalle) => {
@@ -257,7 +355,6 @@ btnAgregarPedido.addEventListener("click", async (e) => {
     const detalleValido = await validarDetallePedido(requestDetalle);
 
     if (!detalleValido) {
-        mostrarToast("La cantidad ingresada supera el stock", "error");
         return;
     }
 
@@ -288,16 +385,24 @@ btnAgregarPedido.addEventListener("click", async (e) => {
     renderDetallesPedido(tipoPedidoActivo);
 });
 
+const modalCobroPedido = document.getElementById("modal-cobro-pedido");
+const tipoPedidoLabel = document.getElementById("tipo-pedido-label");
+const modalPedidoTotalMonto = document.getElementById("modal-pedido-total-monto");
+const comboMetodoPagoModal = document.getElementById("comboMetodoPagoModal");
 
-const btnRegistrarPagoPedido = document.getElementById("btnRegistrarPagoPedido");
-btnRegistrarPagoPedido.addEventListener("click", async (e) => {
+const btnCancelarCompraPedido = document.getElementById("btnCancelarCompraPedido");
+btnCancelarCompraPedido.addEventListener("click", () => {
+    modalCobroPedido.classList.add("hidden");
+});
+
+const btnConfirmarCompraPedido = document.getElementById("btnConfirmarCompraPedido");
+btnConfirmarCompraPedido.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const comboMetodoPagoPedido = document.getElementById("comboMetodoPagoPedido");
     const mapActivo = tipoPedidoActivo === "DELIVERY" ? detallesPedidoDelivery : detallesPedidoLlevar;
 
     const requestPedido = {
-        metodoPago: comboMetodoPagoPedido.value,
+        metodoPago: comboMetodoPagoModal.value,
         tipoPedido: tipoPedidoActivo,
         detalles: Array.from(mapActivo.values()).map((detalle) => ({
             idProducto: detalle.idProducto,
@@ -305,13 +410,38 @@ btnRegistrarPagoPedido.addEventListener("click", async (e) => {
         }))
     };
 
+    btnConfirmarCompraPedido.disabled = true;
+    btnConfirmarCompraPedido.textContent = "Procesando...";
+
     const pagoCorrecto = await cobrarPedido(requestPedido);
+
+    btnConfirmarCompraPedido.disabled = false;
+    btnConfirmarCompraPedido.textContent = "Comprar";
+
     if (pagoCorrecto) {
         mapActivo.clear();
         renderDetallesPedido();
+        modalCobroPedido.classList.add("hidden");
     }
 });
 
+const btnRegistrarPagoPedido = document.getElementById("btnRegistrarPagoPedido");
+btnRegistrarPagoPedido.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const mapActivo = tipoPedidoActivo === "DELIVERY" ? detallesPedidoDelivery : detallesPedidoLlevar;
+
+    let total = 0;
+    mapActivo.forEach(detalle => total += detalle.total);
+
+    tipoPedidoLabel.textContent = `Pedido - ${tipoPedidoActivo}`;
+    modalPedidoTotalMonto.textContent = formatoMoneda(total);
+
+    comboMetodoPagoModal.selectedIndex = 0;
+
+    modalCobroPedido.classList.remove("hidden");
+
+});
 
 const divPedidoRegistro = document.getElementById("divPedidoRegistro");
 const divMesaPedidos = document.getElementById("divMesaPedidos");
@@ -329,6 +459,7 @@ btnTabLlevar.addEventListener("click", () => {
     renderDetallesPedido();
 });
 
+
 const divPedidoDelivery = document.getElementById("divPedidoDelivery");
 btnTabDelivery.addEventListener("click", () => {
     divPedidoDelivery.appendChild(divPedidoRegistro);
@@ -338,6 +469,7 @@ btnTabDelivery.addEventListener("click", () => {
     renderDetallesPedido();
 });
 
+
 btnTabLocal.addEventListener("click", () => {
     tipoPedidoActivo = "LOCAL";
     divPedidoRegistro.classList.add("hidden");
@@ -345,18 +477,37 @@ btnTabLocal.addEventListener("click", () => {
     renderDetallesMesa();
 });
 
-const btnOcupar = document.getElementById("btnOcupar");
-btnOcupar.addEventListener("click",(e)=>{
 
+const btnOcuparMesa = document.getElementById("btnOcuparMesa");
+btnOcuparMesa.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    
+    const idMesaNum = MesaActiva.dataset.idMesa;
+    const mapActivo = detallesPedidoLocal.get(idMesaNum);
 
+    const requestPedido = {
+        metodoPago: "PENDIENTE",
+        tipoPedido: tipoPedidoActivo,
+        detalles: Array.from(mapActivo.values()).map((detalle) => ({
+            idProducto: detalle.idProducto,
+            cantidad: detalle.cantidad
+        }))
+    };
+
+    const mesaOcupada = await ocuparMesa(requestPedido, idMesaNum);
+    if (mesaOcupada) {
+        mapActivo.clear();
+        renderDetallesPedido();
+    }
+
+    divMesaPedidos.classList.add("hidden");
+    btnOcuparMesa.classList.add("hidden");
+    await cargarMesas();
 });
+
 
 const btnAgregarPedidoMesa = document.getElementById("btnAgregarPedidoMesa");
 btnAgregarPedidoMesa.addEventListener("click", async (e) => {
-
     e.preventDefault();
 
     if (MesaActiva == null) {
@@ -375,11 +526,17 @@ btnAgregarPedidoMesa.addEventListener("click", async (e) => {
     const detalleValido = await validarDetallePedido(requestDetalle);
 
     if (!detalleValido) {
-        mostrarToast("La cantidad ingresada supera el stock", "error");
         return;
     }
 
-    btnOcupar.classList.remove("hidden");
+    if (MesaActiva.dataset.estado === "OCUPADO") {
+        const agregadoBackend = await agregarDetalleAlaMesa(MesaActiva.dataset.idMesa, requestDetalle);
+        if (!agregadoBackend) return;
+        mostrarToast("Producto agregado al pedido existente", "success");
+    } else {
+        btnOcuparMesa.classList.remove("hidden");
+    }
+
     const producto = productosMap.get(requestDetalle.idProducto);
     const precioUnitario = Number(producto.precio);
     const total = precioUnitario * requestDetalle.cantidad;
@@ -392,7 +549,7 @@ btnAgregarPedidoMesa.addEventListener("click", async (e) => {
         total
     };
 
-    const mapMesa = detallesPedidoLocal.get(MesaActiva.idMesa);
+    const mapMesa = detallesPedidoLocal.get(MesaActiva.dataset.idMesa);
 
     if (mapMesa.has(detalle.idProducto)) {
         const productoExistente = mapMesa.get(detalle.idProducto);
@@ -406,34 +563,141 @@ btnAgregarPedidoMesa.addEventListener("click", async (e) => {
     comboProductoMesa.selectedIndex = 0;
 
     renderDetallesMesa();
-
 });
 
+const divModalMesaOcupada = document.getElementById("divModalMesaOcupada");
 const mesaGridVenta = document.getElementById("mesa-grid");
-mesaGridVenta.addEventListener("click", (event) => {
+mesaGridVenta.addEventListener("click", () => {
 
+    divMesaPedidos.classList.add("hidden");
     const boton = event.target.closest(".table-card");
+
     if (!boton) return;
 
     MesaActiva = boton;
     const numeroMesa = boton.dataset.mesa;
     const estadoMesa = boton.dataset.estado;
 
+    if (estadoMesa === "OCUPADO") {
 
-    document.getElementById("mesa-selected").textContent = `Mesa ${numeroMesa}`;
-    document.getElementById("mesa-estado").textContent = estadoMesa;
+        divModalMesaOcupada.classList.remove("hidden");
 
-    if(detallesPedidoLocal.get(MesaActiva.idMesa).size > 0){
-        console.log("Tiene pedisos");
-        btnOcupar.classList.remove("hidden");
-    }else{
-        btnOcupar.classList.add("hidden");
+    } else {
+
+        divMesaPedidos.classList.remove("hidden");
+
+        document.getElementById("mesa-selected").textContent = `Mesa ${numeroMesa}`;
+        document.getElementById("mesa-estado").textContent = estadoMesa;
+        document.getElementById("mesa-estado").classList.add("badge-green");
+
+        if (detallesPedidoLocal.get(MesaActiva.dataset.idMesa).size > 0) {
+            btnOcuparMesa.classList.remove("hidden");
+        } else {
+            btnOcuparMesa.classList.add("hidden");
+        }
+
+        renderDetallesMesa();
+
     }
-
-    renderDetallesMesa();
 
 });
 
+const modalCobro = document.getElementById("cobro-modal");
+const cobroListaDetalles = document.getElementById("cobro-lista-detalles");
+const cobroTotalMonto = document.getElementById("cobro-total-monto");
+const comboMetodoPagoCobro = document.getElementById("comboMetodoPagoCobro");
+const btnConfirmarCobro = document.getElementById("btnConfirmarCobro");
+const btnCancelarCobro = document.getElementById("btnCancelarCobro");
+
+const btnMesaOcupadaAgregar = document.getElementById("btnMesaOcupadaAgregar");
+btnMesaOcupadaAgregar.addEventListener("click", async () => {
+    divModalMesaOcupada.classList.add("hidden");
+    divMesaPedidos.classList.remove("hidden");
+
+    const idMesa = MesaActiva.dataset.idMesa;
+    const detallesBackend = await obtenerDetallesPedidoPorMesa(idMesa);
+
+    const mapMesa = detallesPedidoLocal.get(idMesa);
+    mapMesa.clear();
+
+    detallesBackend.forEach(detalle => {
+        mapMesa.set(detalle.idProducto, {
+            idProducto: detalle.idProducto,
+            nombreProducto: detalle.nombreProducto,
+            cantidad: detalle.cantidad,
+            precioUnitario: detalle.precioUnitario,
+            total: detalle.total
+        });
+    });
+
+    renderDetallesMesa();
+});
+
+
+const btnMesaOcupadaCobrar = document.getElementById("btnMesaOcupadaCobrar");
+btnMesaOcupadaCobrar.addEventListener("click", async () => {
+
+    divModalMesaOcupada.classList.add("hidden");
+
+    const idMesa = MesaActiva.dataset.idMesa;
+    if (!idMesa) {
+        mostrarToast("Error: No se encontró el identificador de la mesa.", "error");
+        return;
+    }
+
+    cobroListaDetalles.innerHTML = "<p class='muted'>Cargando detalles...</p>";
+    modalCobro.classList.remove("hidden");
+
+    document.getElementById("cobro-mesa-label").textContent = `Mesa ${MesaActiva.dataset.mesa}`;
+
+    const detallesBackend = await obtenerDetallesPedidoPorMesa(idMesa);
+
+    cobroListaDetalles.innerHTML = "";
+    let totalCobro = 0;
+
+    detallesBackend.forEach((detalle) => {
+        const item = document.createElement("div");
+        item.style.display = "flex";
+        item.style.justifyContent = "space-between";
+        item.style.padding = "4px 0";
+        item.innerHTML = `
+            <span>${detalle.cantidad}x ${detalle.nombreProducto}</span>
+            <span>${formatoMoneda(detalle.total)}</span>
+        `;
+        cobroListaDetalles.appendChild(item);
+        totalCobro += detalle.total;
+    });
+
+    cobroTotalMonto.textContent = formatoMoneda(totalCobro);
+});
+
+
+const btnMesaOcupadaCancel = document.getElementById("btnMesaOcupadaCancel");
+btnMesaOcupadaCancel.addEventListener("click", () => {
+    divModalMesaOcupada.classList.add("hidden");
+    divMesaPedidos.classList.add("hidden");
+    MesaActiva = null;
+});
+
+btnConfirmarCobro.addEventListener("click", async () => {
+    const idMesa = MesaActiva.dataset.idMesa;
+    const metodoPago = comboMetodoPagoCobro.value;
+
+    const cobroExitoso = await cobrarMesa(idMesa, metodoPago);
+
+    if (cobroExitoso) {
+        detallesPedidoLocal.get(idMesa).clear();
+        modalCobro.classList.add("hidden");
+        MesaActiva = null;
+        await cargarMesas();
+    }
+});
+
+
+btnCancelarCobro.addEventListener("click", () => {
+    modalCobro.classList.add("hidden");
+    MesaActiva = null;
+});
 
 const verificarSesionActiva = async () => {
 
@@ -453,6 +717,7 @@ const verificarSesionActiva = async () => {
     }
 
 }
+
 
 const cargarSecciones = (sesionActiva) => {
 
@@ -477,9 +742,16 @@ const cargarSecciones = (sesionActiva) => {
 
 }
 
+
 document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
     e.preventDefault();
+    if (await cerrarSesion()) {
+        window.location.href = "login.html";
+    }
+});
 
+
+const cerrarSesion = async () => {
     try {
 
         const response = await fetch(`http://localhost:8080/api/usuario/cerrarSesion`, {
@@ -487,15 +759,16 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
         });
 
         if (!response.ok) {
-            console.log("Ocurrio un error");
-        } else {
-            window.location.href = 'login.html';
+            return false;
         }
+
+        return true;
 
     } catch (error) {
         console.log(error);
     }
-});
+}
+
 
 document.addEventListener("DOMContentLoaded", async (e) => {
 
@@ -519,13 +792,23 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         cargarMesas();
         cargarProductos();
     } else {
+
+        let html = "caja.html";
+        let mensaje = "Ir a caja";
+
+        if (sesionActiva.rol === "Mesero" && await cerrarSesion()) {
+            html = "login.html";
+            mensaje = "Logear como cajero";
+        }
+
+        document.getElementById("caja-cerrada-ir").textContent = mensaje;
+
         const cajaCerradaModal = document.getElementById("caja-cerrada-modal");
         const cajaCerradaIr = document.getElementById("caja-cerrada-ir");
         cajaCerradaModal.classList.remove("hidden");
         cajaCerradaIr.addEventListener("click", () => {
-            window.location.href = "caja.html";
+            window.location.href = html;
         });
-
     }
 });
 

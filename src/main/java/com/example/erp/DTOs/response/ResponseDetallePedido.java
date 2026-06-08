@@ -17,6 +17,8 @@ public class ResponseDetallePedido {
 
     private UUID idDetallePedido;
 
+    private UUID idProducto;
+
     private String nombreProducto;
 
     private BigDecimal precioUnitario;
