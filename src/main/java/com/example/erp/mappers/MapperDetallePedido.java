@@ -8,6 +8,7 @@ public class MapperDetallePedido {
     public static ResponseDetallePedido toDTO(DetallePedido detallePedido){
         return ResponseDetallePedido.builder()
         .idDetallePedido(detallePedido.getIdDetallePedido())
+        .idProducto(detallePedido.getProducto().getIdProducto())
         .nombreProducto(detallePedido.getProducto().getNombre())
         .precioUnitario(detallePedido.getPrecioUnitario())
         .cantidad(detallePedido.getCantidad())
