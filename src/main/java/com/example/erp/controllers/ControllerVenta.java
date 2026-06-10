@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.erp.DTOs.request.RequestDetallePedido;
 import com.example.erp.DTOs.request.RequestMetodoPago;
 import com.example.erp.DTOs.request.RequestPedido;
+import com.example.erp.DTOs.response.ResponseBoleta;
 import com.example.erp.DTOs.response.ResponseDetallePedido;
 import com.example.erp.DTOs.response.ResponseMesa;
 import com.example.erp.DTOs.response.ResponsePedido;
@@ -49,11 +50,11 @@ public class ControllerVenta {
     }
 
     @PostMapping("/cobrarPedido")
-    public ResponseEntity<String> cobrarPedido(@Valid @RequestBody RequestPedido requestPedido) {
+    public ResponseEntity<ResponseBoleta> cobrarPedido(@Valid @RequestBody RequestPedido requestPedido) {
 
-        String mensaje = ventaService.cobrarPedido(requestPedido);
+        ResponseBoleta boleta = ventaService.cobrarPedido(requestPedido);
 
-        return ResponseEntity.ok().body(mensaje);
+        return ResponseEntity.ok().body(boleta);
     }
 
     @PostMapping("/validarDetallePedido")
@@ -88,11 +89,13 @@ public class ControllerVenta {
     }
 
     @PutMapping("/cobrarMesa/{idMesa}")
-    public ResponseEntity<String> cobrarMesa(@PathVariable UUID idMesa, @Valid @RequestBody RequestMetodoPago requestMetodoPago){
+    public ResponseEntity<ResponseBoleta> cobrarMesa(@PathVariable UUID idMesa,
+            @Valid @RequestBody RequestMetodoPago requestMetodoPago) {
 
-        String mensaje = ventaService.cobrarMesa(idMesa, requestMetodoPago);
-    
-        return ResponseEntity.ok().body(mensaje);
+        ResponseBoleta boleta = ventaService.cobrarMesa(idMesa, requestMetodoPago);
+
+        return ResponseEntity.ok().body(boleta);
     }
+
 
 }

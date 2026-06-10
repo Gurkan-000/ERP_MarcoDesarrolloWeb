@@ -1,5 +1,5 @@
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'http://localhost:8083/api';
 
 const toastContainer = document.getElementById('toast-container');
 const mostrarToast = (mensaje, tipo = 'info') => {

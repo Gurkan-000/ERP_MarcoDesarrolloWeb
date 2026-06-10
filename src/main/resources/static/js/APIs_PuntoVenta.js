@@ -1,5 +1,5 @@
 
-const BASE_URL = "http://localhost:8080/api";
+const BASE_URL = "http://localhost:8083/api";
 
 const detallesPedidoLlevar = new Map();
 const detallesPedidoDelivery = new Map();
@@ -9,27 +9,169 @@ const productosMap = new Map();
 let tipoPedidoActivo = "LLEVAR";
 let MesaActiva = null;
 let rolUsuarioActivo = null; //variable para saber el rol de usuario sin volver a consultar la api
-
-
+// Datos de la última boleta generada (para el PDF)
+let ultimaBoleta = null;
+// ──────────────────────────────────────────────
+// TOAST
+// ──────────────────────────────────────────────
 const toastContainer = document.getElementById('toast-container');
 const mostrarToast = (mensaje, tipo = 'info') => {
     const toast = document.createElement('div');
-
     toast.className = `toast toast-${tipo}`;
     toast.textContent = mensaje;
-
     toastContainer.appendChild(toast);
-
     setTimeout(() => {
         toast.classList.add('toast-hide');
-
         setTimeout(() => toast.remove(), 300);
     }, 4000);
 };
+// ──────────────────────────────────────────────
+// PDF BOLETA con jsPDF
+// ──────────────────────────────────────────────
+const generarPDFBoleta = (boleta) => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: [80, 200], orientation: 'portrait' });
+
+    const ancho   = 80;
+    const margen  = 5;
+    const centro  = ancho / 2;
+    let y         = 8;
+
+    const linea = () => {
+        doc.setDrawColor(200);
+        doc.setLineWidth(0.2);
+        doc.line(margen, y, ancho - margen, y);
+        y += 4;
+    };
+
+    // ── Encabezado ──
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('Lo Esencial Broastería', centro, y, { align: 'center' });
+    y += 5;
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('RUC: 20123456789', centro, y, { align: 'center' });
+    y += 4;
+    doc.text('Av. Principal 123, Lima - Perú', centro, y, { align: 'center' });
+    y += 5;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text('BOLETA DE VENTA', centro, y, { align: 'center' });
+    y += 4;
+    linea();
+
+    // ── Datos pedido ──
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+
+    const idCorto = boleta.idPedido
+        ? boleta.idPedido.toString().substring(0, 8).toUpperCase()
+        : 'N/A';
+
+    const now     = new Date();
+    const fecha   = boleta.fecha || now.toLocaleDateString('es-PE');
+    const hora    = boleta.hora
+        ? boleta.hora.substring(0, 5)
+        : now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+
+    const tipoPedidoMap = { LOCAL: 'Salón/Mesa', LLEVAR: 'Para Llevar', DELIVERY: 'Delivery' };
+    const tipoPedidoLabel = tipoPedidoMap[boleta.tipoPedido] || boleta.tipoPedido || '-';
+    const metodoPago = boleta.metodoPago || '-';
+
+    doc.text(`N° Pedido : ${idCorto}`, margen, y); y += 4;
+    doc.text(`Fecha     : ${fecha}`, margen, y); y += 4;
+    doc.text(`Hora      : ${hora}`, margen, y); y += 4;
+    doc.text(`Cliente   : Cliente Genérico`, margen, y); y += 4;
+    doc.text(`Modalidad : ${tipoPedidoLabel}`, margen, y); y += 4;
+    linea();
+
+    // ── Encabezado tabla ──
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.text('Producto', margen, y);
+    doc.text('Cant', 48, y, { align: 'center' });
+    doc.text('P.Unit', 60, y, { align: 'right' });
+    doc.text('Total', ancho - margen, y, { align: 'right' });
+    y += 3;
+    linea();
+
+    // ── Ítems ──
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+
+    const detalles = boleta.detalles || [];
+    detalles.forEach(d => {
+        const nombreProducto = d.nombreProducto || '-';
+        // Recortar nombre si es muy largo
+        const nombreCorto = nombreProducto.length > 20
+            ? nombreProducto.substring(0, 19) + '.'
+            : nombreProducto;
+        doc.text(nombreCorto, margen, y);
+        doc.text(String(d.cantidad), 48, y, { align: 'center' });
+        doc.text(formatoMoneda(d.precioUnitario), 60, y, { align: 'right' });
+        doc.text(formatoMoneda(d.total), ancho - margen, y, { align: 'right' });
+        y += 5;
+    });
+
+    linea();
+
+    // ── Total ──
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text('TOTAL:', margen, y);
+    doc.text(formatoMoneda(boleta.total), ancho - margen, y, { align: 'right' });
+    y += 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.text(`Método de pago: ${metodoPago}`, margen, y);
+    y += 6;
+    linea();
+
+    // ── Pie ──
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.text('¡Gracias por su visita!', centro, y, { align: 'center' });
+    y += 4;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.text('Vuelva pronto :)!', centro, y, { align: 'center' });
+
+    doc.save(`boleta_${idCorto}.pdf`);
+};
+
+// ──────────────────────────────────────────────
+// MODAL BOLETA
+// ──────────────────────────────────────────────
+const modalBoleta = document.getElementById('modal-boleta');
+const btnDescargarBoleta = document.getElementById('btnDescargarBoleta');
+const btnCerrarBoleta    = document.getElementById('btnCerrarBoleta');
+
+const mostrarModalBoleta = (boleta) => {
+    ultimaBoleta = boleta;
+    if (modalBoleta) modalBoleta.classList.remove('hidden');
+};
+
+if (btnDescargarBoleta) {
+    btnDescargarBoleta.addEventListener('click', () => {
+        if (ultimaBoleta) generarPDFBoleta(ultimaBoleta);
+    });
+}
+
+if (btnCerrarBoleta) {
+    btnCerrarBoleta.addEventListener('click', () => {
+        if (modalBoleta) modalBoleta.classList.add('hidden');
+    });
+}
 
 
 const formatoMoneda = (valor) => `S/ ${Number(valor).toFixed(2)}`;
-
+// ──────────────────────────────────────────────
+// API CALLS
+// ──────────────────────────────────────────────
 const obtenerCajaAbierta = async () => {
 
     try {
@@ -151,31 +293,24 @@ const validarDetallePedido = async (requestDetalle) => {
     }
 };
 
-
+// cobrarPedido ahora devuelve ResponseBoleta
 const cobrarPedido = async (requestPedido) => {
     try {
         const response = await fetch(`${BASE_URL}/venta/cobrarPedido`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestPedido)
         });
-
-        const data = await response.text();
-
+        const data = await response.json();
         if (!response.ok) {
-            data.mensajes.forEach(m => {
-                mostrarToast(m, "error");
-            });
-            return false;
+            (data.mensajes || []).forEach(m => mostrarToast(m, "error"));
+            return null;
         }
-
-        mostrarToast(data, "success");
-        return true;
+        mostrarToast(data.mensaje || "Cobrado exitosamente", "success");
+        return data;        // ResponseBoleta
     } catch (error) {
-        mostrarToast("Ocurrio un error inesperado", "error");
-        return false;
+        mostrarToast("Ocurrió un error inesperado", "error");
+        return null;
     }
 };
 
@@ -206,30 +341,27 @@ const ocuparMesa = async (requestPedido, idMesa) => {
     }
 };
 
+// cobrarMesa ahora devuelve ResponseBoleta
 const cobrarMesa = async (idMesa, metodoPago) => {
     try {
         const response = await fetch(`${BASE_URL}/venta/cobrarMesa/${idMesa}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ metodoPago: metodoPago })
+            body: JSON.stringify({ metodoPago })
         });
-
-        const data = await response.text();
-
+        const data = await response.json();
         if (!response.ok) {
-            data.mensajes.forEach(m => {
-                mostrarToast(m, "error");
-            });
-            return false;
+            (data.mensajes || []).forEach(m => mostrarToast(m, "error"));
+            return null;
         }
-
-        mostrarToast(data, "success");
-        return true;
+        mostrarToast(data.mensaje || "Cobrado exitosamente", "success");
+        return data;        // ResponseBoleta
     } catch (error) {
-        mostrarToast("Ocurrio un error inesperado", "error");
-        return false;
+        mostrarToast("Ocurrió un error inesperado", "error");
+        return null;
     }
 };
+
 
 const agregarDetalleAlaMesa = async (idMesa, requestDetallePedido) => {
     try {
@@ -267,7 +399,9 @@ const obtenerDetallesPedidoPorMesa = async (idMesa) => {
         return [];
     }
 };
-
+// ──────────────────────────────────────────────
+// RENDER DETALLES
+// ──────────────────────────────────────────────
 const renderDetallesPedido = () => {
     const detalles = tipoPedidoActivo === "DELIVERY" ? detallesPedidoDelivery : detallesPedidoLlevar;
 
@@ -341,6 +475,9 @@ const renderDetallesMesa = () => {
 };
 
 
+// ──────────────────────────────────────────────
+// BOTONES — PEDIDO (LLEVAR / DELIVERY)
+// ──────────────────────────────────────────────
 const btnAgregarPedido = document.getElementById("btnAgregarPedido");
 btnAgregarPedido.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -443,7 +580,9 @@ btnRegistrarPagoPedido.addEventListener("click", (e) => {
     modalCobroPedido.classList.remove("hidden");
 
 });
-
+// ──────────────────────────────────────────────
+// TABS
+// ──────────────────────────────────────────────
 const divPedidoRegistro = document.getElementById("divPedidoRegistro");
 const divMesaPedidos = document.getElementById("divMesaPedidos");
 
@@ -479,6 +618,9 @@ btnTabLocal.addEventListener("click", () => {
 });
 
 
+// ──────────────────────────────────────────────
+// MESA — AGREGAR PEDIDO
+// ──────────────────────────────────────────────
 const btnOcuparMesa = document.getElementById("btnOcuparMesa");
 btnOcuparMesa.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -642,43 +784,28 @@ btnMesaOcupadaAgregar.addEventListener("click", async () => {
     renderDetallesMesa();
 });
 
-
-const btnMesaOcupadaCobrar = document.getElementById("btnMesaOcupadaCobrar");
-btnMesaOcupadaCobrar.addEventListener("click", async () => {
-
+document.getElementById("btnMesaOcupadaCobrar").addEventListener("click", async () => {
     divModalMesaOcupada.classList.add("hidden");
-
     const idMesa = MesaActiva.dataset.idMesa;
-    if (!idMesa) {
-        mostrarToast("Error: No se encontró el identificador de la mesa.", "error");
-        return;
-    }
+    if (!idMesa) { mostrarToast("Error: No se encontró el identificador de la mesa.", "error"); return; }
 
     cobroListaDetalles.innerHTML = "<p class='muted'>Cargando detalles...</p>";
     modalCobro.classList.remove("hidden");
-
     document.getElementById("cobro-mesa-label").textContent = `Mesa ${MesaActiva.dataset.mesa}`;
 
     const detallesBackend = await obtenerDetallesPedidoPorMesa(idMesa);
-
     cobroListaDetalles.innerHTML = "";
     let totalCobro = 0;
-
     detallesBackend.forEach((detalle) => {
         const item = document.createElement("div");
-        item.style.display = "flex";
-        item.style.justifyContent = "space-between";
-        item.style.padding = "4px 0";
-        item.innerHTML = `
-            <span>${detalle.cantidad}x ${detalle.nombreProducto}</span>
-            <span>${formatoMoneda(detalle.total)}</span>
-        `;
+        item.style.cssText = "display:flex;justify-content:space-between;padding:4px 0;";
+        item.innerHTML = `<span>${detalle.cantidad}x ${detalle.nombreProducto}</span><span>${formatoMoneda(detalle.total)}</span>`;
         cobroListaDetalles.appendChild(item);
         totalCobro += detalle.total;
     });
-
     cobroTotalMonto.textContent = formatoMoneda(totalCobro);
 });
+
 
 
 const btnMesaOcupadaCancel = document.getElementById("btnMesaOcupadaCancel");
@@ -689,16 +816,17 @@ btnMesaOcupadaCancel.addEventListener("click", () => {
 });
 
 btnConfirmarCobro.addEventListener("click", async () => {
-    const idMesa = MesaActiva.dataset.idMesa;
+    const idMesa     = MesaActiva.dataset.idMesa;
     const metodoPago = comboMetodoPagoCobro.value;
 
-    const cobroExitoso = await cobrarMesa(idMesa, metodoPago);
+    const boleta = await cobrarMesa(idMesa, metodoPago);
 
-    if (cobroExitoso) {
+    if (boleta) {
         detallesPedidoLocal.get(idMesa).clear();
         modalCobro.classList.add("hidden");
         MesaActiva = null;
         await cargarMesas();
+        mostrarModalBoleta(boleta);
     }
 });
 
@@ -760,29 +888,23 @@ const cargarSecciones = (sesionActiva) => {
 
 document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
     e.preventDefault();
-    if (await cerrarSesion()) {
-        window.location.href = "login.html";
-    }
-});
 
-
-const cerrarSesion = async () => {
     try {
 
-        const response = await fetch(`http://localhost:8080/api/usuario/cerrarSesion`, {
+        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
             method: 'PUT'
         });
 
         if (!response.ok) {
-            return false;
+            console.log("Ocurrio un error");
+        } else {
+            window.location.href = 'login.html';
         }
-
-        return true;
 
     } catch (error) {
         console.log(error);
     }
-}
+});
 
 
 document.addEventListener("DOMContentLoaded", async (e) => {

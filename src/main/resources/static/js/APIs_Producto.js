@@ -1,5 +1,5 @@
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'http://localhost:8083/api';
 
 const tbodyProducto = document.getElementById("tbodyProducto");
 const formProducto = document.getElementById('form-cat-productos');
@@ -395,7 +395,7 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
 
     try {
 
-        const response = await fetch(`http://localhost:8080/api/usuario/cerrarSesion`, {
+        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
             method: 'PUT'
         });
 

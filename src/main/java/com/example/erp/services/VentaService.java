@@ -1,5 +1,7 @@
 package com.example.erp.services;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,6 +13,7 @@ import com.example.erp.DTOs.request.RequestDetallePedido;
 import com.example.erp.DTOs.request.RequestMetodoPago;
 import com.example.erp.DTOs.request.RequestMovimientoCaja;
 import com.example.erp.DTOs.request.RequestPedido;
+import com.example.erp.DTOs.response.ResponseBoleta;
 import com.example.erp.DTOs.response.ResponseDetallePedido;
 import com.example.erp.DTOs.response.ResponseMesa;
 import com.example.erp.DTOs.response.ResponsePedido;
@@ -41,8 +44,8 @@ public class VentaService {
     private final PedidoRepository pedidoRepository;
     private final DetallePedidoRepository detallePedidoRepository;
     private final ProductoRepository productoRepository;
-    private final CajaRepository cajaRepository;
 
+    private final CajaRepository cajaRepository;
     private final CajaService cajaService;
 
     public VentaService(MesaRepository mesaRepository, PedidoRepository pedidoRepository,
@@ -96,7 +99,7 @@ public class VentaService {
     }
 
     @Transactional
-    public String cobrarPedido(RequestPedido requestPedido) {
+    public ResponseBoleta cobrarPedido(RequestPedido requestPedido) {
 
         Caja caja = cajaRepository.findByEstado(EstadoCaja.ABIERTO)
                 .orElseThrow(() -> new ReglaDeNegocioException("No se puede cobrar con la caja cerrada"));
@@ -146,7 +149,20 @@ public class VentaService {
 
         cajaService.registrarMovimientoPedido(requestMovimientoCaja, caja.getIdCaja());
 
-        return "Cobrado Exitosamente";
+        List<ResponseDetallePedido> detallesResponse = pedido.getDetalles().stream()
+                .map(MapperDetallePedido::toDTO)
+                .toList();
+
+        return ResponseBoleta.builder()
+                .idPedido(pedido.getIdPedido())
+                .tipoPedido(pedido.getTipoPedido())
+                .metodoPago(pedido.getMetodoPago())
+                .total(pedido.getTotal())
+                .detalles(detallesResponse)
+                .fecha(LocalDate.now())
+                .hora(LocalTime.now())
+                .mensaje("Cobrado Exitosamente")
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -201,7 +217,7 @@ public class VentaService {
     }
 
     @Transactional
-    public String cobrarMesa(UUID idMesa, RequestMetodoPago requestMetodoPago) {
+    public ResponseBoleta cobrarMesa(UUID idMesa, RequestMetodoPago requestMetodoPago) {
 
         Caja caja = cajaRepository.findByEstado(EstadoCaja.ABIERTO)
                 .orElseThrow(() -> new ReglaDeNegocioException("No se puede cobrar con la caja cerrada"));
@@ -215,21 +231,35 @@ public class VentaService {
             throw new EntidadNoEncontradaException("La mesa no tiene registrado un pedido");
         }
 
+        List<ResponseDetallePedido> detallesResponse = detallePedidoRepository.findByPedido(pedido).stream()
+                .map(MapperDetallePedido::toDTO)
+                .toList();
+
         String concepto = "Pedido de la mesa " + pedido.getMesa().getNumero();
 
         RequestMovimientoCaja requestMovimientoCaja = RequestMovimientoCaja.builder()
                 .concepto(concepto)
-                .metodo(pedido.getMetodoPago())
+                .metodo(requestMetodoPago.getMetodoPago())
                 .tipo(Tipo.INGRESO)
                 .monto(pedido.getTotal())
                 .build();
 
         cajaService.registrarMovimientoPedido(requestMovimientoCaja, caja.getIdCaja());
 
+        pedido.setMetodoPago(requestMetodoPago.getMetodoPago());
         mesa.setEstado(EstadoMesa.LIBRE);
         mesa.setPedido(null);
 
-        return "Cobrado Exitosamente";
+        return ResponseBoleta.builder()
+                .idPedido(pedido.getIdPedido())
+                .tipoPedido(pedido.getTipoPedido())
+                .metodoPago(requestMetodoPago.getMetodoPago())
+                .total(pedido.getTotal())
+                .detalles(detallesResponse)
+                .fecha(LocalDate.now())
+                .hora(LocalTime.now())
+                .mensaje("Cobrado Exitosamente")
+                .build();
     }
 
     @Transactional

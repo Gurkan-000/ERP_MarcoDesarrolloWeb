@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api";
+const BASE_URL = "http://localhost:8083/api";
 
 let cajaAbiertActual = null;
 
@@ -328,7 +328,7 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
 
     try {
 
-        const response = await fetch(`http://localhost:8080/api/usuario/cerrarSesion`, {
+        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
             method: 'PUT'
         });
 
