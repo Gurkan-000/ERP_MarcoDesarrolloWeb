@@ -35,14 +35,14 @@ public class ControllerUsuario {
     public ResponseEntity<List<ResponseUsuario>> obtenerUsuarios() {
         List<ResponseUsuario> responseUsuarios = usuarioService.obtenerUsuarios();
 
-        return ResponseEntity.ok().body(responseUsuarios);
+        return ResponseEntity.ok(responseUsuarios);
     }
 
     @GetMapping("/sesionActiva")
     public ResponseEntity<ResponseUsuario> obtenerSesionActiva() {
         ResponseUsuario responseUsuario = usuarioService.obtenerSesionActiva();
 
-        return ResponseEntity.ok().body(responseUsuario);
+        return ResponseEntity.ok(responseUsuario);
     }
 
     @PostMapping("/autenticar")
@@ -66,7 +66,7 @@ public class ControllerUsuario {
 
         ResponseUsuario responseUsuario = usuarioService.insertarUsuario(requestUsuario);
 
-        return ResponseEntity.ok().body(responseUsuario);
+        return ResponseEntity.ok(responseUsuario);
     }
 
 

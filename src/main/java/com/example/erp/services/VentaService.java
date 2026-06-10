@@ -1,7 +1,6 @@
 package com.example.erp.services;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +27,7 @@ import com.example.erp.entities.enums.Tipo;
 import com.example.erp.entities.enums.TipoPedido;
 import com.example.erp.exceptions.EntidadNoEncontradaException;
 import com.example.erp.exceptions.ReglaDeNegocioException;
+import com.example.erp.mappers.MapperBoletaPedido;
 import com.example.erp.mappers.MapperDetallePedido;
 import com.example.erp.mappers.MapperMesa;
 import com.example.erp.mappers.MapperPedido;
@@ -156,16 +156,7 @@ public class VentaService {
                 .map(MapperDetallePedido::toDTO)
                 .toList();
 
-        return ResponseBoleta.builder()
-                .idPedido(pedido.getIdPedido())
-                .tipoPedido(pedido.getTipoPedido())
-                .metodoPago(pedido.getMetodoPago())
-                .total(pedido.getTotal())
-                .detalles(detallesResponse)
-                .fecha(LocalDate.now())
-                .hora(LocalTime.now())
-                .mensaje("Cobrado Exitosamente")
-                .build();
+        return MapperBoletaPedido.toDTO(pedido, detallesResponse);
     }
 
     @Transactional(readOnly = true)
@@ -237,18 +228,14 @@ public class VentaService {
             throw new EntidadNoEncontradaException("La mesa no tiene registrado un pedido");
         }
 
-        List<ResponseDetallePedido> detallesResponse = detallePedidoRepository.findByPedido(pedido).stream()
-                .map(MapperDetallePedido::toDTO)
-                .toList();
-
         String concepto = "Pedido de la mesa " + pedido.getMesa().getNumero();
-
+        
         RequestMovimientoCaja requestMovimientoCaja = RequestMovimientoCaja.builder()
-                .concepto(concepto)
-                .metodo(requestMetodoPago.getMetodoPago())
-                .tipo(Tipo.INGRESO)
-                .monto(pedido.getTotal())
-                .build();
+        .concepto(concepto)
+        .metodo(requestMetodoPago.getMetodoPago())
+        .tipo(Tipo.INGRESO)
+        .monto(pedido.getTotal())
+        .build();
 
         cajaService.registrarMovimientoPedido(requestMovimientoCaja, caja.getIdCaja());
 
@@ -256,16 +243,11 @@ public class VentaService {
         mesa.setEstado(EstadoMesa.LIBRE);
         mesa.setPedido(null);
 
-        return ResponseBoleta.builder()
-                .idPedido(pedido.getIdPedido())
-                .tipoPedido(pedido.getTipoPedido())
-                .metodoPago(requestMetodoPago.getMetodoPago())
-                .total(pedido.getTotal())
-                .detalles(detallesResponse)
-                .fecha(LocalDate.now())
-                .hora(LocalTime.now())
-                .mensaje("Cobrado Exitosamente")
-                .build();
+        List<ResponseDetallePedido> detallesResponse = detallePedidoRepository.findByPedido(pedido).stream()
+                .map(MapperDetallePedido::toDTO)
+                .toList();
+        
+        return MapperBoletaPedido.toDTO(pedido, detallesResponse);
     }
 
     @Transactional

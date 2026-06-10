@@ -17,6 +17,8 @@ public class ResponseUsuario {
 
     private String nombre;
 
+    private String usuario;
+
     private Rol rol;
 
 }

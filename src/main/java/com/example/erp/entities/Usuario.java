@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class Usuario {
 
     private String nombre;
+    private String usuario;
     private String contrasena;
     private Rol rol;
 

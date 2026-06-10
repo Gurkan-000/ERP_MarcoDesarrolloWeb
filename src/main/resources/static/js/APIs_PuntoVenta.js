@@ -906,6 +906,23 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
     }
 });
 
+const cerrarSesion = async () =>{
+    try {
+
+        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
+            method: 'PUT'
+        });
+
+        if (!response.ok) {
+            return false;
+        } 
+
+        return true;
+
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 document.addEventListener("DOMContentLoaded", async (e) => {
 
@@ -915,6 +932,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     if (sesionActiva == null) {
         window.location.href = 'login.html';
         return;
+    }
+    if (typeof window.poblarTopbarUsuario === 'function') {
+        window.poblarTopbarUsuario(sesionActiva);
     }
 
     document.getElementById("infoUsuario").textContent = sesionActiva.nombre;

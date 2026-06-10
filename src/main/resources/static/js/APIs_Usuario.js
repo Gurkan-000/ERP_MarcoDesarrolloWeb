@@ -26,8 +26,8 @@ const cargarTablaUsuarios = async () => {
         data.forEach(usuario => {
             const rowTBody = document.createElement('tr');
             rowTBody.innerHTML = `
-                <td>${usuario.nombreCompleto || '-'}</td>
-                <td>${usuario.nombre}</td>
+                <td>${usuario.nombre || '-'}</td>
+                <td>${usuario.usuario}</td>
                 <td><span class="badge">${usuario.rol}</span></td>
             `;
             tbodyUsuario.appendChild(rowTBody);
@@ -51,8 +51,8 @@ const crearUsuario = async (requestUsuario) => {
             mostrarToast('Usuario creado con éxito', 'success');
             const rowTBody = document.createElement('tr');
             rowTBody.innerHTML = `
-                <td>${data.nombreCompleto || '-'}</td>
-                <td>${data.nombre}</td>
+                <td>${data.nombre || '-'}</td>
+                <td>${data.usuario}</td>
                 <td><span class="badge">${data.rol}</span></td>
             `;
             tbodyUsuario.appendChild(rowTBody);
@@ -70,8 +70,8 @@ btnGuardarUsuario.addEventListener('click', async () => {
     const comboRol          = document.getElementById('comboRol');
 
     const requestUsuario = {
-        nombreCompleto: txtNombreCompleto.value.trim(),
-        nombre:         txtUsuario.value.trim(),
+        nombre: txtNombreCompleto.value.trim(),
+        usuario:         txtUsuario.value.trim(),
         contrasena:     txtContrasena.value,
         rol:            comboRol.value
     };

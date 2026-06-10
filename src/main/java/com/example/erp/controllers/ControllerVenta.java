@@ -39,22 +39,22 @@ public class ControllerVenta {
     public ResponseEntity<List<ResponsePedido>> obtenerPedidos() {
         List<ResponsePedido> responsePedido = ventaService.obtenerPedidos();
 
-        return ResponseEntity.ok().body(responsePedido);
+        return ResponseEntity.ok(responsePedido);
     }
 
     @GetMapping("/listarMesas")
     public ResponseEntity<List<ResponseMesa>> obtenerMesas() {
         List<ResponseMesa> responseMesas = ventaService.obtenerMesas();
 
-        return ResponseEntity.ok().body(responseMesas);
+        return ResponseEntity.ok(responseMesas);
     }
 
     @PostMapping("/cobrarPedido")
     public ResponseEntity<ResponseBoleta> cobrarPedido(@Valid @RequestBody RequestPedido requestPedido) {
 
-        ResponseBoleta boleta = ventaService.cobrarPedido(requestPedido);
+        ResponseBoleta responseBoleta = ventaService.cobrarPedido(requestPedido);
 
-        return ResponseEntity.ok().body(boleta);
+        return ResponseEntity.ok(responseBoleta);
     }
 
     @PostMapping("/validarDetallePedido")
@@ -69,7 +69,7 @@ public class ControllerVenta {
     public ResponseEntity<List<ResponseDetallePedido>> obtenerDetallesPedidoPorMesa(@PathVariable UUID idMesa) {
         List<ResponseDetallePedido> responseDetallePedidos = ventaService.obtenerDetallesPedidoPorMesa(idMesa);
 
-        return ResponseEntity.ok().body(responseDetallePedidos);
+        return ResponseEntity.ok(responseDetallePedidos);
     }
 
     @PutMapping("/agregarDetallePedidoAlaMesa/{idMesa}")
@@ -92,9 +92,9 @@ public class ControllerVenta {
     public ResponseEntity<ResponseBoleta> cobrarMesa(@PathVariable UUID idMesa,
             @Valid @RequestBody RequestMetodoPago requestMetodoPago) {
 
-        ResponseBoleta boleta = ventaService.cobrarMesa(idMesa, requestMetodoPago);
+        ResponseBoleta responseBoleta = ventaService.cobrarMesa(idMesa, requestMetodoPago);
 
-        return ResponseEntity.ok().body(boleta);
+        return ResponseEntity.ok(responseBoleta);
     }
 
 

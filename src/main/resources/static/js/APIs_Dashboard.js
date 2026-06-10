@@ -19,7 +19,7 @@ const cargarSecciones = (sesionActiva) => {
     const ocultarMenus = (urls) => {
         urls.forEach(url => {
             const el = document.querySelector(`a[href='${url}']`);
-            if(el) el.classList.add("hidden");
+            if (el) el.classList.add("hidden");
         });
     }
 
@@ -38,7 +38,7 @@ const cerrarSesion = async (e) => {
     try {
         const response = await fetch(`${BASE_URL}/usuario/cerrarSesion`, { method: 'PUT' });
         if (response.ok) {
-            window.location.href = 'login.html'; 
+            window.location.href = 'login.html';
         } else {
             console.error("Ocurrió un error al cerrar sesión");
         }
@@ -57,7 +57,7 @@ const renderizarGraficas = (data) => {
             labels: ['Ingresos', 'Egresos'],
             datasets: [{
                 label: 'Soles (S/)',
-                data: [data.ingresos, data.egresos], 
+                data: [data.ingresos, data.egresos],
                 backgroundColor: [
                     'rgba(34, 197, 94, 0.6)', // Verde 
                     'rgba(239, 68, 68, 0.6)'  // Rojo 
@@ -70,8 +70,8 @@ const renderizarGraficas = (data) => {
                 borderRadius: 6
             }]
         },
-        options: { 
-            responsive: true, 
+        options: {
+            responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: false } // Oculta la leyenda superior para verse más limpio
@@ -86,7 +86,7 @@ const renderizarGraficas = (data) => {
         data: {
             labels: ['Local (Mesa)', 'Para Llevar', 'Delivery'],
             datasets: [{
-                data: [data.pedidosLocal, data.pedidosLlevar, data.pedidosDelivery], 
+                data: [data.pedidosLocal, data.pedidosLlevar, data.pedidosDelivery],
                 backgroundColor: [
                     'rgba(59, 130, 246, 0.7)', // Azul
                     'rgba(249, 115, 22, 0.7)', // Naranja brand
@@ -96,28 +96,26 @@ const renderizarGraficas = (data) => {
                 hoverOffset: 4
             }]
         },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false 
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
         }
     });
 }
 
-// 5. Función para cargar las estadísticas y pintar los datos
+
 const cargarEstadisticas = async () => {
     try {
-        // CÓDIGO REAL: Llama al backend de Spring Boot
+
         const response = await fetch(`${BASE_URL}/dashboard-api/estadisticas`);
         if (response.ok) {
             const data = await response.json();
-            
-            // Llenar tarjetas superiores
+
             document.querySelector('.text-success').textContent = `S/ ${Number(data.ventasHoy).toFixed(2)}`;
             document.querySelectorAll('.stat-card h4')[1].textContent = data.pedidosTotales;
             document.querySelector('.text-warning').textContent = `${data.mesasOcupadas}/6`;
             document.querySelectorAll('.stat-card h4')[3].textContent = data.productosTotales;
-
-            // Dibujar las gráficas con los datos de la base de datos
+            
             renderizarGraficas(data);
         } else {
             console.error("Error al obtener estadísticas del servidor");
@@ -127,18 +125,39 @@ const cargarEstadisticas = async () => {
     }
 }
 
-// 6. Inicializador cuando la página carga
+document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    try {
+
+        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
+            method: 'PUT'
+        });
+
+        if (!response.ok) {
+            console.log("Ocurrio un error");
+        } else {
+            window.location.href = 'login.html';
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 document.addEventListener("DOMContentLoaded", async (e) => {
     e.preventDefault();
 
     const sesionActiva = await verificarSesionActiva();
 
     if (sesionActiva == null) {
-        window.location.href = 'login.html'; 
+        window.location.href = 'login.html';
         return;
     }
+    if (typeof window.poblarTopbarUsuario === 'function') {
+        window.poblarTopbarUsuario(sesionActiva);
+    }
 
-    // Actualizamos la UI del usuario
     const userInfoP = document.querySelector(".user-meta p");
     const userInfoSpan = document.querySelector(".user-meta span");
     const userAvatar = document.querySelector(".user-avatar");
@@ -147,16 +166,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     if (userInfoSpan) userInfoSpan.textContent = sesionActiva.rol;
     if (userAvatar) userAvatar.textContent = sesionActiva.rol.charAt(0).toUpperCase();
 
-    // Validar permisos del menú
     cargarSecciones(sesionActiva);
 
-    // Configurar cierre de sesión
-    const btnCerrarSesion = document.querySelector(".sidebar-footer .btn-ghost");
-    if (btnCerrarSesion) {
-        btnCerrarSesion.removeAttribute("onclick");
-        btnCerrarSesion.addEventListener("click", cerrarSesion);
-    }
-
-    // Finalmente, cargar los números y gráficas del Dashboard
     cargarEstadisticas();
 });

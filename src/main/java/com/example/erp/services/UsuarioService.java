@@ -36,6 +36,7 @@ public class UsuarioService {
     public List<ResponseUsuario> obtenerUsuarios() {
         return usuarios.stream().map(u -> ResponseUsuario.builder()
                 .nombre(u.getNombre())
+                .usuario(u.getUsuario())
                 .rol(u.getRol())
                 .build())
                 .toList();
@@ -44,20 +45,20 @@ public class UsuarioService {
     private void cargarUsuariosIniciales() {
 
         usuarios.addAll(Arrays.asList(
-                new Usuario("Jose", "admin123", Rol.Administrador),
-                new Usuario("Marco", "caja123", Rol.Cajero),
-                new Usuario("Miguel", "mesero123", Rol.Mesero)
+                new Usuario("Jose Armas", "Jose24", "admin123", Rol.Administrador),
+                new Usuario("Marco Castro", "Marco20", "caja123", Rol.Cajero),
+                new Usuario("Miguel Arrairan", "Miguel22", "mesero123", Rol.Mesero)
         ));
 
     }
 
     public void autenticar(RequestAuthUsuario requestUsuario) {
 
-        String nombre = requestUsuario.getNombre().trim();
+        String usuario = requestUsuario.getUsuario().trim();
         String contrasena = requestUsuario.getContrasena().trim();
 
         Usuario usuarioAuth = usuarios.stream()
-                .filter(u -> nombre.equals(u.getNombre()) && contrasena.equals(u.getContrasena()))
+                .filter(u -> usuario.equals(u.getUsuario()) && contrasena.equals(u.getContrasena()))
                 .findFirst()
                 .orElseThrow(() -> new EntidadNoEncontradaException("Acceso Denegado"));
 
@@ -69,6 +70,7 @@ public class UsuarioService {
 
         Usuario usuario = Usuario.builder()
                 .nombre(requestUsuario.getNombre())
+                .usuario(requestUsuario.getUsuario())
                 .contrasena(requestUsuario.getContrasena())
                 .rol(requestUsuario.getRol())
                 .build();
@@ -77,6 +79,7 @@ public class UsuarioService {
 
         return ResponseUsuario.builder()
                 .nombre(usuario.getNombre())
+                .usuario(usuario.getUsuario())
                 .rol(usuario.getRol())
                 .build();
     }
@@ -89,6 +92,7 @@ public class UsuarioService {
 
         return ResponseUsuario.builder()
                 .nombre(usuarioActivo.getNombre())
+                .usuario(usuarioActivo.getUsuario())
                 .rol(usuarioActivo.getRol())
                 .build();
     }

@@ -53,7 +53,8 @@
 // (usa el dato que ya cargó el JS de la página)
 // ─────────────────────────────────────────────
 window.poblarTopbarUsuario = function(sesion) {
-    const displayName = sesion.nombreCompleto || sesion.nombre || 'Usuario';
+
+    const displayName = sesion.usuario || 'Usuario';
     const rol         = sesion.rol || '';
 
     // Topbar derecho

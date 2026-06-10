@@ -53,7 +53,7 @@ btnIngresar.addEventListener("click", (e) => {
   const txtContraseña = document.getElementById("txtContraseña");
 
   const requestUsuario = {
-    "nombre": txtUsuario.value,
+    "usuario": txtUsuario.value,
     "contrasena": txtContraseña.value
   }
 

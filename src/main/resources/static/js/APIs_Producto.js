@@ -420,6 +420,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         window.location.href = '../login.html';
         return;
     }
+    if (typeof window.poblarTopbarUsuario === 'function') {
+        window.poblarTopbarUsuario(sesionActiva);
+    }
 
     document.getElementById("infoUsuario").textContent = sesionActiva.nombre;
     document.getElementById("infoRol").textContent = sesionActiva.rol;

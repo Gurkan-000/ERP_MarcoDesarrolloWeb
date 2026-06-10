@@ -16,8 +16,11 @@ import lombok.Setter;
 @Builder
 public class RequestUsuario {
 
-    @NotBlank(message = "Nombre de usuario no valido")
+    @NotBlank(message = "Nombre no valido")
     private String nombre;
+
+    @NotBlank(message = "Usuario no valido")
+    private String usuario;
 
     @NotBlank(message = "Contraseña no valida")
     private String contrasena;
