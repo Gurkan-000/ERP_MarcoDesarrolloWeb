@@ -6,7 +6,7 @@ const detallesPedidoDelivery = new Map();
 const detallesPedidoLocal = new Map();
 const productosMap = new Map();
 
-let tipoPedidoActivo = "LLEVAR";
+let tipoPedidoActivo = "LOCAL";
 let MesaActiva = null;
 let rolUsuarioActivo = null; //variable para saber el rol de usuario sin volver a consultar la api
 // Datos de la última boleta generada (para el PDF)
@@ -52,7 +52,7 @@ const generarPDFBoleta = (boleta) => {
 
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('RUC: 20123456789', centro, y, { align: 'center' });
+    doc.text('RUC: -', centro, y, { align: 'center' });
     y += 4;
     doc.text('Av. Principal 123, Lima - Perú', centro, y, { align: 'center' });
     y += 5;
@@ -138,7 +138,7 @@ const generarPDFBoleta = (boleta) => {
     y += 4;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
-    doc.text('Vuelva pronto :)!', centro, y, { align: 'center' });
+    doc.text('VUELVA PRONTO :) !', centro, y, { align: 'center' });
 
     doc.save(`boleta_${idCorto}.pdf`);
 };

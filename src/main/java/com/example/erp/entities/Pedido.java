@@ -1,6 +1,7 @@
 package com.example.erp.entities;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +40,7 @@ public class Pedido {
     @UuidGenerator
     private UUID idPedido;
 
+    @Enumerated(EnumType.STRING)
     private TipoPedido tipoPedido;
 
     @Column(
@@ -58,6 +60,12 @@ public class Pedido {
 
     @OneToOne(mappedBy = "pedido", fetch = FetchType.LAZY)
     private Mesa mesa;
+
+    @Column(
+            name = "fecha_pedido"
+    )
+    private LocalDate fechaPedido;
+
 
     public void addDetallePedido(DetallePedido detallePedido) {
         detallePedido.setPedido(this);

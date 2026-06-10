@@ -105,6 +105,9 @@ public class VentaService {
                 .orElseThrow(() -> new ReglaDeNegocioException("No se puede cobrar con la caja cerrada"));
 
         Pedido pedido = MapperPedido.toEntity(requestPedido);
+
+        pedido.setFechaPedido(LocalDate.now());
+
         pedido = pedidoRepository.save(pedido);
 
         for (RequestDetallePedido requestDetallePedido : requestPedido.getDetalles()) {
@@ -184,6 +187,9 @@ public class VentaService {
                 .orElseThrow(() -> new EntidadNoEncontradaException("Mesa no encontrada"));
 
         Pedido pedido = MapperPedido.toEntity(requestPedido);
+
+        pedido.setFechaPedido(LocalDate.now());
+
         pedido = pedidoRepository.save(pedido);
 
         for (RequestDetallePedido requestDetallePedido : requestPedido.getDetalles()) {

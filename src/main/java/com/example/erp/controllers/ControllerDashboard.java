@@ -1,21 +1,42 @@
 package com.example.erp.controllers;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@RequestMapping("/dashboard")
+import com.example.erp.DTOs.request.RequestPedidoMensual;
+import com.example.erp.DTOs.response.ResponseDashboard;
+import com.example.erp.DTOs.response.ResponsePedidoMensual;
+import com.example.erp.services.DashboardService;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+@RestController
+@RequestMapping("/dashboard-api")
 @CrossOrigin("*")
 public class ControllerDashboard {
-    
-    @GetMapping("/vista")
-    public String dashboardVista(Model model, HttpSession session) {
-      
-        
-        return "dashboard"; 
+
+    private final DashboardService dashboardService;
+
+    public ControllerDashboard(DashboardService dashboardService) {
+        this.dashboardService = dashboardService;
     }
+
+    @GetMapping("/estadisticas")
+    public ResponseEntity<ResponseDashboard> obtenerEstadisticas() {
+        ResponseDashboard estadisticas = dashboardService.obtenerEstadisticas();
+        return ResponseEntity.ok(estadisticas);
+    }
+
+    @GetMapping("/pedidosMensuales")
+    public ResponseEntity<List<ResponsePedidoMensual>> obtenerPedidosMes(@RequestBody RequestPedidoMensual request) {
+        List<ResponsePedidoMensual> pedidosMensuales = dashboardService.obtenerPedidosMes(request.getMes(), request.getAnio());
+        return ResponseEntity.ok(pedidosMensuales);
+    }
+    
 }

@@ -1,14 +1,19 @@
 package com.example.erp.services;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.erp.DTOs.response.ResponseDashboard;
+import com.example.erp.DTOs.response.ResponsePedidoMensual;
 import com.example.erp.entities.Caja;
 import com.example.erp.entities.enums.EstadoCaja;
 import com.example.erp.entities.enums.EstadoMesa;
+import com.example.erp.entities.enums.MetodoPago;
 import com.example.erp.entities.enums.TipoPedido;
 import com.example.erp.repositories.CajaRepository;
 import com.example.erp.repositories.MesaRepository;
@@ -60,6 +65,20 @@ public class DashboardService {
                 .pedidosLocal(pedidosLocal)
                 .pedidosLlevar(pedidosLlevar)
                 .pedidosDelivery(pedidosDelivery)
-                .build();
+                .build();  
+    }
+
+    public List<ResponsePedidoMensual> obtenerPedidosMes(Integer mes, Integer anio) {
+
+    List<ResponsePedidoMensual> respuesta = pedidoRepository.obtenerPedidosMes(mes, anio)
+                                            .stream()
+                                            .map(row -> ResponsePedidoMensual.builder()
+                                                .fecha_pedido(row.getFechaPedido())
+                                                .tipo_pedido(row.getTipoPedido())
+                                                .total(row.getTotal())
+                                                .metodo_pago(row.getMetodoPago())
+                                                .build())
+                                            .toList();
+        return respuesta;
     }
 }
