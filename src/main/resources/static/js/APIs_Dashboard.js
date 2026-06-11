@@ -169,4 +169,119 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     cargarSecciones(sesionActiva);
 
     cargarEstadisticas();
+    // btnHISTORIAL
+    function cargarAnios() {
+
+        const select = document.getElementById("selectAnio");
+
+        const anioActual = new Date().getFullYear();
+
+        for(let i = anioActual; i >= 2020; i--) {
+
+            const option = document.createElement("option");
+
+            option.value = i;
+            option.textContent = i;
+
+            select.appendChild(option);
+        }
+    }
+    document
+        .getElementById("btnHistorialMensual")
+        .addEventListener("click", () => {
+
+            document
+                .getElementById("modalHistorial")
+                .classList.toggle("hidden");
+        });
+
+    document
+        .getElementById("btnDescargarExcel")
+        .addEventListener("click", descargarExcelMensual);
+
+    // generacion del excel
+    async function descargarExcelMensual() {
+
+        const mes = document.getElementById("selectMes").value;
+        const anio = document.getElementById("selectAnio").value;
+
+        const response = await fetch(
+            `${BASE_URL}/dashboard-api/pedidosMensuales?mes=${mes}&anio=${anio}`
+        );
+
+        if (!response.ok) {
+            throw new Error("Error al obtener los pedidos");
+        }
+
+        const pedidos = await response.json();
+
+        generarExcel(pedidos, mes, anio);
+    }
+
+    function generarExcel(pedidos, mes, anio) {
+
+    const datos = pedidos.map(p => ({
+        "Fecha": p.fecha_pedido,
+        "Tipo Pedido": p.tipo_pedido,
+        "Método Pago": p.metodo_pago,
+        "Total (S/)": Number(p.total)
+    }));
+
+    const totalGeneral = pedidos.reduce(
+        (acum, pedido) => acum + Number(pedido.total),
+        0
+    );
+
+    const worksheet = XLSX.utils.aoa_to_sheet([
+        [`Reporte de Pedidos - ${mes}/${anio}`],
+        [],
+        ["Fecha", "Tipo Pedido", "Método Pago", "Total (S/)"]
+    ]);
+
+    XLSX.utils.sheet_add_json(
+        worksheet,
+        datos,
+        {
+            origin: "A4",
+            skipHeader: true
+        }
+    );
+
+    const filaTotal = datos.length + 5;
+
+    XLSX.utils.sheet_add_aoa(
+        worksheet,
+        [
+            ["", "", "TOTAL GENERAL", totalGeneral]
+        ],
+        {
+            origin: `A${filaTotal}`
+        }
+    );
+
+    worksheet["!cols"] = [
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 15 }
+    ];
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Pedidos"
+    );
+
+    XLSX.writeFile(
+        workbook,
+        `Pedidos_${mes}_${anio}.xlsx`
+    );
+}
+
+    cargarSecciones(sesionActiva);
+
+    cargarEstadisticas();
+    cargarAnios();
 });

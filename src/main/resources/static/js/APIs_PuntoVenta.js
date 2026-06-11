@@ -560,6 +560,7 @@ btnConfirmarCompraPedido.addEventListener("click", async (e) => {
         mapActivo.clear();
         renderDetallesPedido();
         modalCobroPedido.classList.add("hidden");
+        mostrarModalBoleta(pagoCorrecto);
     }
 });
 

@@ -163,8 +163,13 @@ body {
   color: var(--white);
 }
 
-.btn-primary:hover {
-  background: var(--orange-600);
+.btn-primary-green {
+  background: var(--green-500)!important;
+  color: var(--white)!important;
+}
+
+.btn-primary-green:hover {
+  transform: translateY(-2px);
 }
 
 .btn-danger {

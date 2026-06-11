@@ -159,6 +159,41 @@
                 <i class="fas fa-boxes-stacked"></i>
                 Ver Inventario
               </button>
+              <button id="btnHistorialMensual" class="btn btn-primary-green">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                VER HISTORIAL MENSUAL
+              </button>
+            </div>
+            <div id="modalHistorial" class="card hidden" style="margin-top:20px;">
+              <h3>Historial Mensual</h3>
+              <form class="form-grid" id="formHistorialMensual">
+                <label class="field">
+                  <span>Mes</span>
+                  <select id="selectMes">
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Año</span>
+                  <select id="selectAnio"></select>
+                </label>
+                <div class="form-actions form-actions-end" style="padding-top:0;">
+                  <button id="btnDescargarExcel" class="btn btn-primary-green" type="button">
+                    Descargar Excel
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </main>
@@ -168,6 +203,7 @@
 
   <div id="toast-container" class="toastFixed"></div>
 
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="../static/js/app.js"></script>
   <script src="../static/js/APIs_Dashboard.js"></script>
