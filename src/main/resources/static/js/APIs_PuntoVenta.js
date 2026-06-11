@@ -614,7 +614,7 @@ btnTabDelivery.addEventListener("click", () => {
 btnTabLocal.addEventListener("click", () => {
     tipoPedidoActivo = "LOCAL";
     divPedidoRegistro.classList.add("hidden");
-    divMesaPedidos.classList.remove("hidden");
+    divMesaPedidos.classList.add("hidden");
     renderDetallesMesa();
 });
 
