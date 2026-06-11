@@ -54,7 +54,7 @@
 // ─────────────────────────────────────────────
 window.poblarTopbarUsuario = function(sesion) {
 
-    const displayName = sesion.usuario || 'Usuario';
+    const displayName = sesion.nombre || 'Usuario'; //muestra el nombre del usuario, no su user-credencial
     const rol         = sesion.rol || '';
 
     // Topbar derecho
