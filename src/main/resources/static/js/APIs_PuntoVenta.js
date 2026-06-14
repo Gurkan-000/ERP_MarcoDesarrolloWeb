@@ -129,6 +129,12 @@ const generarPDFBoleta = (boleta) => {
     doc.setFontSize(7.5);
     doc.text(`Método de pago: ${metodoPago}`, margen, y);
     y += 6;
+    if (boleta.efectivoRecibido != null) {
+        doc.text(`Efectivo recibido: ${formatoMoneda(boleta.efectivoRecibido)}`, margen, y);
+        y += 4;
+        doc.text(`Vuelto: ${formatoMoneda(boleta.vuelto != null ? boleta.vuelto : 0)}`, margen, y);
+        y += 6;
+    }
     linea();
 
     // ── Pie ──
@@ -528,6 +534,33 @@ const tipoPedidoLabel = document.getElementById("tipo-pedido-label");
 const modalPedidoTotalMonto = document.getElementById("modal-pedido-total-monto");
 const comboMetodoPagoModal = document.getElementById("comboMetodoPagoModal");
 
+// Elementos para manejo de efectivo en modal pedido
+const efectivoBlockModal = document.getElementById('efectivo-block-modal');
+const inputEfectivoModal = document.getElementById('inputEfectivoModal');
+const vueltoModal = document.getElementById('vuelto-modal');
+
+if (comboMetodoPagoModal) {
+    comboMetodoPagoModal.addEventListener('change', () => {
+        if (comboMetodoPagoModal.value === 'EFECTIVO') {
+            if (efectivoBlockModal) efectivoBlockModal.classList.remove('hidden');
+            if (inputEfectivoModal) inputEfectivoModal.value = '';
+            if (vueltoModal) vueltoModal.textContent = formatoMoneda(0);
+        } else {
+            if (efectivoBlockModal) efectivoBlockModal.classList.add('hidden');
+        }
+    });
+}
+
+if (inputEfectivoModal) {
+    inputEfectivoModal.addEventListener('input', () => {
+        const text = modalPedidoTotalMonto ? modalPedidoTotalMonto.textContent : 'S/ 0.00';
+        const total = Number(text.replace('S/', '').replace(/\s/g, '').replace(',', '.')) || 0;
+        const efectivo = Number(inputEfectivoModal.value) || 0;
+        const vuelto = efectivo - total;
+        if (vueltoModal) vueltoModal.textContent = formatoMoneda(vuelto >= 0 ? vuelto : 0);
+    });
+}
+
 const btnCancelarCompraPedido = document.getElementById("btnCancelarCompraPedido");
 btnCancelarCompraPedido.addEventListener("click", () => {
     modalCobroPedido.classList.add("hidden");
@@ -551,12 +584,33 @@ btnConfirmarCompraPedido.addEventListener("click", async (e) => {
     btnConfirmarCompraPedido.disabled = true;
     btnConfirmarCompraPedido.textContent = "Procesando...";
 
+    // Si es EFECTIVO, validar monto recibido y calcular vuelto
+    let totalPedido = 0;
+    mapActivo.forEach(d => totalPedido += d.total);
+
+    if (requestPedido.metodoPago === 'EFECTIVO') {
+        const efectivoRec = Number(inputEfectivoModal ? inputEfectivoModal.value : 0) || 0;
+        if (isNaN(efectivoRec) || efectivoRec < totalPedido) {
+            mostrarToast('El monto recibido es insuficiente para cubrir el total.', 'error');
+            btnConfirmarCompraPedido.disabled = false;
+            btnConfirmarCompraPedido.textContent = 'Comprar';
+            return;
+        }
+        requestPedido.efectivoRecibido = Number(efectivoRec.toFixed(2));
+        requestPedido.vuelto = Number((efectivoRec - totalPedido).toFixed(2));
+    }
+
     const pagoCorrecto = await cobrarPedido(requestPedido);
 
     btnConfirmarCompraPedido.disabled = false;
     btnConfirmarCompraPedido.textContent = "Comprar";
 
     if (pagoCorrecto) {
+        // Adjuntar datos de efectivo a la boleta que mostraremos/convertiremos a PDF
+        if (requestPedido.metodoPago === 'EFECTIVO') {
+            pagoCorrecto.efectivoRecibido = requestPedido.efectivoRecibido;
+            pagoCorrecto.vuelto = requestPedido.vuelto;
+        }
         mapActivo.clear();
         renderDetallesPedido();
         modalCobroPedido.classList.add("hidden");
@@ -577,6 +631,15 @@ btnRegistrarPagoPedido.addEventListener("click", (e) => {
     modalPedidoTotalMonto.textContent = formatoMoneda(total);
 
     comboMetodoPagoModal.selectedIndex = 0;
+
+    // Asegurar estado inicial del bloque de efectivo según el valor actual del select
+    if (comboMetodoPagoModal && comboMetodoPagoModal.value === 'EFECTIVO') {
+        if (efectivoBlockModal) efectivoBlockModal.classList.remove('hidden');
+    } else {
+        if (efectivoBlockModal) efectivoBlockModal.classList.add('hidden');
+    }
+    if (inputEfectivoModal) inputEfectivoModal.value = '';
+    if (vueltoModal) vueltoModal.textContent = formatoMoneda(0);
 
     modalCobroPedido.classList.remove("hidden");
 
@@ -761,6 +824,33 @@ const comboMetodoPagoCobro = document.getElementById("comboMetodoPagoCobro");
 const btnConfirmarCobro = document.getElementById("btnConfirmarCobro");
 const btnCancelarCobro = document.getElementById("btnCancelarCobro");
 
+// Elementos para manejo de efectivo en modal cobro mesa
+const efectivoBlockCobro = document.getElementById('efectivo-block-cobro');
+const inputEfectivoCobro = document.getElementById('inputEfectivoCobro');
+const vueltoCobro = document.getElementById('vuelto-cobro');
+
+if (comboMetodoPagoCobro) {
+    comboMetodoPagoCobro.addEventListener('change', () => {
+        if (comboMetodoPagoCobro.value === 'EFECTIVO') {
+            if (efectivoBlockCobro) efectivoBlockCobro.classList.remove('hidden');
+            if (inputEfectivoCobro) inputEfectivoCobro.value = '';
+            if (vueltoCobro) vueltoCobro.textContent = formatoMoneda(0);
+        } else {
+            if (efectivoBlockCobro) efectivoBlockCobro.classList.add('hidden');
+        }
+    });
+}
+
+if (inputEfectivoCobro) {
+    inputEfectivoCobro.addEventListener('input', () => {
+        const text = cobroTotalMonto ? cobroTotalMonto.textContent : 'S/ 0.00';
+        const total = Number(text.replace('S/', '').replace(/\s/g, '').replace(',', '.')) || 0;
+        const efectivo = Number(inputEfectivoCobro.value) || 0;
+        const vuelto = efectivo - total;
+        if (vueltoCobro) vueltoCobro.textContent = formatoMoneda(vuelto >= 0 ? vuelto : 0);
+    });
+}
+
 const btnMesaOcupadaAgregar = document.getElementById("btnMesaOcupadaAgregar");
 btnMesaOcupadaAgregar.addEventListener("click", async () => {
     divModalMesaOcupada.classList.add("hidden");
@@ -792,6 +882,15 @@ document.getElementById("btnMesaOcupadaCobrar").addEventListener("click", async 
 
     cobroListaDetalles.innerHTML = "<p class='muted'>Cargando detalles...</p>";
     modalCobro.classList.remove("hidden");
+    // Estado inicial del bloque de efectivo según el valor actual del select
+    if (comboMetodoPagoCobro) comboMetodoPagoCobro.selectedIndex = 0;
+    if (comboMetodoPagoCobro && comboMetodoPagoCobro.value === 'EFECTIVO') {
+        if (efectivoBlockCobro) efectivoBlockCobro.classList.remove('hidden');
+    } else {
+        if (efectivoBlockCobro) efectivoBlockCobro.classList.add('hidden');
+    }
+    if (inputEfectivoCobro) inputEfectivoCobro.value = '';
+    if (vueltoCobro) vueltoCobro.textContent = formatoMoneda(0);
     document.getElementById("cobro-mesa-label").textContent = `Mesa ${MesaActiva.dataset.mesa}`;
 
     const detallesBackend = await obtenerDetallesPedidoPorMesa(idMesa);
@@ -820,9 +919,25 @@ btnConfirmarCobro.addEventListener("click", async () => {
     const idMesa     = MesaActiva.dataset.idMesa;
     const metodoPago = comboMetodoPagoCobro.value;
 
+    // Si es EFECTIVO, validar monto recibido
+    let totalCobro = Number(cobroTotalMonto ? cobroTotalMonto.textContent.replace('S/', '').replace(/\s/g, '').replace(',', '.') : 0) || 0;
+    let efectivoRec = null;
+    if (metodoPago === 'EFECTIVO') {
+        efectivoRec = Number(inputEfectivoCobro ? inputEfectivoCobro.value : 0) || 0;
+        if (isNaN(efectivoRec) || efectivoRec < totalCobro) {
+            mostrarToast('El monto recibido es insuficiente para cubrir el total.', 'error');
+            return;
+        }
+    }
+
     const boleta = await cobrarMesa(idMesa, metodoPago);
 
     if (boleta) {
+        // Adjuntar datos de efectivo si aplica
+        if (metodoPago === 'EFECTIVO') {
+            boleta.efectivoRecibido = Number(efectivoRec.toFixed(2));
+            boleta.vuelto = Number((efectivoRec - totalCobro).toFixed(2));
+        }
         detallesPedidoLocal.get(idMesa).clear();
         modalCobro.classList.add("hidden");
         MesaActiva = null;
