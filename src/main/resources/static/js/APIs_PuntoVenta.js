@@ -1,4 +1,3 @@
-
 const BASE_URL = "http://localhost:8083/api";
 
 const detallesPedidoLlevar = new Map();
@@ -433,12 +432,15 @@ const renderDetallesPedido = () => {
 
     txtTotalPedido.textContent = formatoMoneda(total);
 
+    const btnEnviarAEsperaRef = document.getElementById("btnEnviarAEspera");
     if (detalles.size > 0) {
         tfootTotalPedido.classList.remove("hidden");
         btnRegistrarPagoPedido.classList.remove("hidden");
+        if (btnEnviarAEsperaRef) btnEnviarAEsperaRef.classList.remove("hidden");
     } else {
         tfootTotalPedido.classList.add("hidden");
         btnRegistrarPagoPedido.classList.add("hidden");
+        if (btnEnviarAEsperaRef) btnEnviarAEsperaRef.classList.add("hidden");
     }
 };
 
@@ -613,6 +615,15 @@ btnConfirmarCompraPedido.addEventListener("click", async (e) => {
         }
         mapActivo.clear();
         renderDetallesPedido();
+        // Si el cobro vino desde un pedido en espera, eliminarlo de la lista
+        const esperaIdStr = modalCobroPedido.dataset.esperaId;
+        if (esperaIdStr) {
+            const esperaId = Number(esperaIdStr);
+            const idx = pedidosEnEspera.findIndex(p => p.id === esperaId);
+            if (idx !== -1) pedidosEnEspera.splice(idx, 1);
+            delete modalCobroPedido.dataset.esperaId;
+            renderTablaEspera();
+        }
         modalCobroPedido.classList.add("hidden");
         mostrarModalBoleta(pagoCorrecto);
     }
@@ -656,6 +667,10 @@ const btnTabLocal = document.getElementById("btnTabLocal");
 
 const divPedidoLlevar = document.getElementById("divPedidoLlevar");
 btnTabLlevar.addEventListener("click", () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btnTabLlevar.classList.add('active');
+    document.getElementById('pos-llevar').classList.add('active');
     divPedidoLlevar.appendChild(divPedidoRegistro);
     divPedidoRegistro.classList.remove("hidden");
     divMesaPedidos.classList.add("hidden");
@@ -666,6 +681,10 @@ btnTabLlevar.addEventListener("click", () => {
 
 const divPedidoDelivery = document.getElementById("divPedidoDelivery");
 btnTabDelivery.addEventListener("click", () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btnTabDelivery.classList.add('active');
+    document.getElementById('pos-delivery').classList.add('active');
     divPedidoDelivery.appendChild(divPedidoRegistro);
     divPedidoRegistro.classList.remove("hidden");
     divMesaPedidos.classList.add("hidden");
@@ -675,6 +694,10 @@ btnTabDelivery.addEventListener("click", () => {
 
 
 btnTabLocal.addEventListener("click", () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btnTabLocal.classList.add('active');
+    document.getElementById('pos-salon').classList.add('active');
     tipoPedidoActivo = "LOCAL";
     divPedidoRegistro.classList.add("hidden");
     divMesaPedidos.classList.add("hidden");
@@ -1086,3 +1109,205 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 });
 
 
+
+// ──────────────────────────────────────────────
+// LISTA DE ESPERA (LLEVAR / DELIVERY)
+// ──────────────────────────────────────────────
+
+// Estructura de cada pedido en espera:
+// { id, tipoPedido, detalles: Map(idProducto -> detalle), fechaHora }
+const pedidosEnEspera = [];
+let contadorEspera = 0;
+
+const formatearFechaHora = (date) => {
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+const calcularTotalDetalles = (detallesMap) => {
+    let total = 0;
+    detallesMap.forEach(d => total += d.total);
+    return total;
+};
+
+const renderTablaEspera = () => {
+    const tbody = document.getElementById('tbodyEspera');
+    const txtVacia = document.getElementById('txtEsperaVacia');
+    const tabla = document.getElementById('tablaEspera');
+
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (pedidosEnEspera.length === 0) {
+        if (txtVacia) txtVacia.classList.remove('hidden');
+        if (tabla) tabla.classList.add('hidden');
+        return;
+    }
+
+    if (txtVacia) txtVacia.classList.add('hidden');
+    if (tabla) tabla.classList.remove('hidden');
+
+    // Ordenados de más antiguo (index 0) a más reciente (último)
+    pedidosEnEspera.forEach((pedido) => {
+        const tipoBadgeClass = pedido.tipoPedido === 'DELIVERY' ? 'badge-blue' : 'badge-orange';
+        const tipoLabel = pedido.tipoPedido === 'DELIVERY' ? 'Delivery' : 'Para Llevar';
+
+        const productosTexto = Array.from(pedido.detalles.values())
+            .map(d => `${d.cantidad}x ${d.nombreProducto}`)
+            .join(', ');
+
+        const total = calcularTotalDetalles(pedido.detalles);
+
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td><span class="badge ${tipoBadgeClass}">${tipoLabel}</span></td>
+            <td style="max-width:260px;white-space:normal;font-size:13px;">${productosTexto}</td>
+            <td><strong>${formatoMoneda(total)}</strong></td>
+            <td style="font-size:13px;white-space:nowrap;">${pedido.fechaHora}</td>
+            <td>
+              <div class="table-actions">
+                <button class="btn btn-action btn-agregar-espera" title="Agregar más productos" data-id="${pedido.id}">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <button class="btn btn-primary btn-cobrar-espera" title="Cobrar pedido" data-id="${pedido.id}">
+                  <i class="fas fa-cash-register"></i>
+                </button>
+                <button class="btn btn-danger btn-cancelar-espera" title="Cancelar pedido" data-id="${pedido.id}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+        `;
+        tbody.appendChild(fila);
+    });
+};
+
+// Botón "Enviar a Espera"
+const btnEnviarAEspera = document.getElementById('btnEnviarAEspera');
+if (btnEnviarAEspera) {
+    btnEnviarAEspera.addEventListener('click', () => {
+        const mapActivo = tipoPedidoActivo === 'DELIVERY' ? detallesPedidoDelivery : detallesPedidoLlevar;
+
+        if (mapActivo.size === 0) {
+            mostrarToast('Agrega al menos un producto antes de enviar a espera.', 'error');
+            return;
+        }
+
+        // Clonar los detalles para que el pedido en espera sea independiente
+        const detallesClonados = new Map();
+        mapActivo.forEach((v, k) => detallesClonados.set(k, { ...v }));
+
+        const nuevoPedido = {
+            id: ++contadorEspera,
+            tipoPedido: tipoPedidoActivo,
+            detalles: detallesClonados,
+            fechaHora: formatearFechaHora(new Date())
+        };
+
+        pedidosEnEspera.push(nuevoPedido);
+        mapActivo.clear();
+        renderDetallesPedido();
+        renderTablaEspera();
+        mostrarToast(`Pedido ${tipoPedidoActivo === 'DELIVERY' ? 'Delivery' : 'Para Llevar'} enviado a la lista de espera.`, 'success');
+    });
+}
+
+// Delegación de eventos en la tabla de espera
+const tbodyEspera = document.getElementById('tbodyEspera');
+if (tbodyEspera) {
+    tbodyEspera.addEventListener('click', (e) => {
+        const btnAgregar = e.target.closest('.btn-agregar-espera');
+        const btnCobrar = e.target.closest('.btn-cobrar-espera');
+        const btnCancelar = e.target.closest('.btn-cancelar-espera');
+
+        if (btnAgregar) {
+            const id = Number(btnAgregar.dataset.id);
+            const pedido = pedidosEnEspera.find(p => p.id === id);
+            if (!pedido) return;
+
+            // Restaurar los detalles del pedido en espera al mapa activo según el tipo
+            tipoPedidoActivo = pedido.tipoPedido;
+            const mapDestino = tipoPedidoActivo === 'DELIVERY' ? detallesPedidoDelivery : detallesPedidoLlevar;
+
+            // Copiar detalles existentes del pedido en espera al mapa activo
+            mapDestino.clear();
+            pedido.detalles.forEach((v, k) => mapDestino.set(k, { ...v }));
+
+            // Quitar el pedido de la lista de espera (se restaurará al volver a enviar a espera)
+            const idx = pedidosEnEspera.findIndex(p => p.id === id);
+            if (idx !== -1) pedidosEnEspera.splice(idx, 1);
+            renderTablaEspera();
+
+            // Navegar al tab correspondiente
+            const tabBtn = tipoPedidoActivo === 'DELIVERY'
+                ? document.getElementById('btnTabDelivery')
+                : document.getElementById('btnTabLlevar');
+            if (tabBtn) tabBtn.click();
+
+            mostrarToast('Pedido restaurado. Puedes seguir agregando productos.', 'info');
+        }
+
+        if (btnCobrar) {
+            const id = Number(btnCobrar.dataset.id);
+            const pedido = pedidosEnEspera.find(p => p.id === id);
+            if (!pedido) return;
+
+            // Cargar los detalles del pedido en espera al mapa activo y abrir modal de cobro
+            tipoPedidoActivo = pedido.tipoPedido;
+            const mapDestino = tipoPedidoActivo === 'DELIVERY' ? detallesPedidoDelivery : detallesPedidoLlevar;
+            mapDestino.clear();
+            pedido.detalles.forEach((v, k) => mapDestino.set(k, { ...v }));
+
+            // Calcular total
+            let total = 0;
+            mapDestino.forEach(d => total += d.total);
+
+            // Abrir modal de cobro
+            const tipoPedidoLabelEl = document.getElementById('tipo-pedido-label');
+            const modalPedidoTotalMontoEl = document.getElementById('modal-pedido-total-monto');
+            const comboMetodoPagoModalEl = document.getElementById('comboMetodoPagoModal');
+            const efectivoBlockModalEl = document.getElementById('efectivo-block-modal');
+            const inputEfectivoModalEl = document.getElementById('inputEfectivoModal');
+            const vueltoModalEl = document.getElementById('vuelto-modal');
+            const modalCobroPedidoEl = document.getElementById('modal-cobro-pedido');
+
+            if (tipoPedidoLabelEl) tipoPedidoLabelEl.textContent = `Pedido - ${pedido.tipoPedido}`;
+            if (modalPedidoTotalMontoEl) modalPedidoTotalMontoEl.textContent = formatoMoneda(total);
+            if (comboMetodoPagoModalEl) comboMetodoPagoModalEl.selectedIndex = 0;
+            if (efectivoBlockModalEl) efectivoBlockModalEl.classList.add('hidden');
+            if (inputEfectivoModalEl) inputEfectivoModalEl.value = '';
+            if (vueltoModalEl) vueltoModalEl.textContent = formatoMoneda(0);
+            if (modalCobroPedidoEl) modalCobroPedidoEl.classList.remove('hidden');
+
+            // Marcar qué pedido en espera estamos cobrando para limpiarlo al confirmar
+            modalCobroPedidoEl.dataset.esperaId = id;
+        }
+
+        if (btnCancelar) {
+            const id = Number(btnCancelar.dataset.id);
+            const idx = pedidosEnEspera.findIndex(p => p.id === id);
+            if (idx !== -1) {
+                pedidosEnEspera.splice(idx, 1);
+                renderTablaEspera();
+                mostrarToast('Pedido cancelado y eliminado de la lista de espera.', 'info');
+            }
+        }
+    });
+}
+
+// Tab "En Espera"
+const btnTabEspera = document.getElementById('btnTabEspera');
+if (btnTabEspera) {
+    btnTabEspera.addEventListener('click', () => {
+        tipoPedidoActivo = null;
+        divPedidoRegistro.classList.add('hidden');
+        divMesaPedidos.classList.add('hidden');
+        renderTablaEspera();
+
+        // Activar visualmente el tab
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btnTabEspera.classList.add('active');
+        document.getElementById('pos-espera').classList.add('active');
+    });
+}

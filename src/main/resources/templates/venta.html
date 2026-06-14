@@ -100,6 +100,7 @@
                 <button class="tab active" data-tab="pos-salon" id="btnTabLocal"><i class="fas fa-chair" style="margin-right:6px;"></i>Salón</button>
                 <button class="tab" data-tab="pos-llevar" id="btnTabLlevar"><i class="fas fa-shopping-bag" style="margin-right:6px;"></i>Para Llevar</button>
                 <button class="tab" data-tab="pos-delivery" id="btnTabDelivery"><i class="fas fa-truck" style="margin-right:6px;"></i>Delivery</button>
+                <button class="tab" data-tab="pos-espera" id="btnTabEspera"><i class="fas fa-hourglass-half" style="margin-right:6px;"></i>En Espera</button>
               </div>
             </div>
             <div class="tab-content active" id="pos-salon">
@@ -164,6 +165,24 @@
             <div class="tab-content" id="pos-delivery">
               <div id="divPedidoDelivery" data-tipo-pedido="DELIVERY"></div>
             </div>
+            <div class="tab-content" id="pos-espera">
+              <div class="card">
+                <h3>Pedidos en Espera</h3>
+                <p class="muted" id="txtEsperaVacia">No hay pedidos en espera.</p>
+                <table class="data-table" id="tablaEspera">
+                  <thead>
+                    <tr>
+                      <th>Tipo</th>
+                      <th>Productos</th>
+                      <th>Total</th>
+                      <th>Hora / Fecha</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbodyEspera"></tbody>
+                </table>
+              </div>
+            </div>
             <div id="divPedidoRegistro" class="split-layout hidden">
               <div class="card">
                 <h3>Registrar Pedido</h3>
@@ -184,6 +203,7 @@
                   <div class="form-actions">
                     <button class="btn btn-primary" type="button" id="btnAgregarPedido">Agregar al Pedido</button>
                     <button class="btn btn-primary hidden" type="button" id="btnRegistrarPagoPedido">Registrar Pago</button>
+                    <button class="btn btn-primary-green hidden" type="button" id="btnEnviarAEspera"><i class="fas fa-hourglass-half"></i> Enviar a Espera</button>
                   </div>
                 </form>
               </div>
