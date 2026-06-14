@@ -236,6 +236,16 @@
               <option value="YAPE">Yape</option>
             </select>
           </label>
+          <!-- Bloque efectivo (solo visible si se selecciona EFECTIVO) -->
+          <div id="efectivo-block-modal" class="field hidden">
+            <label class="field">
+              <span>Efectivo recibido</span>
+              <input id="inputEfectivoModal" type="number" min="0" step="0.01" placeholder="Ingrese monto recibido" />
+            </label>
+            <div style="align-self:end;margin-left:8px;">
+              <small class="muted">Vuelto: <strong id="vuelto-modal">S/ 0.00</strong></small>
+            </div>
+          </div>
         </div>
         <div class="form-actions">
           <button id="btnConfirmarCompraPedido" class="btn btn-primary" type="button">Comprar</button>
@@ -283,6 +293,16 @@
               <option value="YAPE">Yape</option>
             </select>
           </label>
+          <!-- Bloque efectivo (solo visible si se selecciona EFECTIVO) -->
+          <div id="efectivo-block-cobro" class="field hidden">
+            <label class="field">
+              <span>Efectivo recibido</span>
+              <input id="inputEfectivoCobro" type="number" min="0" step="0.01" placeholder="Ingrese monto recibido" />
+            </label>
+            <div style="align-self:end;margin-left:8px;">
+              <small class="muted">Vuelto: <strong id="vuelto-cobro">S/ 0.00</strong></small>
+            </div>
+          </div>
         </div>
         <div class="form-actions">
           <button id="btnConfirmarCobro" class="btn btn-primary" type="button">Cobrar y liberar</button>
