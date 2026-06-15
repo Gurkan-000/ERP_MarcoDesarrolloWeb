@@ -323,13 +323,15 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         window.poblarTopbarUsuario(sesionActiva);
     }
 
-  document.getElementById("infoUsuario").textContent = sesionActiva.nombre;
-  document.getElementById("infoRol").textContent = sesionActiva.rol;
-  document.getElementById("infoAvatar").textContent = sesionActiva.rol.charAt(0).toUpperCase();
+  const infoUsuarioElem = document.getElementById("infoUsuario");
+  const infoRolElem = document.getElementById("infoRol");
+  const infoAvatarElem = document.getElementById("infoAvatar");
 
-  cargarSecciones(sesionActiva);
+  if (infoUsuarioElem) infoUsuarioElem.textContent = sesionActiva.nombre;
+  if (infoRolElem) infoRolElem.textContent = sesionActiva.rol;
+  if (infoAvatarElem) infoAvatarElem.textContent = sesionActiva.rol.charAt(0).toUpperCase();
 
-  cargarProductos();
+  await cargarProductos();
 });
 
 document.addEventListener('click', (e) => {
