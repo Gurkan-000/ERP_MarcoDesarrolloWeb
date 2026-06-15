@@ -15,13 +15,27 @@
     const SIDEBAR_KEY = 'sidebar_expanded';
     const savedExpanded = sessionStorage.getItem(SIDEBAR_KEY) === 'true';
 
-    if (savedExpanded) {
+    const hamburgerIcon = btnHamburger.querySelector('i');
+    const expanded = savedExpanded;
+
+    if (expanded) {
         sidebar.classList.remove('collapsed');
     }
 
+    const updateHamburgerIcon = (isExpanded) => {
+        if (!hamburgerIcon) return;
+        hamburgerIcon.classList.toggle('fa-bars', !isExpanded);
+        hamburgerIcon.classList.toggle('fa-times', isExpanded);
+        btnHamburger.setAttribute('aria-expanded', String(isExpanded));
+    };
+
+    updateHamburgerIcon(expanded);
+
     btnHamburger.addEventListener('click', () => {
         const isCollapsed = sidebar.classList.toggle('collapsed');
-        sessionStorage.setItem(SIDEBAR_KEY, (!isCollapsed).toString());
+        const isExpanded = !isCollapsed;
+        sessionStorage.setItem(SIDEBAR_KEY, String(isExpanded));
+        updateHamburgerIcon(isExpanded);
     });
 })();
 
@@ -66,12 +80,4 @@ window.poblarTopbarUsuario = function(sesion) {
     if (topbarRol)    topbarRol.textContent    = rol;
     if (topbarAvatar) topbarAvatar.textContent = displayName.charAt(0).toUpperCase();
 
-    // Sidebar footer (legado)
-    const infoUsuario = document.getElementById('infoUsuario');
-    const infoRol     = document.getElementById('infoRol');
-    const infoAvatar  = document.getElementById('infoAvatar');
-
-    if (infoUsuario) infoUsuario.textContent = displayName;
-    if (infoRol)     infoRol.textContent     = rol;
-    if (infoAvatar)  infoAvatar.textContent  = displayName.charAt(0).toUpperCase();
 };

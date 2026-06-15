@@ -362,6 +362,7 @@ body {
   padding: 20px 28px;
   background: var(--white);
   border-bottom: 1px solid var(--zinc-200);
+  height: 60px;
 }
 
 .topbar h2 {
@@ -990,27 +991,63 @@ ol {
 .sidebar-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 16px 16px 0 16px;
+}
+
+.sidebar.collapsed .sidebar-header {
+  justify-content: center;
 }
 
 .btn-hamburger {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--zinc-400);
   cursor: pointer;
-  padding: 8px;
-  border-radius: 10px;
-  display: flex;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
   flex-shrink: 0;
 }
 
 .btn-hamburger:hover {
   background: var(--zinc-800);
   color: var(--white);
+  transform: scale(1.02);
+}
+
+.page-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 28px;
+  background: var(--white);
+  border-bottom: 1px solid var(--zinc-200);
+  height: 65px;
+}
+
+.page-brand .brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.page-brand-text h2 {
+  margin: 0;
+  color: var(--zinc-950);
+  font-size: 22px;
+}
+
+.page-brand-text p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--zinc-500);
 }
 
 .sidebar-brand-text {
@@ -1083,6 +1120,7 @@ ol {
 
 .topbar-user {
   position: relative;
+  margin-left: auto;
 }
 
 .topbar-user-btn {
