@@ -95,15 +95,17 @@
 
             <div class="tab-content active" id="inv-stock">
               <div class="card">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Producto</th>
-                      <th>Stock</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tbody-stock-actual"></tbody>
-                </table>
+                <div class="table-container">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Producto</th>
+                        <th>Stock</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody-stock-actual"></tbody>
+                  </table>
+                </div>
                 <div id="stock-actual-empty" class="empty-state hidden">
                   <i class="fas fa-boxes-stacked fa-2x" style="color:var(--zinc-400);"></i>
                   <p>No hay productos en el inventario</p>
@@ -114,16 +116,18 @@
             <div class="tab-content" id="inv-actualizar">
               <div class="card">
                 <form id="form-actualizar-stock">
-                  <table class="data-table stock-editor-table">
-                    <thead>
-                      <tr>
-                        <th>Producto</th>
-                        <th>Stock actual</th>
-                        <th>Nuevo stock</th>
-                      </tr>
-                    </thead>
-                    <tbody id="tbody-actualizar-stock"></tbody>
-                  </table>
+                  <div class="table-container">
+                    <table class="data-table stock-editor-table">
+                      <thead>
+                        <tr>
+                          <th>Producto</th>
+                          <th>Stock actual</th>
+                          <th>Nuevo stock</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbody-actualizar-stock"></tbody>
+                    </table>
+                  </div>
                   <div id="actualizar-stock-empty" class="empty-state hidden">
                     <i class="fas fa-boxes-stacked fa-2x" style="color:var(--zinc-400);"></i>
                     <p>No hay productos para actualizar</p>

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -97,5 +98,20 @@ public class ControllerVenta {
         return ResponseEntity.ok(responseBoleta);
     }
 
+    @PostMapping("/insertarMesa")
+    public ResponseEntity<Void> insertarMesa() {
+
+        ventaService.insertarMesa();
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/eliminarMesa")
+    public ResponseEntity<Void> eliminarMesa() {
+
+        ventaService.eliminarMesa();
+
+        return ResponseEntity.noContent().build();
+    }
 
 }

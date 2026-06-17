@@ -31,10 +31,10 @@ const generarPDFBoleta = (boleta) => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: [80, 200], orientation: 'portrait' });
 
-    const ancho   = 80;
-    const margen  = 5;
-    const centro  = ancho / 2;
-    let y         = 8;
+    const ancho = 80;
+    const margen = 5;
+    const centro = ancho / 2;
+    let y = 8;
 
     const linea = () => {
         doc.setDrawColor(200);
@@ -70,9 +70,9 @@ const generarPDFBoleta = (boleta) => {
         ? boleta.idPedido.toString().substring(0, 8).toUpperCase()
         : 'N/A';
 
-    const now     = new Date();
-    const fecha   = boleta.fecha || now.toLocaleDateString('es-PE');
-    const hora    = boleta.hora
+    const now = new Date();
+    const fecha = boleta.fecha || now.toLocaleDateString('es-PE');
+    const hora = boleta.hora
         ? boleta.hora.substring(0, 5)
         : now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
 
@@ -153,7 +153,7 @@ const generarPDFBoleta = (boleta) => {
 // ──────────────────────────────────────────────
 const modalBoleta = document.getElementById('modal-boleta');
 const btnDescargarBoleta = document.getElementById('btnDescargarBoleta');
-const btnCerrarBoleta    = document.getElementById('btnCerrarBoleta');
+const btnCerrarBoleta = document.getElementById('btnCerrarBoleta');
 
 const mostrarModalBoleta = (boleta) => {
     ultimaBoleta = boleta;
@@ -207,6 +207,12 @@ const cargarMesas = async () => {
         } else {
             const data = await response.json();
 
+            if (data.length == 0) {
+                btnEliminarMesa.classList.add("hidden");
+                return;
+            }
+
+            btnEliminarMesa.classList.remove("hidden");
             const mesaGridVenta = document.getElementById("mesa-grid");
             if (!mesaGridVenta) return;
             mesaGridVenta.innerHTML = "";
@@ -238,6 +244,49 @@ const cargarMesas = async () => {
     }
 };
 
+const insertarMesaBackend = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/venta/insertarMesa`, {
+            method: "POST", // Asumiendo que tu @PostMapping en Spring Boot no requiere body
+            headers: { "Content-Type": "application/json" }
+        });
+
+
+        if (!response.ok) {
+            const data = await response.json();
+            (data.mensajes || []).forEach(m => mostrarToast(m, "error"));
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.log(error);
+        mostrarToast("Ocurrió un error al intentar agregar la mesa", "error");
+        return false;
+    }
+};
+
+const eliminarMesaBackend = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/venta/eliminarMesa`, {
+            method: "DELETE", // Asumiendo @DeleteMapping en tu controlador
+            headers: { "Content-Type": "application/json" }
+        });
+
+
+        if (!response.ok) {
+            const data = await response.json();
+            (data.mensajes || []).forEach(m => mostrarToast(m, "error"));
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.log(error);
+        mostrarToast("Ocurrió un error al intentar eliminar la mesa", "error");
+        return false;
+    }
+};
 
 const cargarProductos = async () => {
     try {
@@ -482,6 +531,46 @@ const renderDetallesMesa = () => {
     }
 };
 
+
+const btnAgregarMesa = document.getElementById("btnAgregarMesa");
+
+btnAgregarMesa.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    btnAgregarMesa.disabled = true;
+    const contenidoOriginal = btnAgregarMesa.innerHTML;
+    btnAgregarMesa.innerHTML = '<span class="btn-spinner"></span> Agregando...';
+
+    const exito = await insertarMesaBackend();
+
+    if (exito) {
+        await cargarMesas();
+    }
+
+    btnAgregarMesa.innerHTML = contenidoOriginal;
+    btnAgregarMesa.disabled = false;
+});
+
+
+
+const btnEliminarMesa = document.getElementById("btnEliminarMesa");
+
+btnEliminarMesa.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    btnEliminarMesa.disabled = true;
+    const contenidoOriginal = btnEliminarMesa.innerHTML;
+    btnEliminarMesa.innerHTML = '<span class="btn-spinner"></span> Eliminando...';
+
+    const exito = await eliminarMesaBackend();
+
+    if (exito) {
+        await cargarMesas();
+    }
+
+    btnEliminarMesa.innerHTML = contenidoOriginal;
+    btnEliminarMesa.disabled = false;
+});
 
 // ──────────────────────────────────────────────
 // BOTONES — PEDIDO (LLEVAR / DELIVERY)
@@ -942,7 +1031,7 @@ btnMesaOcupadaCancel.addEventListener("click", () => {
 });
 
 btnConfirmarCobro.addEventListener("click", async () => {
-    const idMesa     = MesaActiva.dataset.idMesa;
+    const idMesa = MesaActiva.dataset.idMesa;
     const metodoPago = comboMetodoPagoCobro.value;
 
     // Si es EFECTIVO, validar monto recibido
@@ -1016,6 +1105,7 @@ const cargarSecciones = (sesionActiva) => {
         // Ocultar tabs de Para Llevar y Delivery: el mesero solo atiende salon
         document.getElementById("btnTabLlevar").classList.add("hidden");
         document.getElementById("btnTabDelivery").classList.add("hidden");
+        document.getElementById("btnTabEspera").classList.add("hidden");
     }
 
     if (sesionActiva.rol === "Cajero") {
@@ -1048,7 +1138,7 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
     }
 });
 
-const cerrarSesion = async () =>{
+const cerrarSesion = async () => {
     try {
 
         const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
@@ -1057,7 +1147,7 @@ const cerrarSesion = async () =>{
 
         if (!response.ok) {
             return false;
-        } 
+        }
 
         return true;
 

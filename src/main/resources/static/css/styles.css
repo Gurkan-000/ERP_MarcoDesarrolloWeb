@@ -1291,3 +1291,105 @@ ol {
   background: #16a34a;
   transform: translateY(-1px);
 }
+
+/* ============================================
+   GESTIÓN DE MESAS (BOTONES NARANJAS)
+   ============================================ */
+.card-mesa-manager {
+  margin-bottom: 20px;
+}
+
+.mesa-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mesa-manager-header h3 {
+  margin: 0;
+}
+
+/* Efecto hover con elevación suave para los botones del Punto de Venta */
+.mesa-manager-header .btn-primary:hover {
+  background: var(--orange-600); /* Se oscurece un poco al pasar el mouse */
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(249, 115, 22, 0.2); /* Sombra naranja sutil */
+}
+
+/* ============================================
+   CONTENEDOR DE MOVIMIENTOS CON SCROLL INTERNO
+   ============================================ */
+
+/* 1. Ajustamos el contenedor principal de los movimientos */
+#divListMovimientos {
+  /* Limitamos la altura basándonos en el tamaño aproximado de la tarjeta izquierda */
+  max-height: 380px; 
+  overflow-y: auto;   /* El scroll vertical solo aparece si el contenido supera los 380px */
+  overflow-x: hidden;  /* Evitamos cualquier desborde horizontal molesto */
+  padding-right: 8px;  /* Espacio prudente para que la barra no tape el texto del monto */
+}
+
+/* 2. Estilización moderna de la barra de desplazamiento (Chrome, Edge, Safari) */
+#divListMovimientos::-webkit-scrollbar {
+  width: 6px;
+}
+
+#divListMovimientos::-webkit-scrollbar-track {
+  background: transparent; /* Fondo invisible para que no rompa el diseño limpio */
+}
+
+#divListMovimientos::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* Gris suave neutro que combina con tu interfaz */
+  border-radius: 10px;
+}
+
+#divListMovimientos::-webkit-scrollbar-thumb:hover {
+  background: var(--orange-500); /* Se vuelve naranja al pasar el cursor, manteniendo tu identidad visual */
+}
+
+/* ============================================
+   SCROLL FIJO PARA TABLAS (CATÁLOGO / INVENTARIO)
+   ============================================ */
+
+.table-container {
+  /* Aquí defines la altura fija que prefieras antes de que aparezca el scroll */
+  max-height: 400px; 
+  overflow-y: auto;
+  overflow-x: auto; /* Por si en el futuro tienes muchas columnas */
+  padding-right: 4px;
+  margin-bottom: 1rem; /* Da un respiro entre la tabla y el formulario cuando se abre */
+}
+
+/* Fijar los encabezados de la tabla en la parte superior al scrollear */
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  /* IMPORTANTE: Ponle el mismo color de fondo que usa tu diseño para los TH 
+     (asumo un gris muy claro o blanco por la captura anterior) */
+  background-color: #f8fafc; 
+  /* Sombre para mantener la división visual al hacer scroll */
+  box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1);
+}
+
+/* Estilo de la barra de desplazamiento (para que haga match con Caja) */
+.table-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px; /* Para el scroll horizontal si llega a aparecer */
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: var(--orange-500);
+}

@@ -58,9 +58,6 @@ public class VentaService {
         this.cajaService = cajaService;
         this.cajaRepository = cajaRepository;
 
-        for (int i = 1; i <= 6; i++) {
-            mesaRepository.save(Mesa.builder().estado(EstadoMesa.LIBRE).numero(i).build());
-        }
     }
 
     public List<ResponsePedido> obtenerPedidos() {
@@ -229,13 +226,13 @@ public class VentaService {
         }
 
         String concepto = "Pedido de la mesa " + pedido.getMesa().getNumero();
-        
+
         RequestMovimientoCaja requestMovimientoCaja = RequestMovimientoCaja.builder()
-        .concepto(concepto)
-        .metodo(requestMetodoPago.getMetodoPago())
-        .tipo(Tipo.INGRESO)
-        .monto(pedido.getTotal())
-        .build();
+                .concepto(concepto)
+                .metodo(requestMetodoPago.getMetodoPago())
+                .tipo(Tipo.INGRESO)
+                .monto(pedido.getTotal())
+                .build();
 
         cajaService.registrarMovimientoPedido(requestMovimientoCaja, caja.getIdCaja());
 
@@ -246,7 +243,7 @@ public class VentaService {
         List<ResponseDetallePedido> detallesResponse = detallePedidoRepository.findByPedido(pedido).stream()
                 .map(MapperDetallePedido::toDTO)
                 .toList();
-        
+
         return MapperBoletaPedido.toDTO(pedido, detallesResponse);
     }
 
@@ -292,6 +289,31 @@ public class VentaService {
         }
 
         pedido.calcularTotal();
+
+    }
+
+    @Transactional
+    public void insertarMesa() {
+
+        Integer numeroMesa = mesaRepository.findMaxNumero();
+
+        Mesa mesa = MapperMesa.toEntity(numeroMesa == null ? 1 : numeroMesa + 1);
+
+        mesaRepository.save(mesa);
+
+    }
+
+    @Transactional
+    public void eliminarMesa() {
+
+        if(mesaRepository.existsByEstado(EstadoMesa.OCUPADO)) {
+            throw new ReglaDeNegocioException("No se pueden eliminar mesas cuando estan ocupadas");
+        }
+
+        Mesa mesa = mesaRepository.findFirstByOrderByNumeroDesc()
+                .orElseThrow(() -> new EntidadNoEncontradaException("No hay mesas para eliminar"));
+        
+        mesaRepository.delete(mesa);
 
     }
 

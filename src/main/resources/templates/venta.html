@@ -59,21 +59,21 @@
           </div>
           <!-- USER -->
           <div class="topbar-user" id="topbarUser">
-              <button class="topbar-user-btn" id="topbarUserBtn">
-                <div class="topbar-user-avatar" id="topbarAvatar">A</div>
-                <div class="topbar-user-info">
-                  <span class="topbar-user-name" id="topbarNombre">Usuario</span>
-                  <span class="topbar-user-role" id="topbarRol">Rol</span>
-                </div>
-                <i class="fas fa-chevron-down topbar-user-chevron"></i>
-              </button>
-              <div class="topbar-user-dropdown" id="topbarDropdown">
-                <div class="topbar-dropdown-divider"></div>
-                <button class="topbar-dropdown-item danger" id="btnCerrarSesion">
-                  <i class="fas fa-right-from-bracket"></i>
-                  Cerrar Sesión
-                </button>
+            <button class="topbar-user-btn" id="topbarUserBtn">
+              <div class="topbar-user-avatar" id="topbarAvatar">A</div>
+              <div class="topbar-user-info">
+                <span class="topbar-user-name" id="topbarNombre">Usuario</span>
+                <span class="topbar-user-role" id="topbarRol">Rol</span>
               </div>
+              <i class="fas fa-chevron-down topbar-user-chevron"></i>
+            </button>
+            <div class="topbar-user-dropdown" id="topbarDropdown">
+              <div class="topbar-dropdown-divider"></div>
+              <button class="topbar-dropdown-item danger" id="btnCerrarSesion">
+                <i class="fas fa-right-from-bracket"></i>
+                Cerrar Sesión
+              </button>
+            </div>
           </div>
         </div>
         <!-- TOPBAR -->
@@ -88,15 +88,29 @@
           <section class="module active">
             <div class="module-header">
               <div class="tab-row">
-                <button class="tab active" data-tab="pos-salon" id="btnTabLocal"><i class="fas fa-chair" style="margin-right:6px;"></i>Salón</button>
-                <button class="tab" data-tab="pos-llevar" id="btnTabLlevar"><i class="fas fa-shopping-bag" style="margin-right:6px;"></i>Para Llevar</button>
-                <button class="tab" data-tab="pos-delivery" id="btnTabDelivery"><i class="fas fa-truck" style="margin-right:6px;"></i>Delivery</button>
-                <button class="tab" data-tab="pos-espera" id="btnTabEspera"><i class="fas fa-hourglass-half" style="margin-right:6px;"></i>En Espera</button>
+                <button class="tab active" data-tab="pos-salon" id="btnTabLocal"><i class="fas fa-chair"
+                    style="margin-right:6px;"></i>Salón</button>
+                <button class="tab" data-tab="pos-llevar" id="btnTabLlevar"><i class="fas fa-shopping-bag"
+                    style="margin-right:6px;"></i>Para Llevar</button>
+                <button class="tab" data-tab="pos-delivery" id="btnTabDelivery"><i class="fas fa-truck"
+                    style="margin-right:6px;"></i>Delivery</button>
+                <button class="tab" data-tab="pos-espera" id="btnTabEspera"><i class="fas fa-hourglass-half"
+                    style="margin-right:6px;"></i>En Espera</button>
               </div>
             </div>
             <div class="tab-content active" id="pos-salon">
-              <div class="card">
-                <h3>Mapa de Mesas</h3>
+              <div class="card card-mesa-manager">
+                <div class="mesa-manager-header">
+                  <h3>Mapa de Mesas</h3>
+                  <div class="catalog-actions">
+                    <button class="btn btn-primary" id="btnAgregarMesa" type="button">
+                      <i class="fas fa-plus"></i> Agregar Mesa
+                    </button>
+                    <button class="btn btn-primary" id="btnEliminarMesa" type="button">
+                      <i class="fas fa-trash-can"></i> Eliminar Mesa
+                    </button>
+                  </div>
+                </div>
                 <div class="table-grid" id="mesa-grid"></div>
               </div>
               <div id="divMesaPedidos" class="split-layout hidden">
@@ -124,7 +138,8 @@
                     </div>
                     <div class="form-actions">
                       <button class="btn btn-primary" id="btnAgregarPedidoMesa" type="submit">Agregar pedido</button>
-                      <button class="btn btn-primary hidden" id="btnOcuparMesa" type="submit">Marcar mesa ocupada</button>
+                      <button class="btn btn-primary hidden" id="btnOcuparMesa" type="submit">Marcar mesa
+                        ocupada</button>
                     </div>
                   </form>
                 </div>
@@ -193,8 +208,10 @@
                   </div>
                   <div class="form-actions">
                     <button class="btn btn-primary" type="button" id="btnAgregarPedido">Agregar al Pedido</button>
-                    <button class="btn btn-primary hidden" type="button" id="btnRegistrarPagoPedido">Registrar Pago</button>
-                    <button class="btn btn-primary-green hidden" type="button" id="btnEnviarAEspera"><i class="fas fa-hourglass-half"></i> Enviar a Espera</button>
+                    <button class="btn btn-primary hidden" type="button" id="btnRegistrarPagoPedido">Registrar
+                      Pago</button>
+                    <button class="btn btn-primary-green hidden" type="button" id="btnEnviarAEspera"><i
+                        class="fas fa-hourglass-half"></i> Enviar a Espera</button>
                   </div>
                 </form>
               </div>
@@ -361,4 +378,5 @@
   <script src="../static/js/sidebar.js"></script>
 
 </body>
+
 </html>
