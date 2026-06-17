@@ -218,67 +218,134 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         generarExcel(pedidos, mes, anio);
     }
 
-    function generarExcel(pedidos, mes, anio) {
+    async function generarExcel(pedidos, mes, anio) {
 
-    const datos = pedidos.map(p => ({
-        "Fecha": p.fecha_pedido,
-        "Tipo Pedido": p.tipo_pedido,
-        "Método Pago": p.metodo_pago,
-        "Total (S/)": Number(p.total)
-    }));
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Pedidos");
 
-    const totalGeneral = pedidos.reduce(
-        (acum, pedido) => acum + Number(pedido.total),
-        0
-    );
+        // Anchos de columna
+        worksheet.columns = [
+            { header: "Fecha", key: "fecha", width: 18 },
+            { header: "Tipo Pedido", key: "tipo", width: 20 },
+            { header: "Método Pago", key: "metodo", width: 20 },
+            { header: "Total (S/)", key: "total", width: 15 }
+        ];
 
-    const worksheet = XLSX.utils.aoa_to_sheet([
-        [`Reporte de Pedidos - ${mes}/${anio}`],
-        [],
-        ["Fecha", "Tipo Pedido", "Método Pago", "Total (S/)"]
-    ]);
+        // Título
+        worksheet.mergeCells("A1:D1");
 
-    XLSX.utils.sheet_add_json(
-        worksheet,
-        datos,
-        {
-            origin: "A4",
-            skipHeader: true
-        }
-    );
+        const titulo = worksheet.getCell("A1");
 
-    const filaTotal = datos.length + 5;
+        titulo.value = `Reporte de Pedidos - ${mes}/${anio}`;
+        titulo.font = {
+            bold: true,
+            size: 16
+        };
+        titulo.alignment = {
+            horizontal: "center"
+        };
 
-    XLSX.utils.sheet_add_aoa(
-        worksheet,
-        [
-            ["", "", "TOTAL GENERAL", totalGeneral]
-        ],
-        {
-            origin: `A${filaTotal}`
-        }
-    );
+        // Encabezados (fila 3)
+        const headerRow = worksheet.getRow(3);
 
-    worksheet["!cols"] = [
-        { wch: 15 },
-        { wch: 15 },
-        { wch: 20 },
-        { wch: 15 }
-    ];
+        headerRow.values = [
+            "Fecha",
+            "Tipo Pedido",
+            "Método Pago",
+            "Total (S/)"
+        ];
 
-    const workbook = XLSX.utils.book_new();
+        headerRow.eachCell((cell) => {
 
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        "Pedidos"
-    );
+            cell.font = {
+                bold: true,
+                color: {
+                    argb: "000000"
+                }
+            };
 
-    XLSX.writeFile(
-        workbook,
-        `Pedidos_${mes}_${anio}.xlsx`
-    );
-}
+            cell.fill = {
+                type: "pattern",
+                pattern: "solid",
+                fgColor: {
+                    argb: "FFFF00"
+                }
+            };
+
+            cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" }
+            };
+
+            cell.alignment = {
+                horizontal: "center"
+            };
+        });
+
+        // Datos
+        let totalGeneral = 0;
+
+        pedidos.forEach((p) => {
+
+            const total = Number(p.total);
+
+            totalGeneral += total;
+
+            const row = worksheet.addRow([
+                p.fecha_pedido,
+                p.tipo_pedido,
+                p.metodo_pago,
+                total
+            ]);
+
+            row.eachCell((cell) => {
+                cell.border = {
+                    top: { style: "thin" },
+                    left: { style: "thin" },
+                    bottom: { style: "thin" },
+                    right: { style: "thin" }
+                };
+            });
+
+            row.getCell(4).numFmt = '"S/" #,##0.00';
+        });
+
+        // Total General
+        const totalRow = worksheet.addRow([
+            "",
+            "",
+            "TOTAL GENERAL",
+            totalGeneral
+        ]);
+
+        totalRow.eachCell((cell) => {
+
+            cell.font = {
+                bold: true
+            };
+
+            cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" }
+            };
+        });
+
+        totalRow.getCell(4).numFmt = '"S/" #,##0.00';
+
+        // Generar archivo
+        const buffer = await workbook.xlsx.writeBuffer();
+
+        saveAs(
+            new Blob([
+                buffer
+            ]),
+            `Pedidos_${mes}_${anio}.xlsx`
+        );
+    }   
 
     cargarSecciones(sesionActiva);
 
