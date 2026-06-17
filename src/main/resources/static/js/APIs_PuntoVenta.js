@@ -208,12 +208,19 @@ const cargarMesas = async () => {
         } else {
             const data = await response.json();
 
+            // Si no hay mesas, se oculta para todos
             if (data.length == 0) {
                 btnEliminarMesa.classList.add("hidden");
                 return;
             }
 
-            btnEliminarMesa.classList.remove("hidden");
+            //Solo mostrar si NO es Mesero ni Cajero (es decir, si es Administrador)
+            if (rolUsuarioActivo === "Mesero" || rolUsuarioActivo === "Cajero") {
+                btnEliminarMesa.classList.add("hidden");
+            } else {
+                btnEliminarMesa.classList.remove("hidden");
+            }
+
             const mesaGridVenta = document.getElementById("mesa-grid");
             if (!mesaGridVenta) return;
             mesaGridVenta.innerHTML = "";
@@ -1107,6 +1114,8 @@ const cargarSecciones = (sesionActiva) => {
         document.getElementById("btnTabLlevar").classList.add("hidden");
         document.getElementById("btnTabDelivery").classList.add("hidden");
         document.getElementById("btnTabEspera").classList.add("hidden");
+        document.getElementById("btnAgregarMesa").classList.add("hidden");
+        document.getElementById("btnEliminarMesa").classList.add("hidden");
     }
 
     if (sesionActiva.rol === "Cajero") {
@@ -1114,6 +1123,8 @@ const cargarSecciones = (sesionActiva) => {
         document.getElementById("navSeccionCatalogo").classList.add("hidden");
         document.getElementById("navSeccionUsuario").classList.add("hidden");
         document.getElementById("navSeccionConfiguracion").classList.add("hidden");
+        document.getElementById("btnAgregarMesa").classList.add("hidden");
+        document.getElementById("btnEliminarMesa").classList.add("hidden");
     }
 
 }
