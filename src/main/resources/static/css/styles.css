@@ -567,7 +567,7 @@ body {
 }
 
 .modal-card .list {
-  max-height: 220px;
+  max-height: 180px;
   overflow-y: auto;
 }
 
@@ -779,6 +779,8 @@ body {
   width: min(420px, 92vw);
   text-align: center;
   box-shadow: var(--shadow-soft);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .modal-icon {
@@ -1438,3 +1440,4 @@ ol {
   background: var(--zinc-200);
   margin: 0 4px;
 }
+

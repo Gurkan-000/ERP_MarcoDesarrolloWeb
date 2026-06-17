@@ -8,6 +8,7 @@ const productosMap = new Map();
 let tipoPedidoActivo = "LOCAL";
 let MesaActiva = null;
 let rolUsuarioActivo = null; //variable para saber el rol de usuario sin volver a consultar la api
+
 // Datos de la última boleta generada (para el PDF)
 let ultimaBoleta = null;
 // ──────────────────────────────────────────────
