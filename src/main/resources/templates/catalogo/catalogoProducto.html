@@ -104,6 +104,19 @@
             </div>
             <div class="tab-content active" id="cat-productos">
               <div class="card">
+                <div class="filter-bar">
+                  <label for="filtroOrdenProducto"><i class="fas fa-arrow-down-a-z" style="margin-right:4px;"></i>Ordenar por</label>
+                  <select id="filtroOrdenProducto" class="filter-select">
+                    <option value="az">Nombre A → Z</option>
+                    <option value="za">Nombre Z → A</option>
+                    <option value="categoria">Categoría</option>
+                  </select>
+                  <div class="filter-bar-separator"></div>
+                  <label for="filtroCategoria"><i class="fas fa-layer-group" style="margin-right:4px;"></i>Categoría</label>
+                  <select id="filtroCategoria" class="filter-select">
+                    <option value="">Todas</option>
+                  </select>
+                </div>
                 <div class="table-container">
                   <table class="data-table">
                     <thead>

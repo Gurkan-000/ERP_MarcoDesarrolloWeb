@@ -2,7 +2,6 @@
 const BASE_URL = 'http://localhost:8083/api';
 let productosGlobales = [];
 
-
 const tbodyStockActual = document.getElementById('tbody-stock-actual');
 const stockActualEmpty = document.getElementById('stock-actual-empty');
 const tbodyActualizarStock = document.getElementById('tbody-actualizar-stock');
@@ -18,44 +17,67 @@ const listaCambiosStock = document.getElementById('lista-cambios-stock');
 const btnConfirmarCambiosStock = document.getElementById('btnConfirmarCambiosStock');
 const btnCancelarCambiosStock = document.getElementById('btnCancelarCambiosStock');
 
+// Controles de filtro – Stock Actual
+const invFiltroOrden = document.getElementById('invFiltroOrden');
+const invFiltroCategoria = document.getElementById('invFiltroCategoria');
+
+// Controles de filtro – Actualizar Stock
+const invActualizarFiltroOrden = document.getElementById('invActualizarFiltroOrden');
+const invActualizarFiltroCategoria = document.getElementById('invActualizarFiltroCategoria');
+
 let cambiosPendientesStock = [];
 
 const mostrarToast = (mensaje, tipo = 'info') => {
   const toast = document.createElement('div');
-
   toast.className = `toast toast-${tipo}`;
   toast.textContent = mensaje;
-
   toastContainer.appendChild(toast);
-
   setTimeout(() => {
     toast.classList.add('toast-hide');
-
     setTimeout(() => toast.remove(), 300);
   }, 4000);
 };
 
+/* ---- Poblar filtros de categoría ---- */
 
-const cargarProductos = async () => {
-  try {
-    const response = await fetch(`${BASE_URL}/catalogo/listarProductos`);
+const poblarFiltrosCategoriaInv = (productos) => {
+  const categorias = [...new Set(productos.map(p => p.nombreCategoria).filter(Boolean))].sort();
 
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
-
-    const data = await response.json();
-    productosGlobales = data;
-
-    renderizarStockActual(data);
-    renderizarActualizarStock(data);
-
-  } catch (error) {
-    console.error('Error al cargar productos:', error);
-    mostrarToast('No se pudieron cargar los productos del inventario', 'error');
-  }
+  [invFiltroCategoria, invActualizarFiltroCategoria].forEach(sel => {
+    sel.innerHTML = '<option value="">Todas</option>';
+    categorias.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      sel.appendChild(opt);
+    });
+  });
 };
 
+/* ---- Aplicar filtro/orden a una lista de productos ---- */
+
+const aplicarFiltroOrden = (productos, orden, catFiltro) => {
+  let lista = [...productos];
+
+  if (catFiltro) {
+    lista = lista.filter(p => p.nombreCategoria === catFiltro);
+  }
+
+  if (orden === 'az') {
+    lista.sort((a, b) => a.nombreProducto.localeCompare(b.nombreProducto));
+  } else if (orden === 'za') {
+    lista.sort((a, b) => b.nombreProducto.localeCompare(a.nombreProducto));
+  } else if (orden === 'categoria') {
+    lista.sort((a, b) =>
+      (a.nombreCategoria || '').localeCompare(b.nombreCategoria || '') ||
+      a.nombreProducto.localeCompare(b.nombreProducto)
+    );
+  }
+
+  return lista;
+};
+
+/* ---- Renderizar tabla Stock Actual ---- */
 
 const renderizarStockActual = (productos) => {
   tbodyStockActual.innerHTML = '';
@@ -82,6 +104,16 @@ const renderizarStockActual = (productos) => {
   });
 };
 
+const aplicarFiltrosStockActual = () => {
+  const filtrado = aplicarFiltroOrden(
+    productosGlobales,
+    invFiltroOrden.value,
+    invFiltroCategoria.value
+  );
+  renderizarStockActual(filtrado);
+};
+
+/* ---- Renderizar tabla Actualizar Stock ---- */
 
 const renderizarActualizarStock = (productos) => {
   tbodyActualizarStock.innerHTML = '';
@@ -97,7 +129,6 @@ const renderizarActualizarStock = (productos) => {
 
   productos.forEach(producto => {
     const row = document.createElement('tr');
-
     row.innerHTML = `
       <td><strong>${producto.nombreProducto}</strong></td>
       <td>
@@ -117,14 +148,50 @@ const renderizarActualizarStock = (productos) => {
     `;
     tbodyActualizarStock.appendChild(row);
   });
-
 };
 
+const aplicarFiltrosActualizarStock = () => {
+  const filtrado = aplicarFiltroOrden(
+    productosGlobales,
+    invActualizarFiltroOrden.value,
+    invActualizarFiltroCategoria.value
+  );
+  renderizarActualizarStock(filtrado);
+};
+
+/* ---- Carga de productos ---- */
+
+const cargarProductos = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/catalogo/listarProductos`);
+
+    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+    const data = await response.json();
+    productosGlobales = data;
+
+    poblarFiltrosCategoriaInv(data);
+    aplicarFiltrosStockActual();
+    aplicarFiltrosActualizarStock();
+
+  } catch (error) {
+    console.error('Error al cargar productos:', error);
+    mostrarToast('No se pudieron cargar los productos del inventario', 'error');
+  }
+};
+
+/* ---- Listeners de filtros ---- */
+
+invFiltroOrden.addEventListener('change', aplicarFiltrosStockActual);
+invFiltroCategoria.addEventListener('change', aplicarFiltrosStockActual);
+invActualizarFiltroOrden.addEventListener('change', aplicarFiltrosActualizarStock);
+invActualizarFiltroCategoria.addEventListener('change', aplicarFiltrosActualizarStock);
+
+/* ---- Guardar stock ---- */
 
 const actualizarStockProducto = async (idProducto, nuevoStock, nombreProducto) => {
   try {
     const requestBody = { stock: nuevoStock };
-
     const response = await fetch(`${BASE_URL}/catalogo/cantidadProducto/${idProducto}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -192,7 +259,6 @@ btnCancelarCambiosStock.addEventListener('click', () => {
 
 
 btnConfirmarCambiosStock.addEventListener('click', async () => {
-
   modalConfirmarStock.classList.add('hidden');
 
   btnGuardarStock.disabled = true;
@@ -211,13 +277,8 @@ btnConfirmarCambiosStock.addEventListener('click', async () => {
     const exitosos = resultados.filter(r => r.exito);
     const fallidos = resultados.filter(r => !r.exito);
 
-    if (exitosos.length > 0) {
-      mostrarToast(` ${exitosos.length} producto(s) actualizado(s)`, 'success');
-    }
-
-    if (fallidos.length > 0) {
-      mostrarToast(` ${fallidos.length} fallaron: ${fallidos.map(f => f.nombreProducto).join(', ')}`, 'error');
-    }
+    if (exitosos.length > 0) mostrarToast(` ${exitosos.length} producto(s) actualizado(s)`, 'success');
+    if (fallidos.length > 0) mostrarToast(` ${fallidos.length} fallaron: ${fallidos.map(f => f.nombreProducto).join(', ')}`, 'error');
 
     await cargarProductos();
 
@@ -248,29 +309,18 @@ btnCancelarActualizacion.addEventListener('click', cancelarActualizacion);
 
 
 const verificarSesionActiva = async () => {
-
   try {
-
     const response = await fetch(`${BASE_URL}/usuario/sesionActiva`);
     const data = await response.json();
-
-    if (!response.ok) {
-      return null;
-    } else {
-      return data;
-    }
-
+    if (!response.ok) return null;
+    return data;
   } catch (error) {
     console.log(error);
   }
-
-}
+};
 
 const cargarSecciones = (sesionActiva) => {
-
-  if (sesionActiva.rol === "Administrador") {
-    return;
-  }
+  if (sesionActiva.rol === "Administrador") return;
 
   if (sesionActiva.rol === "Mesero") {
     document.getElementById("navSeccionCaja").classList.add("hidden");
@@ -286,31 +336,23 @@ const cargarSecciones = (sesionActiva) => {
     document.getElementById("navSeccionUsuario").classList.add("hidden");
     document.getElementById("navSeccionConfiguracion").classList.add("hidden");
   }
-
-}
+};
 
 document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
   e.preventDefault();
-
   try {
-
-    const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
-      method: 'PUT'
-    });
-
+    const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, { method: 'PUT' });
     if (!response.ok) {
       console.log("Ocurrio un error");
     } else {
       window.location.href = 'login.html';
     }
-
   } catch (error) {
     console.log(error);
   }
 });
 
 document.addEventListener("DOMContentLoaded", async (e) => {
-
   e.preventDefault();
 
   const sesionActiva = await verificarSesionActiva();
@@ -320,8 +362,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     return;
   }
   if (typeof window.poblarTopbarUsuario === 'function') {
-        window.poblarTopbarUsuario(sesionActiva);
-    }
+    window.poblarTopbarUsuario(sesionActiva);
+  }
 
   const infoUsuarioElem = document.getElementById("infoUsuario");
   const infoRolElem = document.getElementById("infoRol");

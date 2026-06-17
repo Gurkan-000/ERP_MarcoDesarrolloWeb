@@ -12,21 +12,21 @@ const modalConfirmar = document.getElementById("modalConfirmar");
 const btnCancelarModal = document.getElementById("btnCancelarModal");
 const btnAceptarModal = document.getElementById("btnAceptarModal");
 
+const filtroOrdenProducto = document.getElementById('filtroOrdenProducto');
+const filtroCategoria = document.getElementById('filtroCategoria');
+
 let filaSeleccionadaParaEliminar = null;
 let productoEditandoId = null;
+let productosGlobales = [];
 
 const toastContainer = document.getElementById('toast-container');
 const mostrarToast = (mensaje, tipo = 'info') => {
     const toast = document.createElement('div');
-
     toast.className = `toast toast-${tipo}`;
     toast.textContent = mensaje;
-
     toastContainer.appendChild(toast);
-
     setTimeout(() => {
         toast.classList.add('toast-hide');
-
         setTimeout(() => toast.remove(), 300);
     }, 4000);
 };
@@ -71,148 +71,148 @@ const actualizarFilaProducto = (producto) => {
     row.children[2].textContent = producto.precio;
 };
 
+/* ---- Lógica de filtros ---- */
+
+const obtenerProductosFiltrados = () => {
+    const orden = filtroOrdenProducto.value;
+    const catFiltro = filtroCategoria.value;
+
+    let lista = [...productosGlobales];
+
+    if (catFiltro) {
+        lista = lista.filter(p => p.nombreCategoria === catFiltro);
+    }
+
+    if (orden === 'az') {
+        lista.sort((a, b) => a.nombreProducto.localeCompare(b.nombreProducto));
+    } else if (orden === 'za') {
+        lista.sort((a, b) => b.nombreProducto.localeCompare(a.nombreProducto));
+    } else if (orden === 'categoria') {
+        lista.sort((a, b) => a.nombreCategoria.localeCompare(b.nombreCategoria)
+            || a.nombreProducto.localeCompare(b.nombreProducto));
+    }
+
+    return lista;
+};
+
+const renderizarTablaProducto = (productos) => {
+    tbodyProducto.innerHTML = "";
+
+    productos.forEach(producto => {
+        const rowTBody = document.createElement("tr");
+        rowTBody.dataset.id = producto.idProducto;
+        rowTBody.innerHTML = `
+        <td>${producto.nombreProducto}</td>
+        <td>${producto.nombreCategoria}</td>
+        <td>${producto.precio}</td>
+        <td>
+            <div class="table-actions">
+                <button class="btn btn-action btn-editar" type="button">
+                    <i data-lucide="pencil"></i>
+                </button>
+                <button class="btn btn-action btn-eliminar" type="button">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            </div>
+        </td>
+        `;
+        tbodyProducto.appendChild(rowTBody);
+    });
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+};
+
+const aplicarFiltros = () => {
+    renderizarTablaProducto(obtenerProductosFiltrados());
+};
+
+const poblarFiltroCategoria = (productos) => {
+    const categorias = [...new Set(productos.map(p => p.nombreCategoria))].sort();
+    // Mantener la opción "Todas" pero limpiar el resto
+    filtroCategoria.innerHTML = '<option value="">Todas</option>';
+    categorias.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        filtroCategoria.appendChild(opt);
+    });
+};
+
 const cargarTablaProducto = async () => {
-
     try {
-
         const response = await fetch(`${BASE_URL}/catalogo/listarProductos`);
-
         if (!response.ok) {
             mostrarToast("Ocurrio un error", "error");
         } else {
             const data = await response.json();
-
-            tbodyProducto.innerHTML = "";
-
-            data.forEach(producto => {
-                const rowTBody = document.createElement("tr");
-
-                rowTBody.dataset.id = producto.idProducto;
-
-                rowTBody.innerHTML = `
-                <td>${producto.nombreProducto}</td>
-                <td>${producto.nombreCategoria}</td>
-                <td>${producto.precio}</td>
-                <td>
-                    <div class="table-actions">
-                        <button class="btn btn-action btn-editar" type="button">
-                            <i data-lucide="pencil"></i>
-                        </button>
-                        <button class="btn btn-action btn-eliminar" type="button">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </div>
-                </td>
-                `;
-
-                tbodyProducto.appendChild(rowTBody);
-
-            });
-
+            productosGlobales = data;
+            poblarFiltroCategoria(data);
+            aplicarFiltros();
         }
-
     } catch (error) {
         console.log(error);
     }
+};
 
-}
+filtroOrdenProducto.addEventListener('change', aplicarFiltros);
+filtroCategoria.addEventListener('change', aplicarFiltros);
+
+/* ---- CRUD ---- */
 
 const insertarProducto = async (requestProducto, idCategoria) => {
     try {
-
         const response = await fetch(`${BASE_URL}/catalogo/crearProducto/categoria/${idCategoria}`,
             {
                 method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestProducto)
             });
 
         const data = await response.json();
 
         if (!response.ok) {
-            data.mensajes.forEach(m => {
-                mostrarToast(m, "error");
-            });
+            data.mensajes.forEach(m => mostrarToast(m, "error"));
         } else {
-
             mostrarToast("Producto creado con éxito", "success");
-
-            const tBody = document.getElementById("tbodyProducto");
-            const rowtBody = document.createElement("tr");
-
-            rowtBody.dataset.id = data.idProducto;
-
-            rowtBody.innerHTML = `
-                <td>${data.nombreProducto}</td>
-                <td>${data.nombreCategoria}</td>
-                <td>${data.precio}</td>
-                <td>
-                    <div class="table-actions">
-                        <button class="btn btn-action btn-editar" type="button">
-                            <i data-lucide="pencil"></i>
-                        </button>
-                        <button data-id="${data.idProducto}" class="btn btn-action btn-eliminar" type="button">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-
-            tBody.appendChild(rowtBody);
-
+            productosGlobales.push(data);
+            poblarFiltroCategoria(productosGlobales);
+            aplicarFiltros();
         }
     } catch (error) {
-
         console.log(error);
-
     }
-}
+};
 
 const editarProducto = async (requestProducto, idProducto, idCategoria) => {
     try {
-
         const response = await fetch(`${BASE_URL}/catalogo/editarProducto/${idProducto}/categoria/${idCategoria}`,
             {
                 method: "PUT",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestProducto)
             });
 
         const data = await response.json();
 
         if (!response.ok) {
-            data.mensajes.forEach(m => {
-                mostrarToast(m, "error");
-            });
+            data.mensajes.forEach(m => mostrarToast(m, "error"));
             return null;
         }
 
         return data;
     } catch (error) {
-
         console.log(error);
         mostrarToast("Ocurrió un error en el servidor", "error");
         return null;
     }
-}
+};
 
 const eliminarProducto = async (idProducto) => {
     try {
-
         const response = await fetch(`${BASE_URL}/catalogo/eliminarProducto/${idProducto}`,
             {
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                }
+                headers: { "Content-Type": "application/json" }
             });
 
         if (!response.ok) {
@@ -223,52 +223,37 @@ const eliminarProducto = async (idProducto) => {
         mostrarToast("Producto eliminado correctamente", "success");
         return true;
     } catch (error) {
-
         console.log(error);
         mostrarToast("Ocurrió un error en el servidor", "error");
         return false;
     }
-}
+};
 
 const llenarComboCategoria = async () => {
     try {
-
         const combo = document.getElementById('comboCategorias');
-
         const response = await fetch(`${BASE_URL}/catalogo/listarCategorias`);
 
         if (!response.ok) {
-
             mostrarToast("Ocurrio un error al llenar comboCategoria", "error");
-
         } else {
-
             const data = await response.json();
-
             data.forEach(categoria => {
-
                 const option = document.createElement("option");
-
                 option.value = categoria.idCategoria;
                 option.textContent = categoria.nombre;
-
                 combo.appendChild(option);
-
-            })
+            });
         }
     } catch (error) {
-
         console.log(error);
-
     }
-}
+};
 
 btnGuardarProducto.addEventListener("click", async (e) => {
-
     e.preventDefault();
 
     const idCategoria = comboCategorias.value;
-
     if (!idCategoria) {
         mostrarToast("Debe seleccionar una categoría", "error");
         return;
@@ -277,12 +262,16 @@ btnGuardarProducto.addEventListener("click", async (e) => {
     const requestProducto = {
         "nombre": nombreProductoInput.value,
         "precio": Number(precioProductoInput.value)
-    }
+    };
 
     if (productoEditandoId) {
         const data = await editarProducto(requestProducto, productoEditandoId, idCategoria);
         if (data) {
-            actualizarFilaProducto(data);
+            // Actualizar en lista global
+            const idx = productosGlobales.findIndex(p => p.idProducto == productoEditandoId);
+            if (idx !== -1) productosGlobales[idx] = data;
+            poblarFiltroCategoria(productosGlobales);
+            aplicarFiltros();
             formProducto.classList.add('hidden');
             limpiarFormularioProducto();
         }
@@ -290,11 +279,9 @@ btnGuardarProducto.addEventListener("click", async (e) => {
     }
 
     await insertarProducto(requestProducto, idCategoria);
-
     formProducto.classList.add('hidden');
     limpiarFormularioProducto();
-
-})
+});
 
 
 tbodyProducto.addEventListener("click", async (e) => {
@@ -333,45 +320,34 @@ btnAceptarModal.addEventListener("click", async () => {
         btnAceptarModal.disabled = true;
         btnAceptarModal.textContent = "Eliminando...";
 
-
         const eliminado = await eliminarProducto(idProducto);
         if (eliminado) {
-            filaSeleccionadaParaEliminar.remove();
+            productosGlobales = productosGlobales.filter(p => p.idProducto != idProducto);
+            poblarFiltroCategoria(productosGlobales);
+            aplicarFiltros();
         }
 
         btnAceptarModal.disabled = false;
         btnAceptarModal.textContent = "Eliminar";
         modalConfirmar.classList.add("hidden");
         filaSeleccionadaParaEliminar = null;
-
     }
 });
 
 
 const verificarSesionActiva = async () => {
-
     try {
-
         const response = await fetch(`${BASE_URL}/usuario/sesionActiva`);
         const data = await response.json();
-
-        if (!response.ok) {
-            return null;
-        } else {
-            return data;
-        }
-
+        if (!response.ok) return null;
+        return data;
     } catch (error) {
         console.log(error);
     }
-
-}
+};
 
 const cargarSecciones = (sesionActiva) => {
-
-    if (sesionActiva.rol === "Administrador") {
-        return;
-    }
+    if (sesionActiva.rol === "Administrador") return;
 
     if (sesionActiva.rol === "Mesero") {
         document.getElementById("navSeccionCaja").classList.add("hidden");
@@ -387,31 +363,23 @@ const cargarSecciones = (sesionActiva) => {
         document.getElementById("navSeccionUsuario").classList.add("hidden");
         document.getElementById("navSeccionConfiguracion").classList.add("hidden");
     }
-
-}
+};
 
 document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
     e.preventDefault();
-
     try {
-
-        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
-            method: 'PUT'
-        });
-
+        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, { method: 'PUT' });
         if (!response.ok) {
             console.log("Ocurrio un error");
         } else {
             window.location.href = '../login.html';
         }
-
     } catch (error) {
         console.log(error);
     }
 });
 
 document.addEventListener("DOMContentLoaded", async (e) => {
-
     e.preventDefault();
 
     const sesionActiva = await verificarSesionActiva();

@@ -9,21 +9,20 @@ const modalConfirmar = document.getElementById("modalConfirmar");
 const btnCancelarModal = document.getElementById("btnCancelarModal");
 const btnAceptarModal = document.getElementById("btnAceptarModal");
 
+const filtroOrdenCategoria = document.getElementById('filtroOrdenCategoria');
+
 let filaCategoriaParaEliminar = null;
 let categoriaEditandoId = null;
+let categoriasGlobales = [];
 
 const toastContainer = document.getElementById('toast-container');
 const mostrarToast = (mensaje, tipo = 'info') => {
     const toast = document.createElement('div');
-
     toast.className = `toast toast-${tipo}`;
     toast.textContent = mensaje;
-
     toastContainer.appendChild(toast);
-
     setTimeout(() => {
         toast.classList.add('toast-hide');
-
         setTimeout(() => toast.remove(), 300);
     }, 4000);
 };
@@ -51,137 +50,119 @@ const actualizarFilaCategoria = (categoria) => {
     row.children[1].textContent = categoria.productos;
 };
 
+/* ---- Lógica de filtros ---- */
+
+const obtenerCategoriasFiltradas = () => {
+    const orden = filtroOrdenCategoria.value;
+    let lista = [...categoriasGlobales];
+
+    if (orden === 'az') {
+        lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
+    } else if (orden === 'za') {
+        lista.sort((a, b) => b.nombre.localeCompare(a.nombre));
+    }
+
+    return lista;
+};
+
+const renderizarTablaCategoria = (categorias) => {
+    tbodyCategoria.innerHTML = "";
+    categorias.forEach(categoria => {
+        const rowTBody = document.createElement("tr");
+        rowTBody.dataset.id = categoria.idCategoria;
+        rowTBody.innerHTML = `
+        <td>${categoria.nombre}</td>
+        <td>${categoria.productos}</td>
+        <td>
+            <div class="table-actions">
+                <button class="btn btn-action btn-editar" type="button">
+                    <i data-lucide="pencil"></i>
+                </button>
+                <button class="btn btn-action btn-eliminar" type="button">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            </div>
+        </td>
+    `;
+        tbodyCategoria.appendChild(rowTBody);
+    });
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+};
+
+const aplicarFiltros = () => {
+    renderizarTablaCategoria(obtenerCategoriasFiltradas());
+};
+
 const cargarTablaCategoria = async () => {
-
     try {
-
         const response = await fetch(`${BASE_URL}/catalogo/listarCategorias`);
-
         if (!response.ok) {
             mostrarToast("Ocurrio un error", "error");
         } else {
             const data = await response.json();
-            tbodyCategoria.innerHTML = "";
-
-            data.forEach(categoria => {
-
-                const rowTBody = document.createElement("tr");
-
-                rowTBody.dataset.id = categoria.idCategoria;
-
-                rowTBody.innerHTML = `
-                <td>${categoria.nombre}</td>
-                <td>${categoria.productos}</td>
-                <td>
-                    <div class="table-actions">
-                        <button class="btn btn-action btn-editar" type="button">
-                            <i data-lucide="pencil"></i>
-                        </button>
-                        <button class="btn btn-action btn-eliminar" type="button">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-                tbodyCategoria.appendChild(rowTBody);
-
-            });
-
+            categoriasGlobales = data;
+            aplicarFiltros();
         }
-
     } catch (error) {
         console.log(error);
     }
+};
 
-}
+filtroOrdenCategoria.addEventListener('change', aplicarFiltros);
 
+/* ---- CRUD ---- */
 
 const insertarCategoria = async (requestCategoria) => {
-
     try {
-
         const response = await fetch(`${BASE_URL}/catalogo/crearCategoria`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestCategoria)
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            data.mensajes.forEach(m => {
-                mostrarToast(m, "error");
-            });
+            data.mensajes.forEach(m => mostrarToast(m, "error"));
         } else {
             mostrarToast("Categoria creado con éxito", "success");
-            const rowTBody = document.createElement("tr");
-
-            rowTBody.dataset.id = data.idCategoria;
-
-            rowTBody.innerHTML = `
-                <td>${data.nombre}</td>
-                <td>${data.productos}</td>
-                <td>
-                    <div class="table-actions">
-                        <button class="btn btn-action btn-editar" type="button">
-                            <i data-lucide="pencil"></i>
-                        </button>
-                        <button class="btn btn-action btn-eliminar" type="button">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-
-            tbodyCategoria.appendChild(rowTBody);
+            categoriasGlobales.push(data);
+            aplicarFiltros();
         }
-
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
-
-}
+};
 
 const editarCategoria = async (requestCategoria, idCategoria) => {
     try {
-
         const response = await fetch(`${BASE_URL}/catalogo/editarCategoria/${idCategoria}`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestCategoria)
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            data.mensajes.forEach(m => {
-                mostrarToast(m, "error");
-            });
+            data.mensajes.forEach(m => mostrarToast(m, "error"));
             return null;
         }
 
         return data;
     } catch (error) {
-        console.log(error)
+        console.log(error);
         mostrarToast("Ocurrió un error en el servidor", "error");
         return null;
     }
-}
+};
 
 const eliminarCategoria = async (idCategoria) => {
     try {
-
         const URL = `http://localhost:8080/api/catalogo/eliminarCategoria/${idCategoria}`;
-
         const response = await fetch(URL, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (!response.ok) {
@@ -191,7 +172,6 @@ const eliminarCategoria = async (idCategoria) => {
 
         mostrarToast("Categoría eliminada correctamente", "success");
         return true;
-
     } catch (error) {
         console.error("Error al conectar con la API:", error);
         mostrarToast("Ocurrió un error en el servidor", "error");
@@ -236,32 +216,30 @@ btnAceptarModal.addEventListener("click", async () => {
         btnAceptarModal.disabled = true;
         btnAceptarModal.textContent = "Eliminando...";
 
-
         const eliminado = await eliminarCategoria(idCategoria);
         if (eliminado) {
-            filaCategoriaParaEliminar.remove();
+            categoriasGlobales = categoriasGlobales.filter(c => c.idCategoria != idCategoria);
+            aplicarFiltros();
         }
 
         btnAceptarModal.disabled = false;
         btnAceptarModal.textContent = "Eliminar";
         modalConfirmar.classList.add("hidden");
         filaCategoriaParaEliminar = null;
-
     }
 });
 
 btnGuardarCategoria.addEventListener("click", async (e) => {
-
     e.preventDefault();
 
-    const requestCategoria = {
-        "nombre": txtNombreCategoria.value
-    }
+    const requestCategoria = { "nombre": txtNombreCategoria.value };
 
     if (categoriaEditandoId) {
         const data = await editarCategoria(requestCategoria, categoriaEditandoId);
         if (data) {
-            actualizarFilaCategoria(data);
+            const idx = categoriasGlobales.findIndex(c => c.idCategoria == categoriaEditandoId);
+            if (idx !== -1) categoriasGlobales[idx] = data;
+            aplicarFiltros();
             formCategoria.classList.add('hidden');
             limpiarFormularioCategoria();
         }
@@ -269,9 +247,7 @@ btnGuardarCategoria.addEventListener("click", async (e) => {
     }
 
     await insertarCategoria(requestCategoria);
-
     formCategoria.classList.add('hidden');
-    txtNombreCategoria.value = " ";
     limpiarFormularioCategoria();
 });
 
@@ -290,29 +266,18 @@ if (btnCancelarCategoria) {
 }
 
 const verificarSesionActiva = async () => {
-
     try {
-
         const response = await fetch(`${BASE_URL}/usuario/sesionActiva`);
         const data = await response.json();
-
-        if (!response.ok) {
-            return null;
-        } else {
-            return data;
-        }
-
+        if (!response.ok) return null;
+        return data;
     } catch (error) {
         console.log(error);
     }
-
-}
+};
 
 const cargarSecciones = (sesionActiva) => {
-
-    if (sesionActiva.rol === "Administrador") {
-        return;
-    }
+    if (sesionActiva.rol === "Administrador") return;
 
     if (sesionActiva.rol === "Mesero") {
         document.getElementById("navSeccionCaja").classList.add("hidden");
@@ -328,31 +293,23 @@ const cargarSecciones = (sesionActiva) => {
         document.getElementById("navSeccionUsuario").classList.add("hidden");
         document.getElementById("navSeccionConfiguracion").classList.add("hidden");
     }
-
-}
+};
 
 document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
     e.preventDefault();
-
     try {
-
-        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
-            method: 'PUT'
-        });
-
+        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, { method: 'PUT' });
         if (!response.ok) {
             console.log("Ocurrio un error");
         } else {
             window.location.href = '../login.html';
         }
-
     } catch (error) {
         console.log(error);
     }
 });
 
 document.addEventListener("DOMContentLoaded", async (e) => {
-
     const sesionActiva = await verificarSesionActiva();
 
     if (sesionActiva == null) {

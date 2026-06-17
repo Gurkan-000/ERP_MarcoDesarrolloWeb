@@ -1393,3 +1393,48 @@ ol {
 .table-container::-webkit-scrollbar-thumb:hover {
   background: var(--orange-500);
 }
+
+/* ============================================
+   BARRA DE FILTROS / ORDENAMIENTO
+   ============================================ */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 4px 14px 4px;
+}
+
+.filter-bar label {
+  font-size: 13px;
+  color: var(--zinc-500);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--zinc-200);
+  background: var(--white);
+  font-size: 13px;
+  color: var(--zinc-700);
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  min-width: 150px;
+}
+
+.filter-select:focus {
+  border-color: var(--orange-500);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.filter-bar-separator {
+  width: 1px;
+  height: 22px;
+  background: var(--zinc-200);
+  margin: 0 4px;
+}
