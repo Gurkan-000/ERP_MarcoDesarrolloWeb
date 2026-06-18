@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8083/api";
+const BASE_URL = 'https://erp-marcodesarrolloweb.onrender.com/api';
 
 const detallesPedidoLlevar = new Map();
 const detallesPedidoDelivery = new Map();

@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8083/api';
+const BASE_URL = 'https://erp-marcodesarrolloweb.onrender.com/api';
 
 // 1. Función para verificar si hay un usuario logueado en el backend
 const verificarSesionActiva = async () => {
