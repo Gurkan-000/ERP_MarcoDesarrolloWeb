@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8083/api';
+const BASE_URL = 'https://erp-marcodesarrolloweb.onrender.com/api';
 
 const tbodyCategoria = document.getElementById("tbodyCategoria");
 const formCategoria = document.getElementById("form-cat-categorias");
