@@ -345,7 +345,7 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
     if (!response.ok) {
       console.log("Ocurrio un error");
     } else {
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
     }
   } catch (error) {
     console.log(error);
@@ -358,7 +358,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   const sesionActiva = await verificarSesionActiva();
 
   if (sesionActiva == null) {
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
     return;
   }
   if (typeof window.poblarTopbarUsuario === 'function') {

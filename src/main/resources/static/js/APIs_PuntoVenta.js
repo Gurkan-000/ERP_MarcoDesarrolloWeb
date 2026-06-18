@@ -1142,7 +1142,7 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
         if (!response.ok) {
             console.log("Ocurrio un error");
         } else {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
 
     } catch (error) {
@@ -1174,7 +1174,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     const sesionActiva = await verificarSesionActiva();
 
     if (sesionActiva == null) {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
         return;
     }
     if (typeof window.poblarTopbarUsuario === 'function') {
@@ -1204,7 +1204,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         let mensaje = "Ir a caja";
 
         if (sesionActiva.rol === "Mesero" && await cerrarSesion()) {
-            html = "login.html";
+            html = "index.html";
             mensaje = "Logear como cajero";
         }
 
