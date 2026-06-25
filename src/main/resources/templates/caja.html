@@ -156,9 +156,45 @@
                   </form>
                 </div>
               </div>
+              
+              <!-- CARD DE MOVIMIENTOS CON BUSCADOR -->
               <div class="card">
                 <h3>Movimientos del Turno</h3>
+                
+                <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+                <div class="search-filters-container">
+                  <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                      type="text" 
+                      id="txtBuscarMovimiento" 
+                      class="search-input" 
+                      placeholder="Buscar por concepto, método, tipo o monto..."
+                    />
+                  </div>
+                  <div class="filters-row">
+                    <select id="filtroTipo" class="filter-select">
+                      <option value="">Todos los tipos</option>
+                      <option value="INGRESO">Ingreso</option>
+                      <option value="EGRESO">Egreso</option>
+                    </select>
+                    <select id="filtroMetodo" class="filter-select">
+                      <option value="">Todos los métodos</option>
+                      <option value="EFECTIVO">Efectivo</option>
+                      <option value="TARJETA">Tarjeta</option>
+                      <option value="YAPE">Yape</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <!-- LISTA DE MOVIMIENTOS -->
                 <div id="divListMovimientos" class="list"></div>
+                
+                <!-- MENSAJE CUANDO NO HAY RESULTADOS -->
+                <div id="noResultsMessage" class="no-results hidden">
+                  <i class="fas fa-search"></i>
+                  <p>No se encontraron movimientos con esos filtros</p>
+                </div>
               </div>
             </div>
           </section>
