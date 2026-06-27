@@ -12,6 +12,6 @@ public class ControllerHealth {
 
     @GetMapping("/health")
     public String health(){
-        return "OK";
+        return "Server is ok. Server is running fine.";
     }
 }
