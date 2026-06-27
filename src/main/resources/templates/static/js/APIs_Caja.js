@@ -60,6 +60,11 @@ function agregarMovimientoAlDOM(mov) {
     <strong>${mov.tipo === "INGRESO" ? "+" : "-"} S/ ${Number(mov.monto).toFixed(2)}</strong>
     `;
     lista.appendChild(item);
+    
+    // Aplicar filtros después de agregar un nuevo movimiento
+    if (typeof aplicarFiltros === 'function') {
+        aplicarFiltros();
+    }
 }
 
 
@@ -327,7 +332,7 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
 
     try {
 
-        const response = await fetch(`http://localhost:8083/api/usuario/cerrarSesion`, {
+        const response = await fetch(`https://erp-marcodesarrolloweb.onrender.com/api/usuario/cerrarSesion`, {
             method: 'PUT'
         });
 
@@ -341,6 +346,68 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
         console.log(error);
     }
 });
+
+// ============================================
+// BÚSQUEDA Y FILTRADO DE MOVIMIENTOS
+// ============================================
+
+const aplicarFiltros = () => {
+    const txtBuscarMovimiento = document.getElementById("txtBuscarMovimiento");
+    const filtroTipo = document.getElementById("filtroTipo");
+    const filtroMetodo = document.getElementById("filtroMetodo");
+    const noResultsMessage = document.getElementById("noResultsMessage");
+    
+    if (!txtBuscarMovimiento || !filtroTipo || !filtroMetodo) return;
+    
+    const textoBusqueda = txtBuscarMovimiento.value.toLowerCase().trim();
+    const tipoSeleccionado = filtroTipo.value;
+    const metodoSeleccionado = filtroMetodo.value;
+    
+    const movimientos = document.querySelectorAll("#divListMovimientos .list-item");
+    let visibles = 0;
+    
+    movimientos.forEach(movimiento => {
+        const concepto = movimiento.querySelector(".title")?.textContent?.toLowerCase() || "";
+        const badges = movimiento.querySelectorAll(".badge");
+        let metodo = "";
+        let tipo = "";
+        
+        badges.forEach(badge => {
+            const texto = badge.textContent.trim().toUpperCase();
+            if (["EFECTIVO", "TARJETA", "YAPE"].includes(texto)) {
+                metodo = texto;
+            } else if (["INGRESO", "EGRESO"].includes(texto)) {
+                tipo = texto;
+            }
+        });
+        
+        const monto = movimiento.querySelector("strong")?.textContent?.toLowerCase() || "";
+        
+        const coincideTexto = !textoBusqueda || 
+            concepto.includes(textoBusqueda) || 
+            metodo.toLowerCase().includes(textoBusqueda) || 
+            tipo.toLowerCase().includes(textoBusqueda) || 
+            monto.includes(textoBusqueda);
+        
+        const coincideTipo = !tipoSeleccionado || tipo === tipoSeleccionado;
+        const coincideMetodo = !metodoSeleccionado || metodo === metodoSeleccionado;
+        
+        if (coincideTexto && coincideTipo && coincideMetodo) {
+            movimiento.classList.remove("hidden");
+            visibles++;
+        } else {
+            movimiento.classList.add("hidden");
+        }
+    });
+    
+    if (noResultsMessage) {
+        if (visibles === 0 && movimientos.length > 0) {
+            noResultsMessage.classList.remove("hidden");
+        } else {
+            noResultsMessage.classList.add("hidden");
+        }
+    }
+};
 
 document.addEventListener("DOMContentLoaded", async (e) => {
 
@@ -367,4 +434,13 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     cargarSecciones(sesionActiva);
 
     cargarEstadoInicial();
+    
+    // Event listeners del buscador
+    const txtBuscarMovimiento = document.getElementById("txtBuscarMovimiento");
+    const filtroTipo = document.getElementById("filtroTipo");
+    const filtroMetodo = document.getElementById("filtroMetodo");
+    
+    if (txtBuscarMovimiento) txtBuscarMovimiento.addEventListener("input", aplicarFiltros);
+    if (filtroTipo) filtroTipo.addEventListener("change", aplicarFiltros);
+    if (filtroMetodo) filtroMetodo.addEventListener("change", aplicarFiltros);
 });
