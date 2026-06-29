@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +24,7 @@ import com.example.erp.services.ProductoService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/catalogo")
-@CrossOrigin("*")
+@RequestMapping("/api/catalogo")
 public class ControllerCatalogo {
 
     private final ProductoService productoService;

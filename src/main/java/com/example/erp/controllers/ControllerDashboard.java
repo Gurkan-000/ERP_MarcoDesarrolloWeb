@@ -3,7 +3,6 @@ package com.example.erp.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,8 +14,7 @@ import com.example.erp.services.DashboardService;
 
 
 @RestController
-@RequestMapping("/dashboard-api")
-@CrossOrigin("*")
+@RequestMapping("/api/dashboard")
 public class ControllerDashboard {
 
     private final DashboardService dashboardService;

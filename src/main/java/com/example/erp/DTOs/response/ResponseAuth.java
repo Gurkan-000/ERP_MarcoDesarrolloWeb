@@ -1,6 +1,5 @@
 package com.example.erp.DTOs.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,12 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseUsuario {
+public class ResponseAuth {
 
-    private String nombre;
-
-    private String usuario;
-
-    private String rol;
+    private String token;
 
 }

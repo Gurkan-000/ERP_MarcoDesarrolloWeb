@@ -1,9 +1,6 @@
 package com.example.erp.DTOs.request;
 
-import com.example.erp.entities.enums.Rol;
-
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,18 +11,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RequestUsuario {
+public class RequestLogin {
 
-    @NotBlank(message = "Nombre no valido")
-    private String nombre;
-
-    @NotBlank(message = "Usuario no valido")
+    @NotBlank(message = "Usuario esta vacio")
     private String usuario;
 
-    @NotBlank(message = "Contraseña no valida")
+    @NotBlank(message = "Contraseña esta vacio")
     private String contrasena;
-
-    @NotNull(message = "Rol no valido")
-    private Rol rol;
 
 }
