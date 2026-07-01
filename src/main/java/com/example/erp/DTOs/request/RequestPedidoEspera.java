@@ -1,0 +1,28 @@
+package com.example.erp.DTOs.request;
+
+import java.util.List;
+
+import com.example.erp.entities.enums.TipoPedido;
+
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter @Setter
+@Builder
+public class RequestPedidoEspera {
+
+    @NotNull(message="Tipo de pedido invalido")
+    private TipoPedido tipoPedido;
+
+    @NotNull(message="Detalles pedido invalido")
+    @NotEmpty(message="Detalles del pedido vacio")
+    private List<RequestDetallePedido> detalles;
+
+}

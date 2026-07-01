@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.erp.DTOs.request.RequestDetallePedido;
 import com.example.erp.DTOs.request.RequestMetodoPago;
 import com.example.erp.DTOs.request.RequestPedido;
+import com.example.erp.DTOs.request.RequestPedidoEspera;
 import com.example.erp.DTOs.response.ResponseBoleta;
 import com.example.erp.DTOs.response.ResponseDetallePedido;
 import com.example.erp.DTOs.response.ResponseMesa;
 import com.example.erp.DTOs.response.ResponsePedido;
+import com.example.erp.DTOs.response.ResponsePedidoEspera;
+import com.example.erp.services.PedidoEsperaService;
 import com.example.erp.services.VentaService;
 
 import jakarta.validation.Valid;
@@ -29,9 +32,11 @@ import jakarta.validation.Valid;
 public class ControllerVenta {
 
     private final VentaService ventaService;
+    private final PedidoEsperaService pedidoEsperaService;
 
-    public ControllerVenta(VentaService ventaService) {
+    public ControllerVenta(VentaService ventaService, PedidoEsperaService pedidoEsperaService) {
         this.ventaService = ventaService;
+        this.pedidoEsperaService = pedidoEsperaService;
     }
 
     @GetMapping("/listarPedidos")
@@ -72,7 +77,8 @@ public class ControllerVenta {
     }
 
     @PutMapping("/agregarDetallePedidoAlaMesa/{idMesa}")
-    public ResponseEntity<Void> agregarDetallePedidoAlaMesa(@PathVariable UUID idMesa, @Valid @RequestBody RequestDetallePedido requestDetallePedido) {
+    public ResponseEntity<Void> agregarDetallePedidoAlaMesa(@PathVariable UUID idMesa,
+            @Valid @RequestBody RequestDetallePedido requestDetallePedido) {
 
         ventaService.agregarDetallePedidoAlaMesa(idMesa, requestDetallePedido);
 
@@ -108,6 +114,46 @@ public class ControllerVenta {
     public ResponseEntity<Void> eliminarMesa() {
 
         ventaService.eliminarMesa();
+
+        return ResponseEntity.noContent().build();
+    }
+
+    // ──────────────────────────────────────────────
+    // PEDIDOS EN ESPERA (LLEVAR / DELIVERY)
+    // Visibles para cualquier usuario autenticado, sin importar
+    // quien los haya creado ni desde que dispositivo se consulten.
+    // ──────────────────────────────────────────────
+
+    @GetMapping("/espera")
+    public ResponseEntity<List<ResponsePedidoEspera>> listarPedidosEnEspera() {
+        List<ResponsePedidoEspera> pedidosEnEspera = pedidoEsperaService.listarPedidosEnEspera();
+
+        return ResponseEntity.ok(pedidosEnEspera);
+    }
+
+    @PostMapping("/espera")
+    public ResponseEntity<ResponsePedidoEspera> crearPedidoEnEspera(
+            @Valid @RequestBody RequestPedidoEspera requestPedidoEspera) {
+
+        ResponsePedidoEspera pedidoEspera = pedidoEsperaService.crearPedidoEnEspera(requestPedidoEspera);
+
+        return ResponseEntity.ok(pedidoEspera);
+    }
+
+    @PutMapping("/espera/{idPedidoEspera}")
+    public ResponseEntity<ResponsePedidoEspera> actualizarPedidoEnEspera(@PathVariable UUID idPedidoEspera,
+            @Valid @RequestBody RequestPedidoEspera requestPedidoEspera) {
+
+        ResponsePedidoEspera pedidoEspera = pedidoEsperaService.actualizarPedidoEnEspera(idPedidoEspera,
+                requestPedidoEspera);
+
+        return ResponseEntity.ok(pedidoEspera);
+    }
+
+    @DeleteMapping("/espera/{idPedidoEspera}")
+    public ResponseEntity<Void> eliminarPedidoEnEspera(@PathVariable UUID idPedidoEspera) {
+
+        pedidoEsperaService.eliminarPedidoEnEspera(idPedidoEspera);
 
         return ResponseEntity.noContent().build();
     }
