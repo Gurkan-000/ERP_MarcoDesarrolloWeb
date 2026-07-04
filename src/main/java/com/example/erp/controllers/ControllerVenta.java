@@ -102,6 +102,22 @@ public class ControllerVenta {
         return ResponseEntity.ok(responseBoleta);
     }
 
+    @PutMapping("/marcarPedidoEntregado/{idMesa}")
+    public ResponseEntity<Void> marcarPedidoEntregado(@PathVariable UUID idMesa) {
+
+        ventaService.marcarPedidoEntregado(idMesa);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/cancelarPedidoMesa/{idMesa}")
+    public ResponseEntity<List<ResponseDetallePedido>> cancelarPedidoMesa(@PathVariable UUID idMesa) {
+
+        List<ResponseDetallePedido> responseDetallePedidos = ventaService.cancelarPedidoMesa(idMesa);
+
+        return ResponseEntity.ok(responseDetallePedidos);
+    }
+
     @PostMapping("/insertarMesa")
     public ResponseEntity<Void> insertarMesa() {
 

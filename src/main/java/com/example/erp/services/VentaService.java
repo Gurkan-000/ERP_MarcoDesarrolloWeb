@@ -49,7 +49,8 @@ public class VentaService {
     private final CajaService cajaService;
 
     public VentaService(MesaRepository mesaRepository, PedidoRepository pedidoRepository,
-            DetallePedidoRepository detallePedidoRepository, ProductoRepository productoRepository, CajaService cajaService, CajaRepository cajaRepository) {
+            DetallePedidoRepository detallePedidoRepository, ProductoRepository productoRepository,
+            CajaService cajaService, CajaRepository cajaRepository) {
 
         this.mesaRepository = mesaRepository;
         this.pedidoRepository = pedidoRepository;
@@ -205,8 +206,69 @@ public class VentaService {
 
         pedido.calcularTotal();
 
-        mesa.setEstado(EstadoMesa.OCUPADO);
+        mesa.setEstado(EstadoMesa.EN_PREPARACION);
         mesa.asignarPedidoAlaMesa(pedido);
+
+    }
+
+    /**
+     * Marca el pedido de la mesa como entregado: el cliente ya recibio su pedido
+     * y ahora se encuentra consumiendolo, por lo que la mesa pasa de EN_PREPARACION
+     * a OCUPADO. A partir de este punto ya no se puede cancelar el pedido, solo
+     * agregar mas productos (ej. una bebida extra) o cobrar al finalizar.
+     */
+    @Transactional
+    public void marcarPedidoEntregado(UUID idMesa) {
+
+        Mesa mesa = mesaRepository.findById(idMesa)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Mesa no encontrada"));
+
+        if (mesa.getEstado() != EstadoMesa.EN_PREPARACION) {
+            throw new ReglaDeNegocioException(
+                    "Solo se puede marcar como entregado un pedido que se encuentra en preparacion");
+        }
+
+        mesa.setEstado(EstadoMesa.OCUPADO);
+
+    }
+
+    /**
+     * Cancela el pedido de una mesa mientras aun se encuentra en preparacion.
+     * Los productos del pedido no vuelven al stock automaticamente (ya fueron
+     * descontados al ocupar la mesa/agregar productos), sino que se retornan
+     * para que el frontend los envie a la "papelera" de productos cancelados,
+     * desde donde el usuario decide si los reingresa a stock o los desecha
+     * registrando la perdida en caja.
+     */
+    @Transactional
+    public List<ResponseDetallePedido> cancelarPedidoMesa(UUID idMesa) {
+
+        Mesa mesa = mesaRepository.findById(idMesa)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Mesa no encontrada"));
+
+        if (mesa.getEstado() != EstadoMesa.EN_PREPARACION) {
+            throw new ReglaDeNegocioException("Solo se puede cancelar un pedido que aun se encuentra en preparacion");
+        }
+
+        Pedido pedido = mesa.getPedido();
+
+        if (pedido == null) {
+            throw new EntidadNoEncontradaException("La mesa no tiene registrado un pedido");
+        }
+
+        List<DetallePedido> detalles = detallePedidoRepository.findByPedido(pedido);
+
+        List<ResponseDetallePedido> detallesResponse = detalles.stream()
+                .map(MapperDetallePedido::toDTO)
+                .toList();
+
+        mesa.setEstado(EstadoMesa.LIBRE);
+        mesa.setPedido(null);
+
+        detallePedidoRepository.deleteAll(detalles);
+        pedidoRepository.delete(pedido);
+
+        return detallesResponse;
 
     }
 
@@ -273,7 +335,8 @@ public class VentaService {
                 .findFirst();
 
         if (detalleExistente.isPresent()) {
-            detalleExistente.get().setCantidad(detalleExistente.get().getCantidad() + requestDetallePedido.getCantidad());
+            detalleExistente.get()
+                    .setCantidad(detalleExistente.get().getCantidad() + requestDetallePedido.getCantidad());
             detalleExistente.get().calcularTotal();
         } else {
             DetallePedido detallePedido = new DetallePedido();
@@ -306,13 +369,14 @@ public class VentaService {
     @Transactional
     public void eliminarMesa() {
 
-        if(mesaRepository.existsByEstado(EstadoMesa.OCUPADO)) {
+        if (mesaRepository.existsByEstado(EstadoMesa.OCUPADO)
+                || mesaRepository.existsByEstado(EstadoMesa.EN_PREPARACION)) {
             throw new ReglaDeNegocioException("No se pueden eliminar mesas cuando estan ocupadas");
         }
 
         Mesa mesa = mesaRepository.findFirstByOrderByNumeroDesc()
                 .orElseThrow(() -> new EntidadNoEncontradaException("No hay mesas para eliminar"));
-        
+
         mesaRepository.delete(mesa);
 
     }
