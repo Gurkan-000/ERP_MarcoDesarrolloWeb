@@ -23,4 +23,6 @@ public interface MesaRepository extends JpaRepository<Mesa, UUID> {
 
     boolean existsByEstado(EstadoMesa estado);
 
+    long count();
+
 }

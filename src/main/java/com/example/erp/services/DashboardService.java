@@ -58,12 +58,14 @@ public class DashboardService {
 
         long pedidosTotales = pedidoRepository.count();
         long mesasOcupadas = mesaRepository.countByEstado(EstadoMesa.OCUPADO);
+        long totalMesas = mesaRepository.count();
         long productosTotales = productoRepository.count();
 
         return ResponseDashboard.builder()
                 .ventasHoy(ingresos)
                 .pedidosTotales(pedidosTotales)
                 .mesasOcupadas(mesasOcupadas)
+                .totalMesas(totalMesas)
                 .productosTotales(productosTotales)
                 .ingresos(ingresos)
                 .egresos(egresos)

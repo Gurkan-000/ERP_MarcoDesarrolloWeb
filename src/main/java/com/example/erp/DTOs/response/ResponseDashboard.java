@@ -19,6 +19,7 @@ public class ResponseDashboard {
     private BigDecimal ventasHoy;
     private long pedidosTotales;
     private long mesasOcupadas;
+    private long totalMesas;
     private long productosTotales;
     
 
