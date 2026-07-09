@@ -37,22 +37,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
 
-            // 1. Extraemos la cabecera "Authorization" de la petición HTTP
             String authHeader = request.getHeader("Authorization");
 
-            // 2. Si la cabecera no existe o no empieza con "Bearer ", dejamos pasar la petición al siguiente filtro
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // 3. Extraemos el token puro (quitando la palabra "Bearer " que mide 7 caracteres)
             String jwt = authHeader.substring(7);
 
-            // 4. Extraemos el nombre de usuario usando nuestro JwtService
             String username = jwtService.extractUsername(jwt);
 
-            // 5. Si encontramos un username y el usuario NO está autenticado todavía en el contexto de Spring...
             if (username == null) {
                 filterChain.doFilter(request, response);
                 return;
@@ -63,10 +58,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // Buscamos al usuario en la base de datos para validar si sigue activo, sus roles, etc.
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            // 6. Si el token es matemáticamente válido y pertenece a este usuario...
             if (!jwtService.isTokenValid(jwt, userDetails)) {
                 filterChain.doFilter(request, response);
                 return;
@@ -77,22 +70,17 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // Creamos el objeto de autenticación definitivo que Spring Security entiende
             UsernamePasswordAuthenticationToken authToken
                     = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
-                            userDetails.getAuthorities() // Aquí van sus roles (ej: ROLE_ADMIN)
+                            userDetails.getAuthorities()
                     );
 
-            // Le añadimos detalles adicionales de la petición web (IP, sesión, etc.)
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            // ¡EL PASO CLAVE!: Seteamos al usuario dentro del contexto de seguridad de Spring.
-            // A partir de esta línea, para Spring, el usuario está oficialmente LOGUEADO.
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
-            // 7. Continuamos el viaje hacia el Controller
             filterChain.doFilter(request, response);
 
         } catch (JwtException e) {

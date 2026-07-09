@@ -19,30 +19,23 @@ import jakarta.validation.Valid;
 public class ControllerAuth {
 
     private final AuthService authService;
-    
-    // Inyección por constructor de nuestro servicio de autenticación
+
     public ControllerAuth(AuthService authService) {
         this.authService = authService;
     }
 
-    // ENDPOINT PARA REGISTRAR USUARIOS
-    // Ruta física: POST http://localhost:8080/api/auth/registrarAdmin
     @PostMapping("/registrarAdmin")
     public ResponseEntity<ResponseAuth> registrarAdmin(@Valid @RequestBody RequestRegister request) {
         ResponseAuth response = authService.registrarAdmin(request);
         return ResponseEntity.ok(response);
     }
 
-    // ENDPOINT PARA INICIAR SESIÓN
-    // Ruta física: POST http://localhost:8080/api/auth/iniciarSesion
     @PostMapping("/iniciarSesion")
     public ResponseEntity<ResponseAuth> iniciarSesion(@Valid @RequestBody RequestLogin request) {
         ResponseAuth response = authService.iniciarSesion(request);
         return ResponseEntity.ok(response);
     }
 
-    // ENDPOINT PARA CERRAR SESION
-    // Ruta física: POST http://localhost:8080/api/auth/cerrarSesion
     @PostMapping("/cerrarSesion")
     public ResponseEntity<String> cerrarSesion(HttpServletRequest request) {
 
